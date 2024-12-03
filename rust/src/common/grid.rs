@@ -1,6 +1,6 @@
-use std::{fmt::Display, hash::Hash, iter::FusedIterator, ops::{Index, IndexMut}, slice::{self, ChunksExact, ChunksExactMut}, str::FromStr};
+use std::{fmt::Display, hash::Hash, ops::{Index, IndexMut}, slice::{self, ChunksExact, ChunksExactMut}, str::FromStr};
 
-use super::*;
+use crate::*;
 use itertools::*;
 use num::Integer;
 use strided::*;
@@ -14,11 +14,11 @@ use strided::*;
 /// [`Vec2D`]: https://docs.rs/vec2d/latest/vec2d/struct.Vec2D.html
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Grid<T> {
-    size: Size,
+    rect: Rect,
     elements: Vec<T>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd)]
 pub struct Size {
     pub width: usize,
     pub height: usize,
@@ -41,6 +41,12 @@ pub enum Major {
     #[default]
     Row,
     Column,
+}
+
+impl From<(usize, usize)> for Size {
+    fn from(tuple: (usize, usize)) -> Self {
+        Self { width: tuple.0, height: tuple.1 }
+    }
 }
 
 impl<TErr, T: TryFrom<char, Error = TErr> + Clone> FromStr for Grid<T> {
@@ -67,7 +73,7 @@ impl<TErr, T: TryFrom<char, Error = TErr> + Clone> FromStr for Grid<T> {
         
         Ok(Self {
             elements,
-            size: Size { width, height }
+            rect: Rect::from_origin(Size { width, height }).unwrap()
         })
     }
 }
@@ -85,24 +91,28 @@ impl<T: Display> Display for Grid<T> {
 }
 
 impl<T> Grid<T> {
-    pub fn width(&self) -> usize { self.size.width }
-    pub fn height(&self) -> usize { self.size.height }
-    pub fn size(&self) -> Size { self.size }
+    pub fn width(&self) -> usize { self.rect.width() }
+    pub fn height(&self) -> usize { self.rect.height() }
+    pub fn size(&self) -> Size { self.rect.size() }
+    pub fn base(&self) -> Point { self.rect.top_left() }
     
     /// Returns the flattened index that corresponds to the given coordinates.
     /// "flattened" here means the index in a (totally hypothetical) backing 1D array
-    pub fn flat_index(&self, x: usize, y: usize) -> Option<usize> {
-        if x < self.width() && y < self.height() {
-            Some(y * self.width() + x)
+    pub fn flat_index(&self, x: isize, y: isize) -> Option<usize> {
+        let x: usize = (x - self.base().x).try_into().ok()?;
+        let y: usize = (y - self.base().y).try_into().ok()?;
+        let flat = y * self.width() + x;
+        if flat < self.elements.len() {
+            Some(flat)
         } else {
             None
         }
     }
-    pub fn get(&self, x: usize, y: usize) -> Option<&T> {
+    pub fn get(&self, x: isize, y: isize) -> Option<&T> {
         self.flat_index(x, y).map(|i| &self.elements[i])
     }
 
-    pub fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
+    pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut T> {
         self.flat_index(x, y).map(|i| &mut self.elements[i])
     }
     
@@ -117,27 +127,29 @@ impl<T> Grid<T> {
             return None;
         }
         let (x, y) = i.div_rem(&self.height());
-        self.get(x, y)
+        self.get(x as isize, y as isize)
     }
 
     pub fn flat_element_mut(&mut self, i: usize) -> Option<&mut T> {
         self.elements.get_mut(i)
     }
-
+    
     pub fn rows(&self) -> ChunksExact<T> {
-        self.elements.chunks_exact(self.size.width)
+        self.elements.chunks_exact(self.width())
     }
 
     pub fn rows_mut(&mut self) -> ChunksExactMut<T> {
-        self.elements.chunks_exact_mut(self.size.width)
+        self.elements.chunks_exact_mut(self.rect.width())
     }
 
-    pub fn row(&self, y: usize) -> Option<&[T]> {
-        self.flat_index(0, y).map(|i| &self.elements[i..i+self.size.width])
+    pub fn row(&self, row: usize) -> Option<&[T]> {
+        self.flat_index(self.base().x, self.base().y + row as isize)
+            .map(|i| &self.elements[i..i+self.width()])
     }
 
-    pub fn row_mut(&mut self, y: usize) -> Option<&mut [T]> {
-        self.flat_index(0, y).map(|i| &mut self.elements[i..i+self.size.width])
+    pub fn row_mut(&mut self, row: usize) -> Option<&mut [T]> {
+        self.flat_index(self.base().x, self.base().y + row as isize)
+            .map(|i| &mut self.elements[i..i+self.rect.width()])
     }
 
     pub fn col(&self, x: usize) -> Option<Stride<T>> {
@@ -151,13 +163,13 @@ impl<T> Grid<T> {
     pub fn cols(&self) -> Substrides<T> {
         self.elements
             .as_stride()
-            .substrides(self.size.width)
+            .substrides(self.width())
     }
 
     pub fn cols_mut(&mut self) -> MutSubstrides<T> {
         self.elements
             .as_stride_mut()
-            .substrides_mut(self.size.width)
+            .substrides_mut(self.rect.width())
     }
 
     pub fn elements(&self) -> slice::Iter<T> {
@@ -168,13 +180,13 @@ impl<T> Grid<T> {
         self.elements.iter_mut()
     }
 
-    pub fn coords(&self) -> CoordsIter {
-        CoordsIter::new(self)
+    pub fn coords(&self) -> RectIter {
+        RectIter::new(self.rect.clone())
     }
 
-    pub fn cells(&self) -> impl DoubleEndedIterator<Item = (usize, usize, &T)> + Clone {
+    pub fn cells(&self) -> impl DoubleEndedIterator<Item = (isize, isize, &T)> + Clone {
         self.coords()
-            .map(move |(x, y)| (x, y, &self[(x,y)]))
+            .map(move |pt| (pt.x, pt.y, &self[pt]))
     }
 
     pub fn cells_mut(&mut self) -> impl DoubleEndedIterator<Item = (usize, usize, &mut T)> {
@@ -190,11 +202,16 @@ impl<T> Grid<T> {
 }
 
 impl<T: Default + Clone> Grid<T> {
-    pub fn new(size: Size) -> Self {
+    pub fn new(rect: Rect) -> Self {
         Self {
-            size,
-            elements: vec![T::default(); size.width * size.height]
+            elements: vec![T::default(); rect.width() * rect.height()],
+            rect,
         }
+    }
+    
+    pub fn from_origin(size: Size) -> Option<Self> {
+        let rect = Rect::from_origin(size)?;
+        Some(Self::new(rect))
     }
 
     pub fn clear(&mut self) {
@@ -203,18 +220,20 @@ impl<T: Default + Clone> Grid<T> {
 }
 
 impl<T: Clone> Grid<T> {
-    pub fn fill_with(&self, size: Size, elem: T) -> Self {
-        Self {
-            size,
+    pub fn fill_with(size: Size, elem: T) -> Option<Self> {
+        let rect = Rect::from_origin(size)?;
+        Some(Self {
+            rect,
             elements: vec![elem; size.width * size.height]
-        }
+        })
     }
 
     pub fn to_vec_column_major(&self) -> Vec<T> {
         let mut vec = Vec::with_capacity(self.width() * self.height());
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                vec.push(self[(x,y)].clone());
+        
+        for y in self.rect.y_range() {
+            for x in self.rect.x_range() {
+                vec.push(self[Point::from((x, y))].clone());
             }
         }
         vec
@@ -262,84 +281,23 @@ impl<T> IndexMut<usize> for Grid<T> {
     }
 }
 
-impl<T> Index<(usize, usize)> for Grid<T> {
+impl<T> Index<Point> for Grid<T> {
     type Output = T;
 
-    fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
-        self.get(x, y)
-            .unwrap_or_else(|| panic!("Index coordinates ({}, {}) out of bounds", x, y))
+    fn index(&self, pt: Point) -> &Self::Output {
+        self.get(pt.x, pt.y)
+            .unwrap_or_else(|| panic!("Index coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }
 }
 
-impl<T> IndexMut<(usize, usize)> for Grid<T> {
-    fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
-        self.get_mut(x, y)
-            .unwrap_or_else(|| panic!("Index mut coordinates ({}, {}) out of bounds", x, y))
+impl<T> IndexMut<Point> for Grid<T> {
+    fn index_mut(&mut self, pt: Point) -> &mut Self::Output {
+        self.get_mut(pt.x, pt.y)
+            .unwrap_or_else(|| panic!("Index mut coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }
 }
-
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct CoordsIter {
-    stride: usize,
-    start: usize,
-    end: usize,
-}
-
-impl CoordsIter {
-    pub fn new<T>(grid: &Grid<T>) -> Self {
-        let total = grid.width() * grid.height();
-        Self {
-            stride: grid.width(),
-            start: 0,
-            end: total,
-        }
-    }
-
-    fn coords(&self, i: usize) -> (usize, usize) {
-        let (y,x) = i.div_rem(&self.stride);
-        (x,y)
-    }
-}
-
-impl Iterator for CoordsIter {
-    type Item = (usize, usize);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.start >= self.end { return None }
-
-        let item = self.coords(self.start);
-        self.start += 1;
-        Some(item)
-    }
-
-    // never should've put this on Iterator in the first place
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let len = self.len();
-        (len, Some(len))
-    }
-}
-
-impl DoubleEndedIterator for CoordsIter {
-    fn next_back(&mut self) -> Option<Self::Item> {
-        if self.start >= self.end { return None }
-
-        self.end -= 1;
-        Some(self.coords(self.end))
-    }
-}
-
-impl ExactSizeIterator for CoordsIter {
-    // The default implementation is overly defensive and uses assert_eq! on size_hint
-    // we know exactly what we're returning so it's not a problem
-    fn len(&self) -> usize {
-        self.end.saturating_sub(self.start)
-    }
-}
-
-impl FusedIterator for CoordsIter {}
 
 impl<T: Sync + Send> Grid<T> {
-
     pub fn par_elements(&self) -> rayon::slice::Iter<'_, T> {
         self.elements.par_iter()
     }
@@ -347,9 +305,9 @@ impl<T: Sync + Send> Grid<T> {
         self.elements.par_iter_mut()
     }
     pub fn par_rows(&self) -> rayon::slice::ChunksExact<'_, T> {
-        self.elements.par_chunks_exact(self.size.width)
+        self.elements.par_chunks_exact(self.rect.width())
     }
     pub fn par_rows_mut(&mut self) -> rayon::slice::ChunksExactMut<'_, T> {
-        self.elements.par_chunks_exact_mut(self.size.width)
+        self.elements.par_chunks_exact_mut(self.rect.width())
     }
 }

@@ -147,10 +147,10 @@ impl From<bool> for CellEnergy {
 
 impl Contraption {
     fn fire_beam(&self, x: usize, y: usize, dir: Direction) -> Grid<u8> {
-        let mut grid_energy: Grid<u8> // bitfield for the 4 directions - this way we can track looping beams
-            = Grid::new(self.grid.size());
+        // bitfield for the 4 directions - this way we can track looping beams
+        let mut grid_energy: Grid<u8> = Grid::from_origin(self.grid.size()).unwrap();
         let mut initial_beam = Beam {id: 0, x, y, dir};
-        Self::step_beam(&mut initial_beam, &self.grid[(x,y)]); // totally not a hack
+        Self::step_beam(&mut initial_beam, &self.grid[Point::from((x,y))]); // totally not a hack
         let mut beams: Vec<Beam> = vec![initial_beam];
         let mut top_id = 1;
         while !beams.is_empty() {
@@ -158,7 +158,7 @@ impl Contraption {
             beams.retain_mut(|beam| {
                 // the order of operations in the loop is:
                 // die -> energize -> move -> turn
-                let cell_energized = grid_energy.get_mut(beam.x, beam.y).unwrap();
+                let cell_energized = grid_energy.get_mut(beam.x as isize, beam.y as isize).unwrap();
                 
                 // die
                 let mask = 1 << (beam.dir as u8);
@@ -184,7 +184,7 @@ impl Contraption {
                 }
 
                 // turn
-                let cell = &self.grid[(beam.x, beam.y)];
+                let cell = &self.grid[Point::from((beam.x, beam.y))];
                 let split = Self::step_beam(beam, cell);
                 if split {
                     let new_beam = Beam {

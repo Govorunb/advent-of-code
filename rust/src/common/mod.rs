@@ -1,6 +1,9 @@
-pub mod grid; pub use grid::*;
-pub mod iter; pub use iter::*;
-pub mod direction; pub use direction::*;
+mod grid; pub use grid::*;
+mod iter; pub use iter::*;
+mod direction; pub use direction::*;
+mod rect_iter; pub use rect_iter::*;
+mod point; pub use point::*;
+mod rect; pub use rect::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};

@@ -107,8 +107,9 @@ impl Day3 {
         let mut touched: FxHashSet<(usize, usize)> = FxHashSet::default();
         let mut sum: usize = 0;
         let mut gear_ratio_sum: usize = 0;
-        for (x,y) in grid.coords() {
-            if !matches!(grid[(x,y)], Cell::Symbol) {continue}
+        for pt in grid.coords() {
+            let (x,y) = (pt.x as usize, pt.y as usize);
+            if !matches!(grid[pt], Cell::Symbol) {continue}
             
             let mut adjacent_to: Vec<usize> = Vec::new();
             for x2 in x - 1..=x + 1 {
