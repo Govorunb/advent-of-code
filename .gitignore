@@ -1,0 +1,8 @@
+Input/
+/rust/target/
+/rust/Cargo.lock
+/csharp/**/bin/
+/csharp/**/obj/
+.vscode
+.idea
+_*
