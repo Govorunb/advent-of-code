@@ -3,6 +3,7 @@ Input/
 /rust/Cargo.lock
 /csharp/**/bin/
 /csharp/**/obj/
+/csharp/**/Input.txt
 .vscode
 .idea
 _*
