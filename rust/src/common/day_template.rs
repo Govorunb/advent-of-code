@@ -1,6 +1,5 @@
 // replace all ~ with the day number
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 pub const DAY~_EXAMPLE: &str =
 "";
