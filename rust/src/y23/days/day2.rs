@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY2_INPUT: &str = include_str!("../Input/day2.txt");
 pub const DAY2_EXAMPLE: &str =
 "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
@@ -23,6 +22,7 @@ struct Cubes(usize, usize, usize); // (r, g, b)
 
 impl Day<2> for Day2 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day2.txt");
     fn solve_part(&self, input: &str, part: Part) -> usize {
         let games = input.lines()
             .map(|l| self.parse_line(l))
@@ -55,11 +55,11 @@ impl Day<2> for Day2 {
         [
             test_cases![
                 (DAY2_EXAMPLE, 8),
-                (DAY2_INPUT, 1931),
+                (self.input(), 1931),
             ],
             test_cases![
                 (DAY2_EXAMPLE, 2286),
-                (DAY2_INPUT, 83105),
+                (self.input(), 83105),
             ]
         ]
     }

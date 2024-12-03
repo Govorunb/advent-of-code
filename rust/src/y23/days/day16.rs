@@ -6,7 +6,6 @@ use rayon::iter::ParallelIterator;
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY16_INPUT: &str = include_str!("../Input/day16.txt");
 pub const DAY16_EXAMPLE: &str =
 r".|...\....
 |.-.\.....
@@ -237,6 +236,7 @@ impl Contraption {
 
 impl Day<16> for Day16 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day16.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let c: Contraption = input.parse().expect("failed to parse grid");
         match part {
@@ -302,11 +302,11 @@ impl Day<16> for Day16 {
                 (DAY16_TEST_1, 19),
                 (DAY16_TEST_2, 25),
                 (DAY16_TEST_3, 4),
-                (DAY16_INPUT, 7517),
+                (self.input(), 7517),
             ],
             test_cases![
                 (DAY16_EXAMPLE, 51),
-                (DAY16_INPUT, 7741),
+                (self.input(), 7741),
             ]
         ]
     }

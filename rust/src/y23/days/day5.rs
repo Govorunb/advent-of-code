@@ -4,7 +4,6 @@ use crate::common::*;
 
 use std::ops::Range;
 
-pub const DAY5_INPUT: &str = include_str!("../Input/day5.txt");
 pub const DAY5_EXAMPLE: &str = 
 "seeds: 79 14 55 13
 
@@ -407,6 +406,7 @@ impl Almanac {
 
 impl Day<5> for Day5 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day5.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let buh: Almanac = Almanac::parse(input, part);
         buh.brute_force()
@@ -416,11 +416,11 @@ impl Day<5> for Day5 {
         [
             test_cases![
                 (DAY5_EXAMPLE, 35),
-                (DAY5_INPUT, 806029445),
+                (self.input(), 806029445),
             ],
             test_cases![
                 (DAY5_EXAMPLE, 46),
-                // (DAY5_INPUT, 59370572), // bruteforce takes too long
+                // (self.input(), 59370572), // bruteforce takes too long
             ]
         ]
     }

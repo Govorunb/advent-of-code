@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY11_INPUT: &str = include_str!("../Input/day11.txt");
 pub const DAY11_EXAMPLE: &str =
 "...#......
 .......#..
@@ -84,6 +83,7 @@ impl Grid {
 
 impl Day<11> for Day11 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day11.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid = Grid::parse(input);
         let expansion = match part {
@@ -103,11 +103,11 @@ impl Day<11> for Day11 {
         [
             test_cases![
                 (DAY11_EXAMPLE, 374),
-                (DAY11_INPUT, 9556712),
+                (self.input(), 9556712),
             ],
             test_cases![
                 (DAY11_EXAMPLE, 82000210),
-                (DAY11_INPUT, 678626199476),
+                (self.input(), 678626199476),
             ]
         ]
     }

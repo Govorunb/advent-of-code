@@ -3,7 +3,6 @@ use crate::common::*;
 
 use std::{cmp::Ordering, sync::atomic::{AtomicBool, Ordering as AOrdering}};
 
-pub const DAY7_INPUT: &str = include_str!("../Input/day7.txt");
 pub const DAY7_EXAMPLE: &str =
 "32T3K 765
 T55J5 684
@@ -152,6 +151,7 @@ static DEBUG: AtomicBool = AtomicBool::new(false);
 
 impl Day<7> for Day7 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day7.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let mut hands = lines.map(|line| {
@@ -188,11 +188,11 @@ impl Day<7> for Day7 {
         [
             test_cases![
                 (DAY7_EXAMPLE, 6440),
-                (DAY7_INPUT, 246795406),
+                (self.input(), 246795406),
             ],
             test_cases![
                 (DAY7_EXAMPLE, 5905),
-                (DAY7_INPUT, 249356515),
+                (self.input(), 249356515),
             ]
         ]
     }

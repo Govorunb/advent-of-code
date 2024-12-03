@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY10_INPUT: &str = include_str!("../Input/day10.txt");
 pub const DAY10_EXAMPLE1: &str =
 "-L|F7
 7S-7|
@@ -380,6 +379,7 @@ impl PipeGrid {
 
 impl Day<10> for Day10 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day10.txt");
     fn solve_part(&self, input: &str, part: Part) -> usize {
         let grid = PipeGrid::parse(input);
         match part {
@@ -398,7 +398,7 @@ impl Day<10> for Day10 {
             test_cases![
                 (DAY10_EXAMPLE1, 4),
                 (DAY10_EXAMPLE2, 8),
-                (DAY10_INPUT, 6768),
+                (self.input(), 6768),
             ],
             test_cases![
                 (DAY10_EXAMPLE3, 4),

@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY1_INPUT: &str = include_str!("../Input/day1.txt");
 pub const DAY1_EXAMPLE_P1: &str = "1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
@@ -20,6 +19,7 @@ pub struct Day1 {
 
 impl Day<1> for Day1 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day1.txt");
     fn solve_part(&self, input: &str, part: Part) -> usize {
         input.lines()
             .map(|l| self.parse_line(l, part))
@@ -33,7 +33,7 @@ impl Day<1> for Day1 {
                 ("a1b2c3d4e5f", 15),
                 ("treb7uchet", 77),
                 (DAY1_EXAMPLE_P1, 142),
-                (DAY1_INPUT, 54601),
+                (self.input(), 54601),
             ],
             test_cases![
                 ("one1", 11),
@@ -45,7 +45,7 @@ impl Day<1> for Day1 {
                 ("zoneight234", 14),
                 ("7pqrstsixteen", 76),
                 (DAY1_EXAMPLE_P2, 281),
-                (DAY1_INPUT, 54078),
+                (self.input(), 54078),
             ]
         ]
     }

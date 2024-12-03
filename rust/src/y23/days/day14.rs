@@ -2,7 +2,6 @@ use crate::test_cases;
 use crate::common::*;
 use std::fmt::Display;
 
-pub const DAY14_INPUT: &str = include_str!("../Input/day14.txt");
 pub const DAY14_EXAMPLE: &str =
 "O....#....
 O.OO#....#
@@ -211,6 +210,7 @@ impl Platform {
 
 impl Day<14> for Day14 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day14.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid = Platform::parse(input);
         match part {
@@ -228,11 +228,11 @@ impl Day<14> for Day14 {
         [
             test_cases![
                 (DAY14_EXAMPLE, 136),
-                (DAY14_INPUT, 109424),
+                (self.input(), 109424),
             ],
             test_cases![
                 (DAY14_EXAMPLE, 64),
-                (DAY14_INPUT, 102509),
+                (self.input(), 102509),
             ]
         ]
     }

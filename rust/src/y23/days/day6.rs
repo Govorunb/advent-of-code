@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY6_INPUT: &str = include_str!("../Input/day6.txt");
 pub const DAY6_EXAMPLE: &str =
 "Time:      7  15   30
 Distance:  9  40  200";
@@ -25,6 +24,7 @@ impl Race {
 
 impl Day<6> for Day6 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day6.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {
             Part::One => {
@@ -66,11 +66,11 @@ impl Day<6> for Day6 {
         [
             test_cases![
                 (DAY6_EXAMPLE, 288),
-                (DAY6_INPUT, 345015),
+                (self.input(), 345015),
             ],
             test_cases![
                 (DAY6_EXAMPLE, 71503),
-                (DAY6_INPUT, 42588603),
+                (self.input(), 42588603),
                 ("Time: 100\nDistance: 1000", 77),
             ]
         ]

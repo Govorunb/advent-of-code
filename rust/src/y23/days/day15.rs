@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY15_INPUT: &str = include_str!("../Input/day15.txt");
 pub const DAY15_EXAMPLE_HASH: &str =
 "HASH";
 pub const DAY15_EXAMPLE: &str = 
@@ -69,6 +68,7 @@ struct Lens {
 
 impl Day<15> for Day15 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day15.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let init_sequence = input
             .split(',');
@@ -119,11 +119,11 @@ impl Day<15> for Day15 {
             test_cases![
                 (DAY15_EXAMPLE_HASH, 52),
                 (DAY15_EXAMPLE, 1320),
-                (DAY15_INPUT, 505427),
+                (self.input(), 505427),
             ],
             test_cases![
                 (DAY15_EXAMPLE, 145),
-                (DAY15_INPUT, 243747),
+                (self.input(), 243747),
             ]
         ]
     }

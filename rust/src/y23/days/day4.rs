@@ -1,7 +1,6 @@
 use crate::common::*;
 use crate::test_cases;
 
-pub const DAY4_INPUT: &str = include_str!("../Input/day4.txt");
 pub const DAY4_EXAMPLE: &str =
 "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
 Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
@@ -67,6 +66,7 @@ impl Card {
 impl Day<4> for Day4 {
     type Output = usize;
 
+    const INPUT: &'static str = include_str!("../Input/day4.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let cards = input.lines()
             .map_into()
@@ -100,11 +100,11 @@ impl Day<4> for Day4 {
         [
             test_cases![
                 (DAY4_EXAMPLE, 13),
-                (DAY4_INPUT, 15205),
+                (self.input(), 15205),
             ],
             test_cases![
                 (DAY4_EXAMPLE, 30),
-                (DAY4_INPUT, 6189740),
+                (self.input(), 6189740),
             ]
         ]
     }

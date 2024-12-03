@@ -2,7 +2,7 @@
 use super::common::*;
 use crate::days::*;
 
-pub const DAY1_INPUT: &str = include_str!("../Input/day1.txt");
+const INPUT: &'static str = include_str!("../Input/day1.txt");
 pub const DAY1_EXAMPLE: &str =
 "";
 
@@ -28,11 +28,11 @@ impl Day<1> for Day1 {
         [
             test_cases![
                 (DAY1_EXAMPLE, 0),
-                // (DAY1_INPUT, 0),
+                // (self.input(), 0),
             ],
             test_cases![
                 // (DAY1_EXAMPLE, 0),
-                // (DAY1_INPUT, 0),
+                // (self.input(), 0),
             ]
         ]
     }

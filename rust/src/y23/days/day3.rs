@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY3_INPUT: &str = include_str!("../Input/day3.txt");
 pub const DAY3_EXAMPLE: &str =
 "467..114..
 ...*......
@@ -43,6 +42,7 @@ impl Cell {
 
 impl Day<3> for Day3 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day3.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let (sum, gear_ratio_sum) = self.do_it(input);
         match part {
@@ -55,11 +55,11 @@ impl Day<3> for Day3 {
         [
             test_cases![
                 (DAY3_EXAMPLE, 4361),
-                (DAY3_INPUT, 549908),
+                (self.input(), 549908),
             ],
             test_cases![
                 (DAY3_EXAMPLE, 467835),
-                (DAY3_INPUT, 81166799),
+                (self.input(), 81166799),
             ]
         ]
     }

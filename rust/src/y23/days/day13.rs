@@ -7,7 +7,6 @@ use std::{collections::HashSet, hash::Hasher};
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY13_INPUT: &str = include_str!("../Input/day13.txt");
 pub const DAY13_EXAMPLE_1: &str =
 "#.##..##.
 ..#.##.#.
@@ -155,6 +154,7 @@ impl Reflection {
 
 impl Day<13> for Day13 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day13.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let valleys = input.split("\r\n\r\n")
             .map(Valley::parse).collect_vec();
@@ -185,12 +185,12 @@ impl Day<13> for Day13 {
             test_cases![
                 (DAY13_EXAMPLE_1, 5),
                 (DAY13_EXAMPLE_2, 400),
-                (DAY13_INPUT, 35360),
+                (self.input(), 35360),
             ],
             test_cases![
                 (DAY13_EXAMPLE_1, 300),
                 (DAY13_EXAMPLE_2, 100),
-                (DAY13_INPUT, 36755),
+                (self.input(), 36755),
             ]
         ]
     }

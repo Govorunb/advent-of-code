@@ -100,3 +100,11 @@ macro_rules! test_cases {
         vec![$(TestCaseImpl($input, $expected),)*]
     }
 }
+
+#[macro_export]
+macro_rules! aoc_year {
+    () => {
+        // advent_of_code::y24 -> 2024
+        "20".to_string() + &module_path!().split("::").skip(1).next().unwrap()[1..]
+    }
+}

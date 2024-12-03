@@ -28,11 +28,11 @@ impl Day<~> for Day~ {
         [
             test_cases![
                 (DAY~_EXAMPLE, 0),
-                // (DAY~_INPUT, 0),
+                // (self.input(), 0),
             ],
             test_cases![
                 // (DAY~_EXAMPLE, 0),
-                // (DAY~_INPUT, 0),
+                // (self.input(), 0),
             ]
         ]
     }

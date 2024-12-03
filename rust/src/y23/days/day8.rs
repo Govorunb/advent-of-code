@@ -2,7 +2,6 @@ use crate::test_cases;
 use crate::common::*;
 
 
-pub const DAY8_INPUT: &str = include_str!("../Input/day8.txt");
 pub const DAY8_EXAMPLE1: &str =
 "RL
 
@@ -64,6 +63,7 @@ impl Head<'_> {
 
 impl Day<8> for Day8 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day8.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let instructions = input.lines().next().unwrap();
         let graph: FxHashMap<&str, (&str, &str)> = input.lines().skip(2).map(|l| {
@@ -110,13 +110,13 @@ impl Day<8> for Day8 {
             test_cases![
                 (DAY8_EXAMPLE1, 2),
                 (DAY8_EXAMPLE2, 6),
-                (DAY8_INPUT, 13301),
+                (self.input(), 13301),
             ],
             test_cases![
                 (DAY8_EXAMPLE1, 2),
                 (DAY8_EXAMPLE2, 6),
                 (DAY8_EXAMPLE3, 6),
-                (DAY8_INPUT, 7309459565207),
+                (self.input(), 7309459565207),
             ]
         ]
     }

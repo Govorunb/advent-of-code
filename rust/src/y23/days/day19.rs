@@ -3,7 +3,6 @@ use crate::common::*;
 
 use std::ops::Range;
 
-pub const DAY19_INPUT: &str = include_str!("../Input/day19.txt");
 pub const DAY19_EXAMPLE: &str =
 "px{a<2006:qkq,m>2090:A,rfg}
 pv{a>1716:R,A}
@@ -283,6 +282,7 @@ impl AcceptableRanges {
 
 impl Day<19> for Day19 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day19.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let newlines_fixed = input.replace("\r\n", "\n");
         let (workflows_str, parts_str) = newlines_fixed
@@ -328,7 +328,7 @@ impl Day<19> for Day19 {
         [
             test_cases![
                 (DAY19_EXAMPLE, 19114),
-                (DAY19_INPUT, 487623),
+                (self.input(), 487623),
             ],
             test_cases![
                 // simplest possible case
@@ -349,7 +349,7 @@ impl Day<19> for Day19 {
                   +(500-19)*1999         // in (20<=x<=500) * d (->b) * b (m<=1999)
                 )*4000*4000),
                 (DAY19_EXAMPLE, 167409079868000),
-                (DAY19_INPUT, 113550238315130),
+                (self.input(), 113550238315130),
             ]
         ]
     }

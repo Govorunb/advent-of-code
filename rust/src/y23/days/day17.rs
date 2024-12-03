@@ -1,7 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY17_INPUT: &str = include_str!("../Input/day17.txt");
 pub const DAY17_EXAMPLE: &str =
 "2413432311323
 3215453535623
@@ -38,6 +37,7 @@ struct SearchHead {
 
 impl Day<17> for Day17 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day17.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         match part {
@@ -54,11 +54,11 @@ impl Day<17> for Day17 {
         [
             test_cases![
                 (DAY17_EXAMPLE, 102),
-                // (DAY17_INPUT, 0),
+                // (self.input(), 0),
             ],
             test_cases![
                 // (DAY17_EXAMPLE, 0),
-                // (DAY17_INPUT, 0),
+                // (self.input(), 0),
             ]
         ]
     }

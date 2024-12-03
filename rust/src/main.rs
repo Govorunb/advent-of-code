@@ -5,15 +5,12 @@
 #![cfg(target_pointer_width = "64")]
 pub mod common;
 mod y15;
-// mod y23;
+mod y23;
 mod y24;
-use y15::days::*;
-// use y23::days::*;
-// use y24::days::*;
-use common::*;
+pub use common::*;
 
 fn main() {
-    let day = Day6::new();
+    let day = y15::days::Day4::new();
     day.test(None);
     day.solve(day.input());
 }
@@ -21,8 +18,8 @@ fn main() {
 #[test]
 fn test_all_years() {
     let sw = stopwatch::Stopwatch::start_new();
-    y15::test_all_days();
-    // y23::test_all_days();
-    y24::test_all_days();
+    y15::test::test_all_days();
+    y23::test::test_all_days();
+    y24::test::test_all_days();
     println!("all tests took {}us", sw.elapsed().as_micros());
 }
