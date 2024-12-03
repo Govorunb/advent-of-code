@@ -52,9 +52,11 @@ impl<T: Display + std::fmt::Debug + Clone> TestCase<T> for TestCaseImpl<T> {
 pub trait Day<const DAY: u8>
 {
     type Output: Display + PartialEq + std::fmt::Debug + Clone;
+    const INPUT: &'static str;
     #[allow(private_bounds)] // the whole point is sealing it
     type TestCase: TestCase<Self::Output> = TestCaseImpl<Self::Output>;
     fn day(&self) -> u8 {DAY}
+    fn input(&self) -> &'static str {Self::INPUT}
     fn solve(&self, input: &str) {
         println!("day {}", self.day());
         let mut sw = Stopwatch::start_new();

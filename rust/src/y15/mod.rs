@@ -4,12 +4,6 @@ pub mod days;
 use days::*;
 use crate::common::*;
 
-fn main() {
-    let d4 = Day4::new();
-    d4.test(None);
-    d4.solve(DAY4_INPUT);
-}
-
 #[test]
 pub fn test_all_days() {
     let sw = stopwatch::Stopwatch::start_new();

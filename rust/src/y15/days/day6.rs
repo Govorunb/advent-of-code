@@ -1,18 +1,16 @@
-// replace all ~ with the day number
-#![allow(dead_code)]
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY~_INPUT: &str = include_str!("../Input/day~.txt");
-pub const DAY~_EXAMPLE: &str =
+const DAY6_EXAMPLE: &str =
 "";
 
-pub struct Day~ {
+pub struct Day6 {
     
 }
 
-impl Day<~> for Day~ {
+impl Day<6> for Day6 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day6.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         match part {
@@ -28,24 +26,24 @@ impl Day<~> for Day~ {
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY~_EXAMPLE, 0),
-                // (DAY~_INPUT, 0),
+                (DAY6_EXAMPLE, 0),
+                // (DAY6_INPUT, 0),
             ],
             test_cases![
-                // (DAY~_EXAMPLE, 0),
-                // (DAY~_INPUT, 0),
+                // (DAY6_EXAMPLE, 0),
+                // (DAY6_INPUT, 0),
             ]
         ]
     }
 }
 
-impl Default for Day~ {
+impl Default for Day6 {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Day~ {
+impl Day6 {
     pub fn new() -> Self {
         Self {
         }

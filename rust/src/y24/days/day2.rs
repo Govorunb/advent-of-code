@@ -1,9 +1,6 @@
-#![allow(dead_code)]
-
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY2_INPUT: &str = include_str!("../Input/day2.txt");
 pub const DAY2_EXAMPLE: &str = "7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
@@ -20,6 +17,7 @@ struct Report {
 
 impl Day<2> for Day2 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day2.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let tolerant = match part {
@@ -42,11 +40,11 @@ impl Day<2> for Day2 {
         [
             test_cases![
                 (DAY2_EXAMPLE, 2),
-                (DAY2_INPUT, 371),
+                (self.input(), 371),
             ],
             test_cases![
                 (DAY2_EXAMPLE, 4),
-                // (DAY2_INPUT, 0),
+                // (self.input(), 0),
             ],
         ]
     }

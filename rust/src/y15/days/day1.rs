@@ -1,14 +1,13 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY1_INPUT: &str = include_str!("../Input/day1.txt");
-
 #[derive(Debug, Clone, Copy)]
 pub struct Day1 {
 }
 
 impl Day<1> for Day1 {
     type Output = isize;
+    const INPUT: &'static str = include_str!("../Input/day1.txt");
 
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {

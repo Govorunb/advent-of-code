@@ -3,8 +3,6 @@ use std::collections::HashSet;
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY3_INPUT: &str = include_str!("../Input/day3.txt");
-
 pub struct Day3 {
 }
 
@@ -56,6 +54,7 @@ enum Direction {
 
 impl Day<3> for Day3 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day3.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {
             Part::One => {

@@ -1,9 +1,6 @@
-#![allow(dead_code)]
-
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY1_INPUT: &str = include_str!("../Input/day1.txt");
 pub const DAY1_EXAMPLE: &str =
 "3   4
 4   3
@@ -17,6 +14,7 @@ pub struct Day1 {
 
 impl Day<1> for Day1 {
     type Output = usize;
+    const INPUT: &'static str = include_str!("../Input/day1.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let (mut left, mut right): (Vec<_>, Vec<_>) = lines
@@ -49,11 +47,11 @@ impl Day<1> for Day1 {
         [
             test_cases![
                 (DAY1_EXAMPLE, 11),
-                (DAY1_INPUT, 2375403),
+                (self.input(), 2375403),
             ],
             test_cases![
                 (DAY1_EXAMPLE, 31),
-                // (DAY1_INPUT, 0),
+                // (self.input(), 0),
             ]
         ]
     }

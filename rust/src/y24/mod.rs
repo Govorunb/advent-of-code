@@ -4,12 +4,6 @@ pub mod days;
 
 use days::*;
 
-fn main() {
-    let d2 = Day2::new();
-    d2.test(None);
-    d2.solve(DAY2_INPUT);
-}
-
 #[test]
 pub fn test_all_days() {
     let sw = stopwatch::Stopwatch::start_new();

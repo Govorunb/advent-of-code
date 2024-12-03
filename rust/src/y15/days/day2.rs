@@ -1,8 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY2_INPUT: &str = include_str!("../Input/day2.txt");
-
 pub struct Day2 {
 }
 
@@ -10,6 +8,7 @@ struct Box(u32, u32, u32);
 
 impl Day<2> for Day2 {
     type Output = u32;
+    const INPUT: &'static str = include_str!("../Input/day2.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let boxes = lines.map(Day2::parse);
