@@ -44,7 +44,7 @@ impl Day<2> for Day2 {
             ],
             test_cases![
                 (DAY2_EXAMPLE, 4),
-                // (self.input(), 0),
+                (self.input(), 426),
             ],
         ]
     }
@@ -92,11 +92,12 @@ impl Report {
             return true;
         }
         
-        // println!("{:?} faulty ({:?},{:?},{:?})", self.levels, direction_faults, stay_faults, leap_faults);
-        
         if tolerance == 0 || direction_faults > tolerance || stay_faults > tolerance || leap_faults > tolerance {
             return false;
         }
+        
+        // println!("{:?} faulty ({:?},{:?},{:?})", self.levels, direction_faults, stay_faults, leap_faults);
+        
         // no point getting clever about it
         for omit in 0..self.levels.len() {
             let mut levels = self.levels.clone();
