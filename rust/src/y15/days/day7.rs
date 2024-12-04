@@ -104,11 +104,11 @@ impl Day<7> for Day7 {
         [
             test_cases![
                 (DAY7_EXAMPLE, 65079),
-                // (self.input(), 0),
+                (self.input(), 956),
             ],
             test_cases![
                 // (DAY7_EXAMPLE, 0),
-                // (self.input(), 0),
+                (self.input(), 40149),
             ],
         ]
     }

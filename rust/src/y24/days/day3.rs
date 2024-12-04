@@ -15,20 +15,10 @@ impl Day<3> for Day3 {
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {
             Part::One => {
-                let regex = Regex::new("mul\\((\\d+),(\\d+)\\)").unwrap();
+                let regex = Regex::new("mul\\((?<num1>\\d+),(?<num2>\\d+)\\)").unwrap();
                 regex.captures_iter(input)
-                    .map(|c| 
-                        c.get(1)
-                            .unwrap()
-                            .as_str()
-                            .parse::<usize>()
-                            .unwrap()
-                        * c.get(2)
-                            .unwrap()
-                            .as_str()
-                            .parse::<usize>()
-                            .unwrap()
-                ).sum::<usize>()
+                    .map(Self::mul)
+                    .sum::<usize>()
             },
             Part::Two => {
                 let regex = Regex::new("(?<mul>mul\\((?<num1>\\d+),(?<num2>\\d+)\\))|(?<do_or_dont>do(?:n't)?\\(\\))").unwrap();
@@ -36,21 +26,10 @@ impl Day<3> for Day3 {
                 regex.captures_iter(input)
                     .map(|c|
                         if c.name("mul").is_some() {
-                            if enabled {
-                                c.name("num1")
-                                    .unwrap()
-                                    .as_str()
-                                    .parse::<usize>()
-                                    .unwrap()
-                                * c.name("num2")
-                                    .unwrap()
-                                    .as_str()
-                                    .parse::<usize>()
-                                    .unwrap()
-                            } else {0}
+                            if enabled { Self::mul(c) } else { 0 }
                         } else {
                             let do_or_dont = c.get(0).unwrap().as_str();
-                            enabled = do_or_dont.eq("do()");
+                            enabled = matches!(do_or_dont.chars().nth(2), Some('('));
                             0
                         }
                     ).sum::<usize>()
@@ -66,7 +45,7 @@ impl Day<3> for Day3 {
             ],
             test_cases![
                 (DAY3_EXAMPLE2, 48),
-                // (self.input(), 0),
+                (self.input(), 103811193),
             ],
         ]
     }
@@ -81,5 +60,10 @@ impl Default for Day3 {
 impl Day3 {
     pub fn new() -> Self {
         Self {}
+    }
+
+    fn mul(c: Captures) -> usize {
+        c.name("num1").unwrap().as_str().parse::<usize>().unwrap()
+        * c.name("num2").unwrap().as_str().parse::<usize>().unwrap()
     }
 }
