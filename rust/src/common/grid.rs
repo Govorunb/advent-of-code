@@ -101,6 +101,9 @@ impl<T> Grid<T> {
     pub fn flat_index(&self, x: isize, y: isize) -> Option<usize> {
         let x: usize = (x - self.base().x).try_into().ok()?;
         let y: usize = (y - self.base().y).try_into().ok()?;
+        if x >= self.width() || y >= self.height() {
+            return None;
+        }
         let flat = y * self.width() + x;
         if flat < self.elements.len() {
             Some(flat)
