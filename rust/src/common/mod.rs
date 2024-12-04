@@ -9,6 +9,7 @@ pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};
 pub use std::fmt::Display;
 pub use rayon::prelude::*;
+pub use regex::{Regex, Captures};
 
 pub type FxIndexMap<K,V> = IndexMap<K, V, BuildHasherDefault<FxHasher>>;
 pub type FxIndexSet<T> = IndexSet<T, BuildHasherDefault<FxHasher>>;

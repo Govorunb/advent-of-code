@@ -22,7 +22,7 @@ impl Rect {
             return None;
         }
         let base = top_left;
-        let size = (bottom_right - base.clone() + Point::from((1isize,1isize))).try_into().ok()?;
+        let size = (bottom_right - base.clone() + Point {x: 1, y: 1}).try_into().ok()?;
         Some(Self { base, size })
     }
     
@@ -34,7 +34,7 @@ impl Rect {
         self.base.clone()
     }
     pub fn bottom_right(&self) -> Point {
-        self.base.clone() - Point::from((1isize,1isize)) + self.size
+        self.base.clone() - Point {x: 1, y: 1} + self.size
     }
     
     pub fn iter(&self) -> RectIter {

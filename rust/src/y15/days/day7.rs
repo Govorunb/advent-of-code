@@ -1,5 +1,4 @@
 use std::sync::LazyLock;
-use regex::Regex;
 use crate::*;
 
 pub const DAY7_EXAMPLE: &str =

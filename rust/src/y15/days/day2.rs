@@ -16,7 +16,7 @@ impl Day<2> for Day2 {
             Part::One => {
                 boxes
                 .map(|b| {
-                    let (l, w, h) = (b.0, b.1, b.2);
+                    let Box(l, w, h) = b;
                     let areas = [l * w, w * h, h * l];
                     let smallest = areas.iter().min().unwrap();
                     2 * areas.iter().sum::<u32>() + smallest
@@ -26,7 +26,7 @@ impl Day<2> for Day2 {
             Part::Two => {
                 boxes
                 .map(|b| {
-                    let (l, w, h) = (b.0, b.1, b.2);
+                    let Box(l, w, h) = b;
                     let sides = [l,w,h];
                     let largest_i = sides.iter().enumerate().max_by_key(|&(_, a)| a).unwrap().0;
                     let ribbon_face = sides.iter().enumerate().filter(|&(i, _)| i != largest_i)
