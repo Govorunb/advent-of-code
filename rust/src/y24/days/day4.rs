@@ -20,21 +20,7 @@ pub const DAY4_EXAMPLE1: &str =
 XMAS.S
 .X....";
 
-pub struct Day4 {
-    
-}
-
-static DIRECTIONS8: LazyLock<Vec<Point>> = LazyLock::new(|| vec![
-    Point {x:-1, y:-1},Point{x:0,y:-1},Point {x:1,y:-1},
-    Point {x:-1, y: 0},                Point {x:1,y: 0},
-    Point {x:-1, y: 1},Point{x:0,y: 1},Point {x:1,y: 1},
-]);
-
-static DIRECTIONSX: LazyLock<Vec<Point>> = LazyLock::new(|| vec![
-    Point {x:-1,y:-1},                Point {x:1,y:-1},
-
-    Point {x:-1,y: 1},                Point {x:1,y: 1},
-]);
+pub struct Day4;
 
 impl Day<4> for Day4 {
     type Output = usize;
@@ -43,26 +29,26 @@ impl Day<4> for Day4 {
         let grid: Grid<char> = Grid::from_str(input).unwrap();
         match part {
             Part::One => {
-                let mut output: Grid<char> = Grid::fill_with(grid.size(), '.').unwrap();
+                // let mut output: Grid<char> = Grid::fill_with(grid.size(), '.').unwrap();
                 let mut total = 0;
-                for (x, y, _) in grid.cells().filter(|(_,_,&c)| c == 'X') {
-                    let pt = Point::from((x,y));
-
-                    for dir in DIRECTIONS8.iter() {
-                        let maybe_m = dir.clone() + pt.clone();
+                for (pt, &c) in grid.cells() {
+                    if c != 'X' {continue}
+                    
+                    for dir in Direction8::iter() {
+                        let maybe_m = &pt + dir;
                         if let Point {x:0, y:0 } = maybe_m {
                             println!();
                         }
-                        if let Some('M') = grid.get(maybe_m.x, maybe_m.y) {
-                            let maybe_a = maybe_m.clone() + dir.clone();
-                            if let Some('A') = grid.get(maybe_a.x, maybe_a.y) {
-                                let maybe_s = maybe_a.clone() + dir.clone();
-                                if let Some('S') = grid.get(maybe_s.x, maybe_s.y) {
+                        if let Some('M') = grid.get(&maybe_m) {
+                            let maybe_a = &maybe_m + dir;
+                            if let Some('A') = grid.get(&maybe_a) {
+                                let maybe_s = &maybe_a + dir;
+                                if let Some('S') = grid.get(&maybe_s) {
                                     total += 1;
-                                    output[pt.clone()] = 'X';
-                                    output[maybe_m.clone()] = 'M';
-                                    output[maybe_a.clone()] = 'A';
-                                    output[maybe_s.clone()] = 'S';
+                                    // output[pt.clone()] = 'X';
+                                    // output[maybe_m.clone()] = 'M';
+                                    // output[maybe_a.clone()] = 'A';
+                                    // output[maybe_s.clone()] = 'S';
                                 }
                             }
                         }
@@ -74,30 +60,31 @@ impl Day<4> for Day4 {
                 total
             },
             Part::Two => {
-                let mut output: Grid<char> = Grid::fill_with(grid.size(), '.').unwrap();
+                // let mut output: Grid<char> = Grid::fill_with(grid.size(), '.').unwrap();
                 let mut total = 0;
-                for (x, y, _) in grid.cells().filter(|(_,_,&c)| c == 'A') {
-                    let pt = Point::from((x,y));
-
+                for (pt, &c) in grid.cells() {
+                    if c != 'A' {continue}
+                    
                     let mut count_mas = 0;
-                    for dir in DIRECTIONSX.iter().take(2) {
-                        let pt2 = pt.clone() + dir.clone();
-                        let opp = pt.clone() - dir.clone();
-                        match (grid.get(pt2.x, pt2.y), grid.get(opp.x, opp.y)) {
+                    let top_corners = Direction8::corners().take(2);
+                    for dir in top_corners {
+                        let pt2 = &pt + &dir;
+                        let opp = &pt - &dir;
+                        match (grid.get(&pt2), grid.get(&opp)) {
                             (Some('M'), Some('S')) | (Some('S'), Some('M')) => count_mas += 1,
                             _ => break,
                         };
                     }
                     if count_mas == 2 {
-                        output[pt.clone()] = 'A';
-                        for off in DIRECTIONSX.iter() {
-                            let p = pt.clone() + off.clone();
-                            output[p.clone()] = grid[p.clone()];
-                        }
+                        // output[pt.clone()] = 'A';
+                        // for off in DIRECTIONSX.iter() {
+                        //     let p = pt.clone() + off.clone();
+                        //     output[p.clone()] = grid[p.clone()];
+                        // }
                         total += 1
                     }
                 }
-                println!("grid\n{}", output);
+                // println!("grid\n{}", output);
 
                 total
             }

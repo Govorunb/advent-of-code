@@ -1,5 +1,6 @@
 use crate::{Point, RectIter, Size};
 use std::ops::Range;
+use itertools::Itertools;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd)]
 pub struct Rect {
@@ -21,7 +22,7 @@ impl Rect {
             return None;
         }
         let base = top_left;
-        let size = (bottom_right - base.clone() + Point::from((1isize,1))).try_into().ok()?;
+        let size = (bottom_right - base.clone() + Point::from((1isize,1isize))).try_into().ok()?;
         Some(Self { base, size })
     }
     
@@ -33,7 +34,7 @@ impl Rect {
         self.base.clone()
     }
     pub fn bottom_right(&self) -> Point {
-        self.base.clone() - Point::from((1isize,1)) + self.size
+        self.base.clone() - Point::from((1isize,1isize)) + self.size
     }
     
     pub fn iter(&self) -> RectIter {
@@ -45,5 +46,10 @@ impl Rect {
     }
     pub fn y_range(&self) -> Range<isize> {
         self.base.y .. (self.base.y + self.size.height as isize)
+    }
+    
+    pub fn contains(&self, point: &Point) -> bool {
+        (self.base.x .. self.bottom_right().x).contains(&point.x)
+        && (self.base.y .. self.bottom_right().y).contains(&point.y)
     }
 }

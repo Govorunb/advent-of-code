@@ -158,7 +158,7 @@ impl Contraption {
             beams.retain_mut(|beam| {
                 // the order of operations in the loop is:
                 // die -> energize -> move -> turn
-                let cell_energized = grid_energy.get_mut(beam.x as isize, beam.y as isize).unwrap();
+                let cell_energized = grid_energy.get_mut(&Point::from((beam.x, beam.y))).unwrap();
                 
                 // die
                 let mask = 1 << (beam.dir as u8);

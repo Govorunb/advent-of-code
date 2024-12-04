@@ -90,8 +90,8 @@ impl Instruction {
             .split_once(',').unwrap();
         let c2 = m.name("c2").unwrap().as_str()
             .split_once(',').unwrap();
-        let tl: Point = (c1.0.parse::<isize>().unwrap(), c1.1.parse::<isize>().unwrap()).into();
-        let br: Point = (c2.0.parse::<isize>().unwrap(), c2.1.parse::<isize>().unwrap()).into();
+        let tl = (c1.0.parse::<isize>().unwrap(), c1.1.parse::<isize>().unwrap()).into();
+        let br = (c2.0.parse::<isize>().unwrap(), c2.1.parse::<isize>().unwrap()).into();
         Instruction {
             itype,
             rect: Rect::from_corners(tl, br).unwrap()
@@ -101,7 +101,8 @@ impl Instruction {
     pub fn apply_p1(&self, grid: &mut Grid<bool>) {
         for y in self.rect.y_range() {
             for x in self.rect.x_range() {
-                let cell: &mut _ = grid.get_mut(x, y).unwrap();
+                let pt = (x,y).into();
+                let cell: &mut _ = grid.get_mut(&pt).unwrap();
                 *cell = match self.itype {
                     InstructionType::On => true,
                     InstructionType::Off => false,
@@ -113,7 +114,8 @@ impl Instruction {
     pub fn apply_p2(&self, grid: &mut Grid<usize>) {
         for y in self.rect.y_range() {
             for x in self.rect.x_range() {
-                let cell: &mut _ = grid.get_mut(x, y).unwrap();
+                let pt = (x,y).into();
+                let cell: &mut _ = grid.get_mut(&pt).unwrap();
                 *cell = match self.itype {
                     InstructionType::On => cell.add(1),
                     InstructionType::Off => cell.saturating_sub(1),

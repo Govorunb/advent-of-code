@@ -1,29 +1,58 @@
+use std::iter::Iterator;
+use std::sync::LazyLock;
+use crate::Point;
+
 #[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
 pub enum Direction {
     North,
-    South,
     East,
+    South,
     West,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
 pub enum Direction8 {
-    North,
-    South,
-    East,
-    West,
     NorthWest,
+    North,
     NorthEast,
+    West,
+    East,
     SouthWest,
+    South,
     SouthEast,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
 pub enum Turn {
     None,
-    Left,
-    Right,
+    Left, // counter-clockwise
+    Right, // clockwise
     Opposite,
 }
+
+static AROUND: LazyLock<Vec<Point>> = LazyLock::new(||
+    vec![
+        Point {x:-1, y:-1},Point{x:0,y:-1},Point {x:1,y:-1},
+        Point {x:-1, y: 0},                Point {x:1,y: 0},
+        Point {x:-1, y: 1},Point{x:0,y: 1},Point {x:1,y: 1},
+    ]
+);
+
+static ADJACENT: LazyLock<Vec<Point>> = LazyLock::new(||
+    vec![
+                           Point{x:0,y:-1},
+        Point {x:-1, y: 0},                Point {x:1,y: 0},
+                           Point{x:0,y: 1},
+    ]
+);
+
+static CORNERS: LazyLock<Vec<Point>> = LazyLock::new(||
+    vec![
+        Point {x:-1, y:-1},                Point {x:1,y:-1},
+
+        Point {x:-1, y: 1},                Point {x:1,y: 1},
+    ]
+);
 
 impl Direction {
     pub fn from_delta(dx: i64, dy: i64) -> Self {
@@ -79,6 +108,39 @@ impl Direction {
             Turn::Right => self.cw(),
             Turn::Opposite => self.opp(),
         }
+    }
+    
+    pub fn iter() -> impl Iterator<Item = &'static Point> {
+        ADJACENT.iter()
+    }
+}
+
+impl Direction8 {
+    pub fn from_delta(pt: Point) -> Self {
+        match (pt.x, pt.y) {
+            (-1, -1) => Self::NorthWest,
+            (0, -1) => Self::North,
+            (1, -1) => Self::NorthEast,
+            
+            (-1, 0) => Self::West,
+            // center
+            (1, 0) => Self::East,
+            
+            (-1, 1) => Self::SouthWest,
+            (0, 1) => Self::South,
+            (1, 1) => Self::SouthEast,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn iter() -> impl Iterator<Item = &'static Point> {
+        AROUND.iter()
+    }
+    pub fn cardinals() -> impl Iterator<Item = &'static Point> {
+        Direction::iter()
+    }
+    pub fn corners() -> impl Iterator<Item = &'static Point> {
+        CORNERS.iter()
     }
 }
 

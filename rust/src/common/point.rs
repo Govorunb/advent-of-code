@@ -1,35 +1,33 @@
-use crate::Size;
+use crate::{Direction, Direction8, Size};
 use std::ops::{Add, Sub};
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Default)]
+#[derive(derive_more::Add, derive_more::Sub, derive_more::From)]
 pub struct Point {
     pub x: isize,
     pub y: isize,
 }
 
-impl From<(isize, isize)> for Point {
-    fn from(tuple: (isize, isize)) -> Self {
-        Self {
-            x: tuple.0,
-            y: tuple.1,
-        }
+impl Point {
+    pub fn adjacent<'a>(&'a self) -> impl Iterator<Item = Point> + 'a {
+        Direction::iter()
+            .map(move |offset| self + offset)
     }
-}
-impl From<(usize, usize)> for Point {
-    fn from(tuple: (usize, usize)) -> Self {
-        Self {
-            x: tuple.0 as isize,
-            y: tuple.1 as isize,
-        }
+    pub fn around<'a>(&'a self) -> impl Iterator<Item = Point> + 'a {
+        Direction8::iter()
+            .map(move |offset| self + offset)
     }
 }
 
 impl From<Size> for Point {
     fn from(size: Size) -> Self {
-        Self {
-            x: size.width as isize,
-            y: size.height as isize,
-        }
+        Self::from((size.width, size.height))
+    }
+}
+
+impl From<(usize, usize)> for Point {
+    fn from((x,y): (usize, usize)) -> Self {
+        Self { x: x as isize, y: y as isize }
     }
 }
 
@@ -53,22 +51,22 @@ impl TryFrom<Point> for Size {
     }
 }
 
-impl Sub for Point {
-    type Output = Self;
+impl Sub for &Point {
+    type Output = Point;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        Self {
+        Point {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
         }
     }
 }
 
-impl Add for Point {
-    type Output = Self;
-
+impl Add for &Point {
+    type Output = Point;
+    
     fn add(self, rhs: Self) -> Self::Output {
-        Self {
+        Point {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
         }
