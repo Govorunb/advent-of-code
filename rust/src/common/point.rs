@@ -17,6 +17,17 @@ impl Point {
         Direction8::iter()
             .map(move |offset| self + offset)
     }
+    
+    /// Returns an iterator that moves in the given direction.<br/>
+    /// Note: this iterator **does not terminate**.
+    pub fn ray<'a>(&self, dir: &'a Point) -> impl Iterator<Item = Point> + 'a {
+        let mut curr = self.clone();
+        std::iter::from_fn(move || {
+            let item = curr.clone();
+            curr = &curr + dir;
+            Some(item)
+        })
+    }
 }
 
 impl From<Size> for Point {

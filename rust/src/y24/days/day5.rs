@@ -1,4 +1,3 @@
-// replace all 5 with the day number
 use crate::*;
 
 pub const DAY5_EXAMPLE: &str =
@@ -68,8 +67,8 @@ impl Day<5> for Day5 {
                     for i in 1..u.len() {
                         let item = u[i];
                         if let Some(should_be_before) = rules_map.get(&item) {
-                            if let Some(bad) = u.iter().take(i).find(|c| should_be_before.contains(c)) {
-                                // println!("{} found before {}", bad, item);
+                            if let Some(_bad) = u.iter().take(i).find(|c| should_be_before.contains(c)) {
+                                // println!("{} found before {}", _bad, item);
                                 return false
                             }
                         }

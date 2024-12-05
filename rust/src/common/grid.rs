@@ -212,6 +212,17 @@ impl<T> Grid<T> {
             .enumerate() // can't zip because zip isn't double ended
             .map(move |(i, e)| ((i % w, i / w).into(), e))
     }
+
+    /// Iterates over the grid's items, indexed by a point travelling from start in the given direction.
+    /// The iterator is fused and will only produce `None` when the point goes outside the bounds of the grid. 
+    pub fn ray<'a>(&'a self, start: &Point, dir: &'a Point) -> impl Iterator<Item = &'a T> {
+        let mut curr = start.clone();
+        std::iter::from_fn(move || {
+            let item = self.get(&curr);
+            curr = &curr + dir;
+            item
+        }).fuse() // already behaves like fused but w/e
+    }
 }
 
 impl<T: Default + Clone> Grid<T> {

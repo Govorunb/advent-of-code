@@ -1,6 +1,5 @@
 use crate::{Point, RectIter, Size};
 use std::ops::Range;
-use itertools::Itertools;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd)]
 pub struct Rect {

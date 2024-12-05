@@ -1,4 +1,4 @@
-use std::iter::Iterator;
+use std::slice::Iter;
 use std::sync::LazyLock;
 use crate::Point;
 
@@ -110,7 +110,7 @@ impl Direction {
         }
     }
     
-    pub fn iter() -> impl Iterator<Item = &'static Point> {
+    pub fn iter() -> Iter<'static, Point> {
         ADJACENT.iter()
     }
 }
@@ -133,13 +133,13 @@ impl Direction8 {
         }
     }
 
-    pub fn iter() -> impl Iterator<Item = &'static Point> {
+    pub fn iter() -> Iter<'static, Point> {
         AROUND.iter()
     }
-    pub fn cardinals() -> impl Iterator<Item = &'static Point> {
+    pub fn cardinals() -> Iter<'static, Point> {
         Direction::iter()
     }
-    pub fn corners() -> impl Iterator<Item = &'static Point> {
+    pub fn corners() -> Iter<'static, Point> {
         CORNERS.iter()
     }
 }
