@@ -1,27 +1,27 @@
-use crate::{Point, RectIter, Size};
+use crate::{Vector2, RectIter, Size};
 use std::ops::Range;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd)]
 pub struct Rect {
-    base: Point,
+    base: Vector2,
     size: Size,
 }
 
 impl Rect {
-    pub fn new(base: Point, size: Size) -> Option<Self> {
+    pub fn new(base: Vector2, size: Size) -> Option<Self> {
         if size.width > 0 && size.height > 0 {
             Some(Self { base, size })
         } else {None}
     }
     pub fn from_origin(size: Size) -> Option<Self> {
-        Self::new(Point::default(), size)
+        Self::new(Vector2::default(), size)
     }
-    pub fn from_corners(top_left: Point, bottom_right: Point) -> Option<Self> {
+    pub fn from_corners(top_left: Vector2, bottom_right: Vector2) -> Option<Self> {
         if bottom_right.x < top_left.x || bottom_right.y < top_left.y {
             return None;
         }
         let base = top_left;
-        let size = (bottom_right - base.clone() + Point {x: 1, y: 1}).try_into().ok()?;
+        let size = (bottom_right - base.clone() + Vector2 {x: 1, y: 1}).try_into().ok()?;
         Some(Self { base, size })
     }
     
@@ -29,11 +29,11 @@ impl Rect {
     pub fn height(&self) -> usize { self.size.height }
     pub fn size(&self) -> Size { self.size }
     
-    pub fn top_left(&self) -> Point {
+    pub fn top_left(&self) -> Vector2 {
         self.base.clone()
     }
-    pub fn bottom_right(&self) -> Point {
-        self.base.clone() - Point {x: 1, y: 1} + self.size
+    pub fn bottom_right(&self) -> Vector2 {
+        self.base.clone() - Vector2 {x: 1, y: 1} + self.size
     }
     
     pub fn iter(&self) -> RectIter {
@@ -47,7 +47,7 @@ impl Rect {
         self.base.y .. (self.base.y + self.size.height as isize)
     }
     
-    pub fn contains(&self, point: &Point) -> bool {
+    pub fn contains(&self, point: &Vector2) -> bool {
         (self.base.x .. self.bottom_right().x).contains(&point.x)
         && (self.base.y .. self.bottom_right().y).contains(&point.y)
     }

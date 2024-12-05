@@ -94,11 +94,11 @@ impl<T> Grid<T> {
     pub fn width(&self) -> usize { self.rect.width() }
     pub fn height(&self) -> usize { self.rect.height() }
     pub fn size(&self) -> Size { self.rect.size() }
-    pub fn base(&self) -> Point { self.rect.top_left() }
+    pub fn base(&self) -> Vector2 { self.rect.top_left() }
     
     /// Returns the flattened index that corresponds to the given coordinates.
     /// "flattened" here means the index in a (totally hypothetical) backing 1D array
-    pub fn flat_index(&self, point: &Point) -> Option<usize> {
+    pub fn flat_index(&self, point: &Vector2) -> Option<usize> {
         let (x, y) = (point - &self.base()).into();
         let (x, y) = (x as usize, y as usize);
         if x >= self.width() || y >= self.height() {
@@ -112,18 +112,18 @@ impl<T> Grid<T> {
         }
     }
     
-    pub fn point_index(&self, flat: usize) -> Option<Point> {
+    pub fn point_index(&self, flat: usize) -> Option<Vector2> {
         if flat > self.elements.len() {
             return None;
         }
         let (y, x) = flat.div_rem(&self.width());
-        Some(self.base() + Point::from((x, y)))
+        Some(self.base() + Vector2::from((x, y)))
     }
-    pub fn get(&self, pt: &Point) -> Option<&T> {
+    pub fn get(&self, pt: &Vector2) -> Option<&T> {
         self.flat_index(pt).map(|i| &self.elements[i])
     }
 
-    pub fn get_mut(&mut self, pt: &Point) -> Option<&mut T> {
+    pub fn get_mut(&mut self, pt: &Vector2) -> Option<&mut T> {
         self.flat_index(pt).map(|i| &mut self.elements[i])
     }
     
@@ -138,7 +138,7 @@ impl<T> Grid<T> {
             return None;
         }
         let (x, y) = i.div_rem(&self.height());
-        self.get(&Point::from((x, y)))
+        self.get(&Vector2::from((x, y)))
     }
 
     pub fn flat_element_mut(&mut self, i: usize) -> Option<&mut T> {
@@ -154,13 +154,13 @@ impl<T> Grid<T> {
     }
 
     pub fn row(&self, row: usize) -> Option<&[T]> {
-        let pt = self.base() + Point::from((0, row));
+        let pt = self.base() + Vector2::from((0, row));
         self.flat_index(&pt)
             .map(|i| &self.elements[i..i+self.rect.width()])
     }
 
     pub fn row_mut(&mut self, row: usize) -> Option<&mut [T]> {
-        let pt = self.base() + Point::from((0, row));
+        let pt = self.base() + Vector2::from((0, row));
         self.flat_index(&pt)
             .map(|i| &mut self.elements[i..i+self.rect.width()])
     }
@@ -197,12 +197,12 @@ impl<T> Grid<T> {
         RectIter::new(self.rect.clone())
     }
 
-    pub fn cells(&self) -> impl DoubleEndedIterator<Item = (Point, &T)> + Clone {
+    pub fn cells(&self) -> impl DoubleEndedIterator<Item = (Vector2, &T)> + Clone {
         self.coords()
             .map(move |pt| (pt.clone(), &self[pt]))
     }
 
-    pub fn cells_mut(&mut self) -> impl DoubleEndedIterator<Item = (Point, &mut T)> {
+    pub fn cells_mut(&mut self) -> impl DoubleEndedIterator<Item = (Vector2, &mut T)> {
         // can't do it the other way
         // (`self.coords().map(|pt| &mut self[pt])`)
         // because closure can't capture self
@@ -215,7 +215,7 @@ impl<T> Grid<T> {
 
     /// Iterates over the grid's items, indexed by a point travelling from start in the given direction.
     /// The iterator is fused and will only produce `None` when the point goes outside the bounds of the grid. 
-    pub fn ray<'a>(&'a self, start: &Point, dir: &'a Point) -> impl Iterator<Item = &'a T> {
+    pub fn ray<'a>(&'a self, start: &Vector2, dir: &'a Vector2) -> impl Iterator<Item = &'a T> {
         let mut curr = start.clone();
         std::iter::from_fn(move || {
             let item = self.get(&curr);
@@ -257,7 +257,7 @@ impl<T: Clone> Grid<T> {
         
         for y in self.rect.y_range() {
             for x in self.rect.x_range() {
-                vec.push(self[Point::from((x, y))].clone());
+                vec.push(self[Vector2::from((x, y))].clone());
             }
         }
         vec
@@ -305,33 +305,33 @@ impl<T> IndexMut<usize> for Grid<T> {
     }
 }
 
-impl<T> Index<Point> for Grid<T> {
+impl<T> Index<Vector2> for Grid<T> {
     type Output = T;
 
-    fn index(&self, pt: Point) -> &Self::Output {
+    fn index(&self, pt: Vector2) -> &Self::Output {
         self.get(&pt)
             .unwrap_or_else(|| panic!("Index coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }
 }
 
-impl<T> Index<&Point> for Grid<T> {
+impl<T> Index<&Vector2> for Grid<T> {
     type Output = T;
 
-    fn index(&self, pt: &Point) -> &Self::Output {
+    fn index(&self, pt: &Vector2) -> &Self::Output {
         self.get(pt)
             .unwrap_or_else(|| panic!("Index coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }
 }
 
-impl<T> IndexMut<Point> for Grid<T> {
-    fn index_mut(&mut self, pt: Point) -> &mut Self::Output {
+impl<T> IndexMut<Vector2> for Grid<T> {
+    fn index_mut(&mut self, pt: Vector2) -> &mut Self::Output {
         self.get_mut(&pt)
             .unwrap_or_else(|| panic!("Index mut coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }
 }
 
-impl<T> IndexMut<&Point> for Grid<T> {
-    fn index_mut(&mut self, pt: &Point) -> &mut Self::Output {
+impl<T> IndexMut<&Vector2> for Grid<T> {
+    fn index_mut(&mut self, pt: &Vector2) -> &mut Self::Output {
         self.get_mut(pt)
             .unwrap_or_else(|| panic!("Index mut coordinates ({}, {}) out of bounds", pt.x, pt.y))
     }

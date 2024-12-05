@@ -1,11 +1,11 @@
-use crate::{Point, Rect};
+use crate::{Vector2, Rect};
 use std::iter::FusedIterator;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Eq, Hash)]
 pub struct RectIter {
     rect: Rect,
-    start: Point,
-    end: Point,
+    start: Vector2,
+    end: Vector2,
 }
 
 impl RectIter {
@@ -19,7 +19,7 @@ impl RectIter {
 }
 
 impl Iterator for RectIter {
-    type Item = Point;
+    type Item = Vector2;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.start.y > self.end.y { return None }

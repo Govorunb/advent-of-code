@@ -1,6 +1,6 @@
 use std::slice::Iter;
 use std::sync::LazyLock;
-use crate::Point;
+use crate::Vector2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
 pub enum Direction {
@@ -30,27 +30,27 @@ pub enum Turn {
     Opposite,
 }
 
-static AROUND: LazyLock<Vec<Point>> = LazyLock::new(||
+static AROUND: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-        Point {x:-1, y:-1},Point{x:0,y:-1},Point {x:1,y:-1},
-        Point {x:-1, y: 0},                Point {x:1,y: 0},
-        Point {x:-1, y: 1},Point{x:0,y: 1},Point {x:1,y: 1},
+        Vector2 {x:-1, y:-1}, Vector2 {x:0,y:-1}, Vector2 {x:1,y:-1},
+        Vector2 {x:-1, y: 0},                     Vector2 {x:1,y: 0},
+        Vector2 {x:-1, y: 1}, Vector2 {x:0,y: 1}, Vector2 {x:1,y: 1},
     ]
 );
 
-static ADJACENT: LazyLock<Vec<Point>> = LazyLock::new(||
+static ADJACENT: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-                           Point{x:0,y:-1},
-        Point {x:-1, y: 0},                Point {x:1,y: 0},
-                           Point{x:0,y: 1},
+                              Vector2 {x:0,y:-1},
+        Vector2 {x:-1, y: 0},                     Vector2 {x:1,y: 0},
+                              Vector2 {x:0,y: 1},
     ]
 );
 
-static CORNERS: LazyLock<Vec<Point>> = LazyLock::new(||
+static CORNERS: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-        Point {x:-1, y:-1},                Point {x:1,y:-1},
+        Vector2 {x:-1, y:-1},                     Vector2 {x:1,y:-1},
 
-        Point {x:-1, y: 1},                Point {x:1,y: 1},
+        Vector2 {x:-1, y: 1},                     Vector2 {x:1,y: 1},
     ]
 );
 
@@ -110,13 +110,13 @@ impl Direction {
         }
     }
     
-    pub fn iter() -> Iter<'static, Point> {
+    pub fn iter() -> Iter<'static, Vector2> {
         ADJACENT.iter()
     }
 }
 
 impl Direction8 {
-    pub fn from_delta(pt: Point) -> Self {
+    pub fn from_delta(pt: Vector2) -> Self {
         match (pt.x, pt.y) {
             (-1, -1) => Self::NorthWest,
             (0, -1) => Self::North,
@@ -133,13 +133,13 @@ impl Direction8 {
         }
     }
 
-    pub fn iter() -> Iter<'static, Point> {
+    pub fn iter() -> Iter<'static, Vector2> {
         AROUND.iter()
     }
-    pub fn cardinals() -> Iter<'static, Point> {
+    pub fn cardinals() -> Iter<'static, Vector2> {
         Direction::iter()
     }
-    pub fn corners() -> Iter<'static, Point> {
+    pub fn corners() -> Iter<'static, Vector2> {
         CORNERS.iter()
     }
 }

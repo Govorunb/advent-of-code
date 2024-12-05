@@ -38,9 +38,9 @@ impl Day<4> for Day4 {
                     .filter(|pt| {
                         grid[pt] == 'A' // centered on 'A'
                         && Direction8::corners().take(2)
-                            .filter(|dir| {
-                                let pt2 = pt + &dir; // top left/top right
-                                let opp = pt - &dir; // bottom right/bottom left
+                            .filter(|&dir| {
+                                let pt2 = pt + dir; // top left/right
+                                let opp = pt - dir; // bottom right/left
                                 matches!(
                                     (grid.get(&pt2), grid.get(&opp)),
                                     (Some('M'), Some('S')) | (Some('S'), Some('M'))
@@ -78,7 +78,7 @@ impl Day4 {
         }
     }
     
-    fn word_search<'a>(grid: Grid<char>, pat: &str, directions: impl Iterator<Item = &'a Point> + Clone) -> usize {
+    fn word_search<'a>(grid: Grid<char>, pat: &str, directions: impl Iterator<Item = &'a Vector2> + Clone) -> usize {
         let mut chars = pat.chars();
         let head = chars.next().unwrap();
         let tail: &Vec<char> = &chars.collect_vec();
