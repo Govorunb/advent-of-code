@@ -7,16 +7,19 @@ pub mod test {
     use super::days::*;
     use crate::*;
     pub fn test_all_days() {
+        let year = aoc_year!();
+        println!("running {year} tests");
+
         let sw = stopwatch::Stopwatch::start_new();
         Day1::new().test(None);
         Day2::new().test(None);
         Day3::new().test(None);
-        // Day4::new().test(None); // slow
+        // Day4::new().test(None); // very slow
         Day5::new().test(None);
         // Day6::new().test(None); // slow
         Day7::new().test(None);
         Day8::new().test(None);
-        Day9::new().test(None);
+        // Day9::new().test(None); // slow
         // Day10::new().test(None);
         // Day11::new().test(None);
         // Day12::new().test(None);
@@ -34,6 +37,6 @@ pub mod test {
         // Day24::new().test(None);
         // Day25::new().test(None);
         
-        println!("{} tests took {}us", aoc_year!(), sw.elapsed().as_micros());
+        println!("{year} tests took {}us", sw.elapsed().as_micros());
     }
 }

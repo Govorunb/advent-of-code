@@ -1,20 +1,26 @@
 use crate::{Direction, Direction8, Size};
-use std::ops::{Add, Sub};
+use std::ops::{Add, Neg, Sub};
 
-#[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Default)]
-#[derive(derive_more::Add, derive_more::Sub, derive_more::From)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Default)]
+#[derive(derive_more::Add, derive_more::AddAssign, derive_more::Sub, derive_more::SubAssign, derive_more::From, derive_more::Neg)]
 pub struct Vector2 {
     pub x: isize,
     pub y: isize,
 }
 
 impl Vector2 {
+    pub fn zero() -> Vector2 {Self::default()}
+    pub fn one() -> Vector2 { Self { x: 1, y: 1 } }
+    pub fn up() -> Vector2 { Self { x: 0, y: -1 } }
+    pub fn down() -> Vector2 { Self { x: 0, y: 1 } }
+    pub fn left() -> Vector2 { Self { x: -1, y: 0 } }
+    pub fn right() -> Vector2 { Self { x: 1, y: 0 } }
     pub fn adjacent<'a>(&'a self) -> impl Iterator<Item = Vector2> + 'a {
-        Direction::iter()
+        Direction::deltas()
             .map(move |offset| self + offset)
     }
     pub fn around<'a>(&'a self) -> impl Iterator<Item = Vector2> + 'a {
-        Direction8::iter()
+        Direction8::deltas()
             .map(move |offset| self + offset)
     }
     
@@ -92,5 +98,12 @@ impl Add<Size> for Vector2 {
             x: self.x + rhs.width as isize,
             y: self.y + rhs.height as isize,
         }
+    }
+}
+
+impl Neg for &Vector2 {
+    type Output = Vector2;
+    fn neg(self) -> Self::Output {
+        Vector2 {x: -self.x, y: -self.y}
     }
 }

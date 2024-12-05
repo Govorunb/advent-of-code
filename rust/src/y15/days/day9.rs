@@ -26,6 +26,7 @@ impl Day<9> for Day9 {
             edges.insert((from.clone(), to.clone()), dist);
             edges.insert((to, from), dist);
         }
+        // not worth rearchitecting for rayon
         match part {
             Part::One => {
                 let mut distances: FxHashMap<(String, String), usize> = FxHashMap::default();
@@ -137,10 +138,7 @@ impl Day9 {
         // println!("route: {:?}", route);
         route.iter()
             .tuple_windows()
-            .map(|(from, to)| {
-                // println!("wnd {:?}", wnd);
-                graph.get(&(from.clone(), to.clone())).unwrap()
-            })
+            .map(|(from, to)| graph.get(&(from.clone(), to.clone())).unwrap())
             .sum()
     }
 }

@@ -1,3 +1,5 @@
+use std::iter::Rev;
+use std::ops::Neg;
 use std::slice::Iter;
 use std::sync::LazyLock;
 use crate::Vector2;
@@ -55,13 +57,22 @@ static CORNERS: LazyLock<Vec<Vector2>> = LazyLock::new(||
 );
 
 impl Direction {
-    pub fn from_delta(dx: i64, dy: i64) -> Self {
-        match (dx, dy) {
+    pub fn from_delta(delta: &Vector2) -> Self {
+        match (delta.x, delta.y) {
             (0, -1) => Self::North,
             (0, 1) => Self::South,
             (1, 0) => Self::East,
             (-1, 0) => Self::West,
             _ => unreachable!()
+        }
+    }
+
+    pub fn move_delta(&self) -> Vector2 {
+        match self {
+            Self::North => Vector2 {x: 0, y:-1},
+            Self::South => Vector2 {x: 0, y: 1},
+            Self::East  => Vector2 {x: 1, y: 0},
+            Self::West  => Vector2 {x:-1, y: 0},
         }
     }
 
@@ -110,7 +121,15 @@ impl Direction {
         }
     }
     
-    pub fn iter() -> Iter<'static, Vector2> {
+    pub fn all_clockwise() -> Iter<'static, Direction> {
+        [Direction::North, Direction::East, Direction::South, Direction::West].iter()
+    }
+    
+    pub fn all_counterclockwise() -> Rev<Iter<'static, Direction>> {
+        Self::all_clockwise().rev()
+    }
+    
+    pub fn deltas() -> Iter<'static, Vector2> {
         ADJACENT.iter()
     }
 }
@@ -132,16 +151,65 @@ impl Direction8 {
             _ => unreachable!(),
         }
     }
+    
+    pub fn delta(&self) -> Vector2 {
+        match self {
+            Self::NorthWest => Vector2 {x: -1, y: -1},
+            Self::North => Vector2 {x: 0, y: -1},
+            Self::NorthEast => Vector2 {x: 1, y: -1},
+            
+            Self::West => Vector2 {x: -1, y: 0},
+            // center
+            Self::East => Vector2 {x: 1, y: 0},
+            
+            Self::SouthWest => Vector2 {x: 0, y: 1},
+            Self::South => Vector2 {x: 0, y: 1},
+            Self::SouthEast => Vector2 {x: 1, y: 0},
+        }
+    }
 
-    pub fn iter() -> Iter<'static, Vector2> {
+    pub fn opp(&self) -> Direction8 {
+        match self {
+            Self::NorthWest => Direction8::SouthEast,
+            Self::North => Self::South,
+            Self::NorthEast => Direction8::SouthWest,
+            
+            Self::West => Self::East,
+            Self::East => Self::West,
+            
+            Self::SouthWest => Direction8::NorthEast,
+            Self::South => Self::North,
+            Self::SouthEast => Direction8::NorthWest,
+        }
+    }
+    
+    pub fn all_clockwise() -> Iter<'static, Direction8> {
+        [
+            Self::North, Self::NorthEast,
+            Self::East, Self::SouthEast,
+            Self::South, Self::SouthWest,
+            Self::West, Self::NorthWest
+        ].iter()
+    }
+    pub fn deltas() -> Iter<'static, Vector2> {
         AROUND.iter()
     }
-    pub fn cardinals() -> Iter<'static, Vector2> {
-        Direction::iter()
+    pub fn cardinal_deltas() -> Iter<'static, Vector2> {
+        Direction::deltas()
     }
-    pub fn corners() -> Iter<'static, Vector2> {
+    pub fn corner_deltas() -> Iter<'static, Vector2> {
         CORNERS.iter()
     }
+}
+
+impl Neg for Direction8 {
+    type Output = Direction8;
+    fn neg(self) -> Self::Output {self.opp()}
+}
+
+impl Neg for Direction {
+    type Output = Direction;
+    fn neg(self) -> Self::Output {self.opp()}
 }
 
 impl Turn {

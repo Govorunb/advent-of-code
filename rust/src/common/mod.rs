@@ -108,6 +108,6 @@ macro_rules! test_cases {
 macro_rules! aoc_year {
     () => {
         // advent_of_code::y24 -> 2024
-        "20".to_string() + &module_path!().split("::").skip(1).next().unwrap()[1..]
+        "20".to_string() + &module_path!().split("::").nth(1).unwrap()[1..]
     }
 }

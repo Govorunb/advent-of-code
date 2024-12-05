@@ -31,13 +31,13 @@ impl Day<4> for Day4 {
         let grid: Grid<char> = Grid::from_str(input).unwrap();
         match part {
             Part::One => {
-                Self::word_search(grid,"XMAS", Direction8::iter())
+                Self::word_search(grid,"XMAS", Direction8::deltas())
             },
             Part::Two => {
                 grid.coords()
                     .filter(|pt| {
                         grid[pt] == 'A' // centered on 'A'
-                        && Direction8::corners().take(2)
+                        && Direction8::corner_deltas().take(2)
                             .filter(|&dir| {
                                 let pt2 = pt + dir; // top left/right
                                 let opp = pt - dir; // bottom right/left
@@ -86,25 +86,26 @@ impl Day4 {
             .filter(|pt| grid[pt] == head) // e.g. "ABCD" can only start from 'A'
             .cartesian_product(directions) // search all cells around
             .filter(|(pt, dir)|
-                grid.ray(&pt, dir).skip(1) // skip start (at pt)
+                grid.ray(&pt, dir).skip(1) // skip pt itself
                     .take(tail.len())
                     .eq(tail)
-            )
-            .count()
-        //// imperative version:
-        // let mut total = 0;
-        // for (pt, &c) in grid.cells() {
-        //     if c != chars[0] {continue}
-        // 
-        //     for dir in Direction8::iter() {
-        //         let mut curr = pt.clone();
-        //         let found_word = chars.iter().skip(1).all(|&test| {
-        //             curr = &curr + dir;
-        //             grid.get(&curr).is_some_and(|&x| x == test)
-        //         });
-        //         if found_word { total += 1 }
-        //     }
-        // }
-        // total
+            ).count()
+        // imperative version:
+        /*
+        let mut total = 0;
+        for (pt, &c) in grid.cells() {
+            if c != head {continue}
+        
+            for dir in Direction8::iter() {
+                let mut curr = pt.clone();
+                let found_word = tail.iter().all(|&test| {
+                    curr = &curr + dir;
+                    grid.get(&curr).is_some_and(|&x| x == test)
+                });
+                if found_word { total += 1 }
+            }
+        }
+        total
+        */
     }
 }

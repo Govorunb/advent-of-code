@@ -18,10 +18,9 @@ pub struct Day11 {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Grid {
+struct SparseGalaxiesGrid {
     galaxies: Vec<Point>,
-    width: usize,
-    height: usize,
+    size: Size,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -30,7 +29,7 @@ struct Point {
     y: usize,
 }
 
-impl Grid {
+impl SparseGalaxiesGrid {
     fn parse(input: &str) -> Self {
         let lines = input.lines();
         let height = lines.clone().count();
@@ -42,16 +41,15 @@ impl Grid {
 
         Self {
             galaxies,
-            width,
-            height,
+            size: Size { width, height }
         }
     }
 
     fn expand(&mut self, expansion_factor: usize) {
-        let empty_rows = (0..self.height)
+        let empty_rows = (0..self.size.height)
             .filter(|&y| !self.galaxies.iter().any(|g| g.y == y))
             .collect_vec();
-        let empty_columns = (0..self.width)
+        let empty_columns = (0..self.size.width)
             .filter(|&x| !self.galaxies.iter().any(|g| g.x == x))
             .collect_vec();
 
@@ -85,7 +83,7 @@ impl Day<11> for Day11 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day11.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let mut grid = Grid::parse(input);
+        let mut grid = SparseGalaxiesGrid::parse(input);
         let expansion = match part {
             Part::One => 1,
             Part::Two => 999999,

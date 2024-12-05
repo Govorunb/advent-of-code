@@ -1,5 +1,5 @@
-use crate::test_cases;
-use crate::common::*;
+use std::str::FromStr;
+use crate::*;
 
 pub const DAY10_EXAMPLE1: &str =
 "-L|F7
@@ -61,18 +61,15 @@ pub struct Day10 {
 }
 
 struct PipeGrid {
-    tiles: Vec<Tile>, // this should be a Grid<Tile>
-    pipes: Vec<Tile>,
-    width: usize,
-    height: usize,
-    animal: (usize, usize),
-    pipe_under_animal: Tile,
+    tiles: Grid<Symbol>,
+    pipes: Vec<Tile>, // "linked list"
+    animal: Vector2,
+    pipe_under_animal: Symbol,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy, Hash)]
 struct Tile {
-    x: usize,
-    y: usize,
+    coords: Vector2,
     symbol: Symbol,
 }
 
@@ -141,111 +138,82 @@ impl Pipe {
     }
 }
 
+impl From<char> for Symbol {
+    fn from(c: char) -> Self {
+        match c {
+            '.' => Symbol::Empty,
+            '|' => Symbol::Pipe(Pipe::Vertical),
+            '-' => Symbol::Pipe(Pipe::Horizontal),
+            'F' => Symbol::Pipe(Pipe::TL),
+            '7' => Symbol::Pipe(Pipe::TR),
+            'L' => Symbol::Pipe(Pipe::BL),
+            'J' => Symbol::Pipe(Pipe::BR),
+            'S' => Symbol::Animal,
+            _ => unreachable!(),
+        }
+    }
+}
+
 impl PipeGrid {
     fn parse(input: &str) -> PipeGrid {
-        let lines = input.lines().collect_vec();
-        let mut tiles = Vec::new();
-        let width = lines[0].len();
-        let height = lines.len();
-        let mut animal = (0, 0);
-
-        for (y, line) in lines.iter().enumerate() {
-            for (x, c) in line.char_indices() {
-                let symbol = match c {
-                    '.' => Symbol::Empty,
-                    '|' => Symbol::Pipe(Pipe::Vertical),
-                    '-' => Symbol::Pipe(Pipe::Horizontal),
-                    'F' => Symbol::Pipe(Pipe::TL),
-                    '7' => Symbol::Pipe(Pipe::TR),
-                    'L' => Symbol::Pipe(Pipe::BL),
-                    'J' => Symbol::Pipe(Pipe::BR),
-                    'S' => Symbol::Animal,
-                    _ => unreachable!(),
-                };
-                if let Symbol::Animal = symbol {
-                    animal = (x, y);
-                }
-                tiles.push(Tile {
-                    x,
-                    y,
-                    symbol,
-                });
-            }
-        }
+        let tiles = Grid::from_str(input).unwrap();
+        let animal = tiles.cells()
+            .find(|(_, &c)| matches!(c, Symbol::Animal)).unwrap()
+            .0;
 
         let mut grid = PipeGrid {
             tiles,
             pipes: vec![],
-            width,
-            height,
             animal,
-            pipe_under_animal: Tile {
-                x: animal.0,
-                y: animal.1,
-                symbol: Symbol::Animal,
-            }, // placeholder
+            pipe_under_animal: Symbol::Animal, // placeholder
         };
         grid.discover_pipe_network();
         grid
     }
     fn discover_pipe_network(&mut self) {
         let mut graph: Vec<Tile> = vec![];
-        let (start_x, start_y) = self.animal;
         
-        let directions = [Direction::North, Direction::South, Direction::East, Direction::West];
+        // infer what pipe under animal is from what it's connected to
         let mut first_pipe = None;
-        for dir in directions {
-            if let Some((x, y)) = dir.move_(start_x, start_y) {
-                match self.get(x, y).symbol {
-                    Symbol::Pipe(p) => {
-                        if p.is_connected(dir.opp()) {
-                            if first_pipe.clone().is_none() {
-                                first_pipe = Some((x, y, dir.opp()));
-                            } else {
-                                self.pipe_under_animal.symbol = Symbol::Pipe(Pipe::from_conn(first_pipe.unwrap().2, dir.opp()));
-                                break;
-                            }
+        for dir in Direction::all_clockwise() {
+            let moved = self.animal + dir.move_delta();
+            if let Some(Symbol::Pipe(p)) = self.tiles.get(&moved) {
+                if p.is_connected(dir.opp()) {
+                    match first_pipe {
+                        None => first_pipe = Some((moved, dir.opp())),
+                        Some((_, d)) => {
+                            self.pipe_under_animal = Symbol::Pipe(Pipe::from_conn(d, dir.opp()));
+                            break;
                         }
-                    },
-                    _ => {continue;}
+                    };
                 }
-            }
+            } else {continue}
         }
-        let (mut x, mut y, mut dir) = first_pipe.expect("did not find first pipe");
-        let mut curr_tile = self.get(x, y);
-        while let Symbol::Pipe(p) = curr_tile.symbol {
+        let (mut pt, mut dir) = first_pipe.expect("did not find first pipe");
+        let mut curr_tile: Option<&Symbol> = self.tiles.get(&pt);
+        while let Some(Symbol::Pipe(p)) = curr_tile {
             graph.push(Tile {
-                x,
-                y,
-                symbol: Symbol::Pipe(p),
+                coords: pt,
+                symbol: Symbol::Pipe(*p),
             });
             dir = p.traverse(dir);
-            (x, y) = dir.move_(x, y).unwrap();
+            pt += dir.move_delta();
             dir = dir.opp();
-            curr_tile = self.get(x,y);
+            curr_tile = self.tiles.get(&pt);
         }
         
         self.pipes = graph;
     }
 
-    fn index(&self, x: usize, y: usize) -> usize {
-        y * self.width + x
-    }
-
-    fn get(&self, x: usize, y: usize) -> &Tile {
-        &self.tiles[self.index(x, y)]
-    }
-
     fn inside_pipe_network(&self) -> usize {
-        let mut partition_r: FxHashSet<&Tile> = FxHashSet::default();
-        let mut partition_l: FxHashSet<&Tile> = FxHashSet::default();
+        let mut partition_r: FxHashSet<Vector2> = FxHashSet::default();
+        let mut partition_l: FxHashSet<Vector2> = FxHashSet::default();
         
         let mut turns = 0;
-        let dx = self.pipe_under_animal.x as i64 - self.pipes[0].x as i64;
-        let dy = self.pipe_under_animal.y as i64 - self.pipes[0].y as i64;
-        let mut dir = Direction::from_delta(dx, dy);
-        for p in self.pipes.as_slice() {
-            let pipe = match p.symbol {
+        let delta = self.animal - self.pipes[0].coords;
+        let mut dir = Direction::from_delta(&delta);
+        for pipe_tile in self.pipes.as_slice() {
+            let pipe = match pipe_tile.symbol {
                 Symbol::Pipe(pipe) => pipe,
                 _ => unreachable!()
             };
@@ -257,20 +225,19 @@ impl PipeGrid {
                 _ => (),
             };
             
+            let pt = pipe_tile.coords;
+            
             if turn == Turn::None {
-                let cw_maybe = new_dir.cw().move_(p.x, p.y);
-                let ccw_maybe = new_dir.ccw().move_(p.x, p.y);
-                if let Some(cw) = cw_maybe {
-                    if (0..=self.tiles.len()-1).contains(&self.index(cw.0, cw.1))
-                    && !self.pipes.contains(self.get(cw.0, cw.1)) {
-                        partition_r.extend(self.flood_fill(cw.0, cw.1, &partition_r));
-                    }
+                let cw = pt + new_dir.cw().move_delta();
+                let ccw = pt + new_dir.ccw().move_delta();
+                if self.tiles.flat_index(&cw).is_some()
+                    && !self.pipes.iter().any(|&p_| p_.coords == cw) {
+                    partition_r.extend(self.flood_fill(&cw, &partition_r));
                 }
-                if let Some(ccw) = ccw_maybe {
-                    if (0..=self.tiles.len()-1).contains(&self.index(ccw.0, ccw.1))
-                        && !self.pipes.contains(self.get(ccw.0, ccw.1)) {
-                        partition_l.extend(self.flood_fill(ccw.0, ccw.1, &partition_l));
-                    }
+
+                if self.tiles.flat_index(&ccw).is_some()
+                    && !self.pipes.iter().any(|&p_| p_.coords == ccw) {
+                    partition_l.extend(self.flood_fill(&ccw, &partition_l));
                 }
             } else {
                 let dir_past = dir.opp();
@@ -279,21 +246,17 @@ impl PipeGrid {
                 let outside_is_l = turn == Turn::Right;
                 let partition = if outside_is_l { &mut partition_l } else { &mut partition_r };
 
-                let past_maybe = dir_past.move_(p.x, p.y);
-                let behind_maybe = dir_behind.move_(p.x, p.y);
-                if let Some(past) = past_maybe {
-                    if (0..=self.tiles.len()-1).contains(&self.index(past.0, past.1))
-                        && !self.pipes.contains(self.get(past.0, past.1))
-                        && !(self.animal.0 == past.0 && self.animal.1 == past.1) {
-                        partition.extend(self.flood_fill(past.0, past.1, partition));
-                    }
+                let past = pt + dir_past.move_delta();
+                let behind = pt + dir_behind.move_delta();
+                if self.tiles.flat_index(&past).is_some()
+                    && !self.pipes.iter().any(|&p_| p_.coords == past)
+                    && self.animal != past {
+                    partition.extend(self.flood_fill(&past, partition));
                 }
-                if let Some(behind) = behind_maybe {
-                    if (0..=self.tiles.len()-1).contains(&self.index(behind.0, behind.1))
-                        && !self.pipes.contains(self.get(behind.0, behind.1))
-                        && !(self.animal.0 == behind.0 && self.animal.1 == behind.1) {
-                        partition.extend(self.flood_fill(behind.0, behind.1, partition));
-                    }
+                if self.tiles.flat_index(&behind).is_some()
+                    && !self.pipes.iter().any(|&p_| p_.coords == behind)
+                    && self.animal != behind {
+                    partition.extend(self.flood_fill(&behind, partition));
                 }
             }
 
@@ -310,71 +273,29 @@ impl PipeGrid {
 
         visited.len()
     }
-    
-    #[allow(dead_code)] // forgor
-    fn around(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
-        let mut around: Vec<(usize, usize)> = vec![];
-        around.extend(self.adjacent(x, y));
-        let (left, up) = (x > 0, y > 0);
-        let (right, down) = (x < self.width - 1, y < self.height - 1);
-        if left && up {
-            around.push((x - 1, y - 1));
-        }
-        if right && up {
-            around.push((x + 1, y - 1));
-        }
-        if left && down {
-            around.push((x - 1, y + 1));
-        }
-        if right && down {
-            around.push((x + 1, y + 1));
-        }
-        around
-    }
 
-    fn adjacent(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
-        let mut adjacent: Vec<(usize, usize)> = vec![];
-        let (left, up) = (x > 0, y > 0);
-        let (right, down) = (x < self.width - 1, y < self.height - 1);
-        if up {
-            adjacent.push((x, y - 1));
-        }
-        if left {
-            adjacent.push((x - 1, y));
-        }
-        if right {
-            adjacent.push((x + 1, y));
-        }
-        if down {
-            adjacent.push((x, y + 1));
-        }
-        adjacent
-    }
-
-    fn flood_fill<'a>(&'a self, x: usize, y: usize, visited: &FxHashSet<&'a Tile>) -> Vec<&Tile> {
-        if visited.contains(self.get(x,y)) {
+    fn flood_fill(&self, pt: &Vector2, visited: &FxHashSet<Vector2>) -> Vec<Vector2> {
+        if visited.contains(&pt) {
             return vec![];
         }
         
-        let mut white: Vec<&Tile> = vec![self.get(x, y)];
-        let mut black: Vec<&Tile> = vec![];
+        let mut white: Vec<Vector2> = vec![pt.clone()];
+        let mut black: Vec<Vector2> = vec![];
         
         while let Some(tile) = white.pop() {
             if !black.contains(&tile) {
                 black.push(tile);
             }
-            for (x, y) in self.adjacent(tile.x, tile.y) {
-                let tile = self.get(x, y);
-                if black.contains(&tile) || white.contains(&tile)
-                    || self.pipes.iter().any(|t| t.x == tile.x && t.y == tile.y) {
-                    continue;
+            for adj in tile.adjacent() {
+                if !black.contains(&adj) && !white.contains(&adj)
+                    && self.tiles.flat_index(&adj).is_some()
+                    && !self.pipes.iter().any(|t| t.coords == adj) {
+                    white.push(adj);
                 }
-                white.push(tile);
             }
         }
         black
     }
-
 }
 
 impl Day<10> for Day10 {

@@ -13,4 +13,4 @@ rustc-hash = "2.1.0"
 stopwatch = "0.0.7"
 strided = "0.2.9"
 regex = "1.11.1"
-derive_more = { version = "1.0.0", features = ["add", "add_assign", "from", "from_str"] }
+derive_more = { version = "1.0.0", features = ["full"] }

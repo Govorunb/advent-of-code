@@ -24,8 +24,7 @@ struct Cave {
     grid: Grid<u8>,
 }
 struct Crucible {
-    x: usize,
-    y: usize,
+    coords: Vector2,
     dir: Direction,
     dir_count: usize,
 }

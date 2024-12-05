@@ -12,27 +12,22 @@ impl Day<4> for Day4 {
         input_md5_context.consume(input);
         match part {
             Part::One => {
-                for i in 0..u32::MAX {
-                    let mut clone = input_md5_context.clone();
-                    clone.consume(i.to_string());
-                    let hash = clone.compute();
-                    if !hash.starts_with(&[0, 0]) || hash[2] > 0x0f {
-                        continue;
-                    }
-                    return i;
-                }
-                unreachable!("not found")
+                (0..u32::MAX).into_par_iter()
+                    .find_first(|i| {
+                        let mut clone = input_md5_context.clone();
+                        clone.consume(i.to_string());
+                        let hash = clone.compute();
+                        hash.starts_with(&[0, 0]) && hash[2] <= 0x0f
+                    }).unwrap()
             },
             Part::Two => {
-                for i in 0..u32::MAX {
-                    let mut clone = input_md5_context.clone();
-                    clone.consume(i.to_string());
-                    let hash = clone.compute();
-                    if hash.starts_with(&[0, 0, 0]) {
-                        return i
-                    }
-                }
-                unreachable!("not found")
+                (0..u32::MAX).into_par_iter()
+                    .find_first(|i| {
+                        let mut clone = input_md5_context.clone();
+                        clone.consume(i.to_string());
+                        let hash = clone.compute();
+                        hash.starts_with(&[0, 0, 0])
+                    }).unwrap()
             }
         }
     }

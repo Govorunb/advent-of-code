@@ -48,8 +48,7 @@ struct Contraption {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Beam {
     id: usize,
-    x: usize,
-    y: usize,
+    coords: Vector2,
     dir: Direction,
 }
 
@@ -146,11 +145,11 @@ impl From<bool> for CellEnergy {
 }
 
 impl Contraption {
-    fn fire_beam(&self, x: usize, y: usize, dir: Direction) -> Grid<u8> {
+    fn fire_beam(&self, from: Vector2, dir: Direction) -> Grid<u8> {
         // bitfield for the 4 directions - this way we can track looping beams
         let mut grid_energy: Grid<u8> = Grid::from_origin(self.grid.size()).unwrap();
-        let mut initial_beam = Beam {id: 0, x, y, dir};
-        Self::step_beam(&mut initial_beam, &self.grid[Vector2::from((x, y))]); // totally not a hack
+        let mut initial_beam = Beam {id: 0, coords: from, dir};
+        Self::step_beam(&mut initial_beam, &self.grid[from]); // totally not a hack
         let mut beams: Vec<Beam> = vec![initial_beam];
         let mut top_id = 1;
         while !beams.is_empty() {
@@ -158,7 +157,7 @@ impl Contraption {
             beams.retain_mut(|beam| {
                 // the order of operations in the loop is:
                 // die -> energize -> move -> turn
-                let cell_energized = grid_energy.get_mut(&Vector2::from((beam.x, beam.y))).unwrap();
+                let cell_energized = grid_energy.get_mut(&beam.coords).unwrap();
                 
                 // die
                 let mask = 1 << (beam.dir as u8);
@@ -174,23 +173,17 @@ impl Contraption {
                 *cell_energized |= mask;
 
                 // move
-                match beam.dir.move_(beam.x, beam.y) {
-                    Some((x,y)) if x < self.grid.width() && y < self.grid.height() => {
-                        beam.x = x;
-                        beam.y = y;
-                    },
-                    // can't move past the bounds => die
-                    _ => return false,
-                }
-
+                let moved = beam.coords + beam.dir.move_delta();
+                if !self.grid.bounds().contains(&moved) {return false}
+                beam.coords = moved;
+                
                 // turn
-                let cell = &self.grid[Vector2::from((beam.x, beam.y))];
+                let cell = &self.grid[beam.coords];
                 let split = Self::step_beam(beam, cell);
                 if split {
                     let new_beam = Beam {
                         id: top_id,
-                        x: beam.x,
-                        y: beam.y,
+                        coords: beam.coords,
                         dir: beam.dir.opp(),
                     };
                     new_beams.push(new_beam);
@@ -225,8 +218,8 @@ impl Contraption {
         split
     }
 
-    fn count_energized(&self, x: usize, y: usize, dir: Direction) -> usize {
-        self.fire_beam(x, y, dir)
+    fn count_energized(&self, from: Vector2, dir: Direction) -> usize {
+        self.fire_beam(from, dir)
             .par_elements()
             .filter(|&&cell| cell != 0)
             .count()
@@ -241,7 +234,7 @@ impl Day<16> for Day16 {
         let c: Contraption = input.parse().expect("failed to parse grid");
         match part {
             Part::One => {
-                c.count_energized(0, 0, Direction::East)
+                c.count_energized(Vector2::zero(), Direction::East)
             },
             Part::Two => {
                 let width = c.grid.width();
@@ -277,15 +270,15 @@ impl Day<16> for Day16 {
                 let vertical = (0..height)
                     .into_par_iter()
                     .flat_map_iter(|y| [
-                        c.count_energized(0, y, Direction::East),
-                        c.count_energized(width-1, y, Direction::West)
+                        c.count_energized((0,y).into(), Direction::East),
+                        c.count_energized((width-1, y).into(), Direction::West)
                     ]); // if we put .max().unwrap() here, we're forced to wait for vertical before we can start horizontal
 
                 let horizontal = (0..width)
                     .into_par_iter()
                     .flat_map_iter(|x| [
-                        c.count_energized(x, 0, Direction::South),
-                        c.count_energized(x, height-1, Direction::North)
+                        c.count_energized((x, 0).into(), Direction::South),
+                        c.count_energized((x, height-1).into(), Direction::North)
                     ]);
                 // start both running parallel
                 let (max_vert, max_horiz) = rayon::join(|| vertical.max().unwrap(), || horizontal.max().unwrap());

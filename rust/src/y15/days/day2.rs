@@ -71,7 +71,7 @@ impl Day2 {
     fn parse(line: &str) -> Box {
         let parts = line.split('x')
             .map(|s| s.parse::<u32>().unwrap())
-            .collect::<Vec<_>>();
+            .collect_vec();
 
         Box(parts[0], parts[1], parts[2])
     }

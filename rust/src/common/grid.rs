@@ -95,6 +95,7 @@ impl<T> Grid<T> {
     pub fn height(&self) -> usize { self.rect.height() }
     pub fn size(&self) -> Size { self.rect.size() }
     pub fn base(&self) -> Vector2 { self.rect.top_left() }
+    pub fn bounds(&self) -> &Rect { &self.rect }
     
     /// Returns the flattened index that corresponds to the given coordinates.
     /// "flattened" here means the index in a (totally hypothetical) backing 1D array

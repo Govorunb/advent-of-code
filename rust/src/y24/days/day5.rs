@@ -61,21 +61,20 @@ impl Day<5> for Day5 {
         }).collect_vec();
         match part {
             Part::One => {
-                updates.iter().filter(|&u| {
-                    if u.len() < 2 {return false}
-                    
-                    for i in 1..u.len() {
-                        let item = u[i];
-                        if let Some(should_be_before) = rules_map.get(&item) {
-                            if let Some(_bad) = u.iter().take(i).find(|c| should_be_before.contains(c)) {
-                                // println!("{} found before {}", _bad, item);
-                                return false
+                updates.iter()
+                    .filter(|&u| {
+                        if u.len() < 2 {return false}
+                        
+                        for (i, item) in u.iter().enumerate() {
+                            if let Some(should_be_before) = rules_map.get(&item) {
+                                if let Some(_bad) = u.iter().take(i).find(|c| should_be_before.contains(c)) {
+                                    // println!("{} found before {}", _bad, item);
+                                    return false
+                                }
                             }
                         }
-                    }
-                    true
-                })
-                    .map(|u| {
+                        true
+                    }).map(|u| {
                         // println!("{:?}", u);
                         u[u.len() / 2] // middle
                     }).sum()
@@ -89,6 +88,7 @@ impl Day<5> for Day5 {
                     let mut done = false;
                     while !done {
                         done = true;
+                        // borrow checker prevents u.iter().enumerate()
                         for i in 1..u.len() {
                             let item = u[i];
                             if let Some(should_be_before) = rules_map.get(&item) {
@@ -97,6 +97,7 @@ impl Day<5> for Day5 {
                                 for j in 0..i {
                                     if should_be_before.contains(&u[j]) {
                                         bad = Some(j);
+                                        break;
                                     }
                                 }
                                 if let Some(badj) = bad {

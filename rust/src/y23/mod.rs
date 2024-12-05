@@ -7,6 +7,9 @@ pub mod test {
     use crate::*;
     
     pub fn test_all_days() {
+        let year = aoc_year!();
+        println!("running {year} tests");
+        
         let sw = stopwatch::Stopwatch::start_new();
         Day1::new().test(None);
         Day2::new().test(None);
@@ -27,7 +30,7 @@ pub mod test {
         // Day17::new().test(None); // wowie graph problems yippee i love reimplementing search algorithms
         // Day18::new().test(None); // this one is a grid issue (aka skill issue) on my part
         Day19::new().test(None);
-        
-        println!("{} tests took {}us", aoc_year!(), sw.elapsed().as_micros());
+
+        println!("{year} tests took {}us", sw.elapsed().as_micros());
     }
 }
