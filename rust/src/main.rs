@@ -2,6 +2,7 @@
 #![feature(associated_type_defaults)]
 #![feature(ascii_char)]
 #![feature(is_none_or)]
+#![feature(ascii_char_variants)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common;
@@ -11,7 +12,7 @@ mod y24;
 pub use common::*;
 
 fn main() {
-    let day = y15::days::Day11::new();
+    let day = y15::days::Day12::new();
     day.test(None);
     day.solve(day.input());
 }
