@@ -121,8 +121,7 @@ impl Day9 {
                 next_route.push(target.clone());
                 
                 let cost = Self::route_cost(costs, &next_route);
-                // .is_none_or
-                if best.distance.map_or(true, |x| check(x, cost)) {
+                if best.distance.is_none_or(|x| check(x, cost)) {
                     best.route = next_route.clone();
                     best.distance = Some(cost);
                 }
