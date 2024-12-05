@@ -1,5 +1,4 @@
 mod grid; pub use grid::*;
-mod iter; pub use iter::*;
 mod direction; pub use direction::*;
 mod rect_iter; pub use rect_iter::*;
 mod vector2; pub use vector2::*;

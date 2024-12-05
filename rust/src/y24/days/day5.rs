@@ -82,8 +82,8 @@ impl Day<5> for Day5 {
             },
             Part::Two => {
                 // reorder incorrect updates
-                updates.iter_mut().filter_map(|u| {
-                    if u.len() < 2 {panic!()}
+                updates.iter_mut().filter_map(|u| { // .filter has weird inference issues, icba
+                    debug_assert!(u.len() > 1);
 
                     let mut reordered = false;
                     let mut done = false;
@@ -108,7 +108,7 @@ impl Day<5> for Day5 {
                             }
                         }
                     }
-                    if reordered { Some(u) } else {None}
+                    if reordered {Some(u)} else {None}
                 }).map(|u| {
                     // println!("{:?}", u);
                     u[u.len() / 2] // middle

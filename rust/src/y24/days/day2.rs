@@ -12,7 +12,7 @@ pub struct Day2 {}
 
 #[derive(Debug, Clone)]
 struct Report {
-    levels: Vec<usize>
+    levels: Vec<isize>
 }
 
 impl Day<2> for Day2 {
@@ -66,14 +66,14 @@ impl Report {
     pub fn parse(line: &str) -> Self {
         let levels = line
             .split(" ")
-            .map(|c| c.parse::<usize>().unwrap())
+            .map(|c| c.parse::<isize>().unwrap())
             .collect_vec();
         Report { levels }
     }
     pub fn safety(&self, tolerant: bool) -> bool {
-        let diffs = self.levels
-            .windows(2)
-            .map(|w| w[1] as isize - w[0] as isize)
+        let diffs = self.levels.iter()
+            .tuple_windows()
+            .map(|(a,b)| b-a)
             .collect_vec();
         let tolerance = if tolerant {1} else {0};
         let directions = diffs.iter()

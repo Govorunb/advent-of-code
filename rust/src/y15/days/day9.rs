@@ -135,10 +135,11 @@ impl Day9 {
     
     fn route_cost(graph: &FxHashMap<(String, String), usize>, route: &Vec<String>) -> usize {
         // println!("route: {:?}", route);
-        route.windows(2)
-            .map(|wnd| {
+        route.iter()
+            .tuple_windows()
+            .map(|(from, to)| {
                 // println!("wnd {:?}", wnd);
-                graph.get(&(wnd[0].clone(), wnd[1].clone())).unwrap()
+                graph.get(&(from.clone(), to.clone())).unwrap()
             })
             .sum()
     }

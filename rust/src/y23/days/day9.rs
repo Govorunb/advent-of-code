@@ -31,8 +31,8 @@ impl From<&str> for Sequence {
 impl Sequence {
     fn differences(&self) -> Self {
         let values = self.values.iter()
-            .sliding_pairs()
-            .map(|pair| pair.1 - pair.0)
+            .tuple_windows()
+            .map(|(a,b)| b-a)
             .collect_vec();
         Self { values }
     }

@@ -48,7 +48,20 @@ impl Rect {
     }
     
     pub fn contains(&self, point: &Vector2) -> bool {
-        (self.base.x .. self.bottom_right().x).contains(&point.x)
-        && (self.base.y .. self.bottom_right().y).contains(&point.y)
+        self.x_range().contains(&point.x) && self.y_range().contains(&point.y)
+    }
+}
+#[test]
+fn test_rect_contains() {
+    let rect = Rect {
+        base: Vector2 { x: 0, y: 0 },
+        size: Size { width: 5, height: 5 }
+    };
+    let tests: Vec<(isize, isize, bool)> = vec![
+        (0,0,true), (0,1,true), (1,0,true), (4,4,true),
+        (5,5,false), (-1,-1,false), (-1,0,false), (0,-1,false),
+    ];
+    for (x,y,should_contain) in tests {
+        assert_eq!(should_contain, rect.contains(&Vector2::from((x,y))))
     }
 }
