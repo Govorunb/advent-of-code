@@ -17,12 +17,12 @@ impl Day<8> for Day8 {
         match part {
             Part::One => {
                 lines
-                    .map(|l| Self::decode_size_diff(l))
+                    .map(Self::decode_size_diff)
                     .sum()
             },
             Part::Two => {
                 lines
-                    .map(|l| Self::encode_size_diff(l))
+                    .map(Self::encode_size_diff)
                     .sum()
             }
         }
@@ -66,14 +66,11 @@ impl Day8 {
             if c == '\\' {
                 char_size -= 1;
                 // consumes next char
-                match iter.next() {
-                    Some('x') => {
-                        char_size -= 2;
-                        // \x00 - consume 2 more
-                        iter.next();
-                        iter.next();
-                    },
-                    _ => {}
+                if let Some('x') = iter.next() {
+                    char_size -= 2;
+                    // \x00 - consume 2 more
+                    iter.next();
+                    iter.next();
                 };
             }
         }
@@ -84,9 +81,8 @@ impl Day8 {
     fn encode_size_diff(line: &str) -> usize {
         let char_size = line.len();
         let mut repr_size = char_size+2; // wrapping quotes
-        let mut iter = line.chars();
 
-        while let Some(c) = iter.next() {
+        for c in line.chars() {
             if matches!(c, '\\' | '"') {
                 repr_size += 1; // escaped
             }

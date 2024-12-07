@@ -233,7 +233,7 @@ impl PipeGrid {
                 for (p, par) in [(cw, &mut partition_r), (ccw, &mut partition_l)] {
                     if self.tiles.flat_index(&p).is_some()
                         && !self.pipes.iter().any(|&p_| p_.coords == p) {
-                        par.extend(self.flood_fill(&cw, &par));
+                        par.extend(self.flood_fill(&cw, par));
                     }
                 }
             } else {
@@ -269,11 +269,11 @@ impl PipeGrid {
     }
 
     fn flood_fill(&self, pt: &Vector2, visited: &FxHashSet<Vector2>) -> Vec<Vector2> {
-        if visited.contains(&pt) {
+        if visited.contains(pt) {
             return vec![];
         }
         
-        let mut white: Vec<Vector2> = vec![pt.clone()];
+        let mut white: Vec<Vector2> = vec![*pt];
         let mut black: Vec<Vector2> = vec![];
         
         while let Some(tile) = white.pop() {

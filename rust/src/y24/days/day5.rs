@@ -51,7 +51,7 @@ impl Day<5> for Day5 {
         }).collect_vec();
         let mut rules_map: FxHashMap<usize, Vec<usize>> = Default::default();
         for rule in rules {
-            rules_map.entry(rule.print).or_insert(vec![]);
+            rules_map.entry(rule.print).or_default();
             rules_map.get_mut(&rule.print).unwrap().push(rule.before);
         }
         let mut updates = updates_s.lines().map(|us| {
@@ -66,7 +66,7 @@ impl Day<5> for Day5 {
                         if u.len() < 2 {return false}
                         
                         for (i, item) in u.iter().enumerate() {
-                            if let Some(should_be_before) = rules_map.get(&item) {
+                            if let Some(should_be_before) = rules_map.get(item) {
                                 if let Some(_bad) = u.iter().take(i).find(|c| should_be_before.contains(c)) {
                                     // println!("{} found before {}", _bad, item);
                                     return false
@@ -92,15 +92,13 @@ impl Day<5> for Day5 {
                         for i in 1..u.len() {
                             let item = u[i];
                             if let Some(should_be_before) = rules_map.get(&item) {
-                                let mut bad: Option<usize> = None;
-                                // mut/unmut shenanigans
-                                for j in 0..i {
-                                    if should_be_before.contains(&u[j]) {
-                                        bad = Some(j);
-                                        break;
-                                    }
-                                }
-                                if let Some(badj) = bad {
+                                let option = u.iter().enumerate()
+                                    .take(i)
+                                    .find_map(|(j, c)|
+                                        should_be_before.contains(c)
+                                            .then_some(j)
+                                    );
+                                if let Some(badj) = option {
                                     // println!("{} found before {}", u[badj], item);
                                     reordered = true;
                                     done = false;

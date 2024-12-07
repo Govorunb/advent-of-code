@@ -87,7 +87,7 @@ impl Day4 {
             .cartesian_product(directions) // search all cells around
             .filter(|(pt, &dir)|
                 grid.ray(*pt, dir).skip(1) // skip pt itself
-                    .map(|(p,s)| s)
+                    .map(|(_p,s)| s)
                     .take(tail.len())
                     .eq(tail)
             ).count()

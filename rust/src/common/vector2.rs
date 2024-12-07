@@ -15,11 +15,11 @@ impl Vector2 {
     pub fn down() -> Vector2 { Self { x: 0, y: 1 } }
     pub fn left() -> Vector2 { Self { x: -1, y: 0 } }
     pub fn right() -> Vector2 { Self { x: 1, y: 0 } }
-    pub fn adjacent<'a>(&'a self) -> impl Iterator<Item = Vector2> + 'a {
+    pub fn adjacent(&self) -> impl Iterator<Item = Vector2> + '_ {
         Direction::deltas()
             .map(move |offset| self + offset)
     }
-    pub fn around<'a>(&'a self) -> impl Iterator<Item = Vector2> + 'a {
+    pub fn around(&self) -> impl Iterator<Item = Vector2> + '_ {
         Direction8::deltas()
             .map(move |offset| self + offset)
     }
@@ -29,8 +29,8 @@ impl Vector2 {
     pub fn ray(&self, dir: Vector2) -> impl Iterator<Item = Vector2> {
         let mut curr = *self;
         std::iter::from_fn(move || {
-            let item = curr.clone();
-            curr = curr + dir;
+            let item = curr;
+            curr += dir;
             Some(item)
         })
     }

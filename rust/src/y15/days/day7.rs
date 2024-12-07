@@ -14,6 +14,7 @@ NOT y -> a"; // replaced 'i' with 'a' to be able to test
 pub struct Day7 {}
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 enum Op<'a> {
     STORE(Operand<'a>),
     NOT(Operand<'a>),
@@ -79,7 +80,7 @@ impl Day<7> for Day7 {
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let mut instructions: FxHashMap<&str, Instruction> = lines
-            .map(|l| Instruction::from(l))
+            .map(Instruction::from)
             .map(|i| (i.target, i))
             .collect();
         let mut emulator = Emulator { wires: instructions.clone() };

@@ -89,7 +89,7 @@ impl Day<6> for Day6 {
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid: Grid<Symbol> = Grid::from_str(input).unwrap();
         let guard_cell = grid.cells().find(|(_, s)| matches!(s, Symbol::Guard(_))).unwrap();
-        let _starting_pos = guard_cell.0.clone();
+        let _starting_pos = guard_cell.0;
         let Symbol::Guard(dir) = *guard_cell.1 else {unreachable!()};
         let mut guard = Guard {
             pos: guard_cell.0,
@@ -98,7 +98,7 @@ impl Day<6> for Day6 {
         };
         match part {
             Part::One => {
-                while let Some(_) = Self::step(&mut grid, &mut guard) { }
+                while Self::step(&grid, &mut guard).is_some() { }
                 
                 // let mut visit_grid = grid.clone();
                 // for visited in &guard.visited {
@@ -110,7 +110,7 @@ impl Day<6> for Day6 {
             Part::Two => {
                 let mut route_walker = guard.clone();
 
-                while let Some(_) = Self::step(&mut grid, &mut route_walker) { }
+                while Self::step(&grid, &mut route_walker).is_some() { }
                 
                 for c in route_walker.visited {
                     // if c == _starting_pos {continue}

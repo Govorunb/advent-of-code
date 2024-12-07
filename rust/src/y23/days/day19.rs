@@ -316,7 +316,7 @@ impl Day<19> for Day19 {
             },
             Part::Two => {
                 let ranges = AcceptableRanges {
-                    ranges: [(1..4001), (1..4001), (1..4001), (1..4001)], // no copy...
+                    ranges: [1..4001, 1..4001, 1..4001, 1..4001], // no copy...
                 };
 
                 start.count_combinations(ranges, &workflows)

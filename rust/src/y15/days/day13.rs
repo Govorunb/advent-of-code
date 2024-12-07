@@ -97,7 +97,7 @@ impl Day13 {
         best
     }
     
-    fn search_<'a>(costs: &FxHashMap<(String, String), isize>, unvisited: &HashSet<String, FxBuildHasher>, best: &mut SeatingArrangement, curr_route: Vec<String>, comparer: fn(current_best: isize, cost: isize) -> bool) {
+    fn search_(costs: &FxHashMap<(String, String), isize>, unvisited: &HashSet<String, FxBuildHasher>, best: &mut SeatingArrangement, curr_route: Vec<String>, comparer: fn(current_best: isize, cost: isize) -> bool) {
         for curr in unvisited {
             let mut next_unvisited = unvisited.clone();
             next_unvisited.remove(curr);
@@ -118,7 +118,7 @@ impl Day13 {
         }
     }
 
-    fn route_cost(graph: &FxHashMap<(String, String), isize>, route: &Vec<String>) -> isize {
+    fn route_cost(graph: &FxHashMap<(String, String), isize>, route: &[String]) -> isize {
         // println!("route: {:?}", route);
         let forward: isize = route.iter()
             .circular_tuple_windows().take(route.len()+1)

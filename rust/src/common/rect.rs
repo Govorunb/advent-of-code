@@ -21,7 +21,7 @@ impl Rect {
             return None;
         }
         let base = top_left;
-        let size = (bottom_right - base.clone() + Vector2 {x: 1, y: 1}).try_into().ok()?;
+        let size = (bottom_right - base + Vector2 {x: 1, y: 1}).try_into().ok()?;
         Some(Self { base, size })
     }
     
@@ -30,10 +30,10 @@ impl Rect {
     pub fn size(&self) -> Size { self.size }
     
     pub fn top_left(&self) -> Vector2 {
-        self.base.clone()
+        self.base
     }
     pub fn bottom_right(&self) -> Vector2 {
-        self.base.clone() - Vector2 {x: 1, y: 1} + self.size
+        self.base - Vector2 {x: 1, y: 1} + self.size
     }
     
     pub fn iter(&self) -> RectIter {

@@ -24,7 +24,7 @@ impl Iterator for RectIter {
     fn next(&mut self) -> Option<Self::Item> {
         if self.start.y > self.end.y { return None }
 
-        let item = self.start.clone();
+        let item = self.start;
         self.start.x += 1;
         if self.start.x > self.rect.bottom_right().x {
             self.start.x = self.rect.top_left().x;
@@ -45,7 +45,7 @@ impl DoubleEndedIterator for RectIter {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.start.y > self.end.y { return None }
 
-        let item = self.end.clone();
+        let item = self.end;
         self.end.x -= 1;
         if self.end.x < self.rect.top_left().x {
             self.end.x = self.rect.bottom_right().x;

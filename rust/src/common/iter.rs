@@ -22,7 +22,7 @@ impl<T, I: Iterator<Item = T>> Pick<T> for &mut I {
         let mut count = 0;
         let mut iter = self.enumerate();
         Either::Right(std::iter::from_fn(move || {
-            while let Some((i, item)) = iter.next() {
+            for (i, item) in iter.by_ref() {
                 // already returned all requested
                 if count >= indices.len() {return None}
                 

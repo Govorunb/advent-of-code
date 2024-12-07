@@ -200,7 +200,7 @@ impl<T> Grid<T> {
 
     pub fn cells(&self) -> impl DoubleEndedIterator<Item = (Vector2, &T)> + Clone {
         self.coords()
-            .map(move |pt| (pt.clone(), &self[pt]))
+            .map(move |pt| (pt, &self[pt]))
     }
 
     pub fn cells_mut(&mut self) -> impl DoubleEndedIterator<Item = (Vector2, &mut T)> {
@@ -217,10 +217,10 @@ impl<T> Grid<T> {
     /// Iterates over the grid's items, indexed by a point travelling from start in the given direction.
     /// The iterator is fused and will produce only `None` when the point goes outside the bounds of the grid. 
     pub fn ray(&self, start: Vector2, dir: Vector2) -> impl Iterator<Item = (Vector2, &T)> {
-        let mut curr = start.clone();
+        let mut curr = start;
         std::iter::from_fn(move || {
             let item = self.get(&curr).map(|e| (curr, e));
-            curr = curr + dir;
+            curr += dir;
             item
         }).fuse() // already behaves like fused but w/e
     }

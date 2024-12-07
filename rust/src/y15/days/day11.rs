@@ -10,7 +10,7 @@ impl Day<11> for Day11 {
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let starting_pass: &[u8;8] = input.as_bytes().try_into().unwrap();
         
-        let mut pass = starting_pass.into();
+        let mut pass = Vec::from(starting_pass);
         // do while
         loop {
             Self::increment(&mut pass);
@@ -60,7 +60,7 @@ impl Day11 {
     
     pub fn new() -> Self { Self {} }
     
-    fn increment(x: &mut Vec<u8>) {
+    fn increment(x: &mut [u8]) {
         let mut i = x.len()-1;
         x[i] += 1;
         while x[i] > Self::Z {
@@ -74,23 +74,21 @@ impl Day11 {
         Self::rule1(x) && Self::rule2(x) && Self::rule3(x)
     }
     
-    fn rule1(x: &Vec<u8>) -> bool {
+    fn rule1(x: &[u8]) -> bool {
         x.iter().tuple_windows().any(|(&a, &b, &c)| b == a+1 && c == a+2)
     }
     
-    fn rule2(x: &Vec<u8>) -> bool {
+    fn rule2(x: &[u8]) -> bool {
         x.iter().all(|&c| c != Self::I && c != Self::L && c != Self::O)
     }
-    fn rule3(x: &Vec<u8>) -> bool {
+    fn rule3(x: &[u8]) -> bool {
         let mut doubles = 0;
         let mut last_double: Option<(u8, usize)> = None;
         for i in 0..x.len()-1 {
             let c = x[i];
-            if x[i+1] == c {
-                if last_double.is_none_or(|(d, pos)| d != c && pos+1 < i) {
-                    doubles += 1;
-                    last_double = Some((c, i));
-                }
+            if x[i+1] == c && last_double.is_none_or(|(d, pos)| d != c && pos+1 < i) {
+                doubles += 1;
+                last_double = Some((c, i));
             }
         }
         

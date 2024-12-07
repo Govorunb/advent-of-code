@@ -110,7 +110,7 @@ impl Day9 {
         tour
     }
     
-    fn tsp_<'a>(costs: &FxHashMap<(String, String), usize>, unvisited: &FxHashSet<String>, best: &mut Tour, curr_route: Vec<String>, target: &String, check: fn(item: usize, cost: usize) -> bool) {
+    fn tsp_(costs: &FxHashMap<(String, String), usize>, unvisited: &FxHashSet<String>, best: &mut Tour, curr_route: Vec<String>, target: &String, check: fn(item: usize, cost: usize) -> bool) {
         for curr_city in unvisited {
             let mut next_unvisited = unvisited.clone();
             next_unvisited.remove(curr_city);
@@ -133,7 +133,7 @@ impl Day9 {
         }
     }
     
-    fn route_cost(graph: &FxHashMap<(String, String), usize>, route: &Vec<String>) -> usize {
+    fn route_cost(graph: &FxHashMap<(String, String), usize>, route: &[String]) -> usize {
         // println!("route: {:?}", route);
         route.iter()
             .tuple_windows()
