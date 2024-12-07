@@ -85,8 +85,9 @@ impl Day4 {
         grid.coords()
             .filter(|pt| grid[pt] == head) // e.g. "ABCD" can only start from 'A'
             .cartesian_product(directions) // search all cells around
-            .filter(|(pt, dir)|
-                grid.ray(&pt, dir).skip(1) // skip pt itself
+            .filter(|(pt, &dir)|
+                grid.ray(*pt, dir).skip(1) // skip pt itself
+                    .map(|(p,s)| s)
                     .take(tail.len())
                     .eq(tail)
             ).count()

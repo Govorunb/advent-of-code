@@ -215,12 +215,12 @@ impl<T> Grid<T> {
     }
 
     /// Iterates over the grid's items, indexed by a point travelling from start in the given direction.
-    /// The iterator is fused and will only produce `None` when the point goes outside the bounds of the grid. 
-    pub fn ray<'a>(&'a self, start: &Vector2, dir: &'a Vector2) -> impl Iterator<Item = &'a T> {
+    /// The iterator is fused and will produce only `None` when the point goes outside the bounds of the grid. 
+    pub fn ray(&self, start: Vector2, dir: Vector2) -> impl Iterator<Item = (Vector2, &T)> {
         let mut curr = start.clone();
         std::iter::from_fn(move || {
-            let item = self.get(&curr);
-            curr = &curr + dir;
+            let item = self.get(&curr).map(|e| (curr, e));
+            curr = curr + dir;
             item
         }).fuse() // already behaves like fused but w/e
     }
