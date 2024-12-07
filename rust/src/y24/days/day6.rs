@@ -186,12 +186,14 @@ impl Day6 {
     
     fn step(grid: &Grid<Symbol>, guard: &mut Guard) -> Option<TurnAtProp> {
         // move forward until out of bounds/hit a prop
-        grid.ray(guard.pos, guard.dir.move_delta())
+        // possible (micro?)optimization: precompute a coordinate map of all props (like the sparse galaxies grid from y23d11)
+        // then just check the row/column once and move there
+        grid.ray(guard.pos, guard.dir.into())
             .find_map(|(p, s)| {
                 match s {
                     Symbol::Prop => {
                         let turn = TurnAtProp { pos: p, dir: guard.dir };
-                        guard.pos = p - guard.dir.move_delta();
+                        guard.pos = p - guard.dir;
                         guard.dir = guard.dir.turn(Turn::Right);
                         Some(turn)
                     },

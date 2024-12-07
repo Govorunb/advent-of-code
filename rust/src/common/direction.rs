@@ -2,6 +2,7 @@ use std::iter::Rev;
 use std::ops::Neg;
 use std::slice::Iter;
 use std::sync::LazyLock;
+use itertools::Either;
 use crate::Vector2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
@@ -34,57 +35,29 @@ pub enum Turn {
 
 static AROUND: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-        Vector2 {x:-1, y:-1}, Vector2 {x:0,y:-1}, Vector2 {x:1,y:-1},
-        Vector2 {x:-1, y: 0},                     Vector2 {x:1,y: 0},
-        Vector2 {x:-1, y: 1}, Vector2 {x:0,y: 1}, Vector2 {x:1,y: 1},
+        Vector2 {x:-1,y:-1}, Vector2 {x: 0,y:-1}, Vector2 {x: 1,y:-1},
+        Vector2 {x:-1,y: 0},                      Vector2 {x: 1,y: 0},
+        Vector2 {x:-1,y: 1}, Vector2 {x: 0,y: 1}, Vector2 {x: 1,y: 1},
     ]
 );
 
 static ADJACENT: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-                              Vector2 {x:0,y:-1},
-        Vector2 {x:-1, y: 0},                     Vector2 {x:1,y: 0},
-                              Vector2 {x:0,y: 1},
+                             Vector2 {x: 0,y:-1},
+        Vector2 {x:-1,y: 0},                      Vector2 {x: 1,y: 0},
+                             Vector2 {x: 0,y: 1},
     ]
 );
 
 static CORNERS: LazyLock<Vec<Vector2>> = LazyLock::new(||
     vec![
-        Vector2 {x:-1, y:-1},                     Vector2 {x:1,y:-1},
+        Vector2 {x:-1,y:-1},                      Vector2 {x: 1,y:-1},
 
-        Vector2 {x:-1, y: 1},                     Vector2 {x:1,y: 1},
+        Vector2 {x:-1,y: 1},                      Vector2 {x: 1,y: 1},
     ]
 );
 
 impl Direction {
-    pub fn from_delta(delta: &Vector2) -> Self {
-        match (delta.x, delta.y) {
-            (0, -1) => Self::North,
-            (0, 1) => Self::South,
-            (1, 0) => Self::East,
-            (-1, 0) => Self::West,
-            _ => unreachable!()
-        }
-    }
-
-    pub fn move_delta(&self) -> Vector2 {
-        match self {
-            Self::North => Vector2 {x: 0, y:-1},
-            Self::South => Vector2 {x: 0, y: 1},
-            Self::East  => Vector2 {x: 1, y: 0},
-            Self::West  => Vector2 {x:-1, y: 0},
-        }
-    }
-
-    pub fn move_(&self, x: usize, y: usize) -> Option<(usize, usize)> {
-        match self {
-            Self::North => if y > 0 { Some((x, y - 1)) } else { None },
-            Self::South => Some((x, y + 1)),
-            Self::East  => Some((x + 1, y)),
-            Self::West  => if x > 0 { Some((x - 1, y)) } else { None },
-        }
-    }
-
     pub fn opp(&self) -> Self {
         match self {
             Self::North => Self::South,
@@ -93,7 +66,6 @@ impl Direction {
             Self::West => Self::East,
         }
     }
-
     
     pub fn cw(&self) -> Self {
         match self {
@@ -135,51 +107,17 @@ impl Direction {
 }
 
 impl Direction8 {
-    pub fn from_delta(pt: Vector2) -> Self {
-        match (pt.x, pt.y) {
-            (-1, -1) => Self::NorthWest,
-            (0, -1) => Self::North,
-            (1, -1) => Self::NorthEast,
-            
-            (-1, 0) => Self::West,
-            // center
-            (1, 0) => Self::East,
-            
-            (-1, 1) => Self::SouthWest,
-            (0, 1) => Self::South,
-            (1, 1) => Self::SouthEast,
-            _ => unreachable!(),
-        }
-    }
-    
-    pub fn delta(&self) -> Vector2 {
-        match self {
-            Self::NorthWest => Vector2 {x: -1, y: -1},
-            Self::North => Vector2 {x: 0, y: -1},
-            Self::NorthEast => Vector2 {x: 1, y: -1},
-            
-            Self::West => Vector2 {x: -1, y: 0},
-            // center
-            Self::East => Vector2 {x: 1, y: 0},
-            
-            Self::SouthWest => Vector2 {x: 0, y: 1},
-            Self::South => Vector2 {x: 0, y: 1},
-            Self::SouthEast => Vector2 {x: 1, y: 0},
-        }
-    }
-
     pub fn opp(&self) -> Direction8 {
         match self {
-            Self::NorthWest => Direction8::SouthEast,
             Self::North => Self::South,
-            Self::NorthEast => Direction8::SouthWest,
-            
             Self::West => Self::East,
             Self::East => Self::West,
-            
-            Self::SouthWest => Direction8::NorthEast,
             Self::South => Self::North,
-            Self::SouthEast => Direction8::NorthWest,
+            
+            Self::NorthWest => Self::SouthEast,
+            Self::NorthEast => Self::SouthWest,
+            Self::SouthWest => Self::NorthEast,
+            Self::SouthEast => Self::NorthWest,
         }
     }
     
@@ -214,6 +152,7 @@ impl Neg for Direction {
 
 impl Turn {
     pub fn from_corner(from: Direction, to: Direction) -> Self {
+        // just hoping this compiles to a LUT
         match (from, to) {
             (Direction::North, Direction::North) => Self::None,
             (Direction::South, Direction::South) => Self::None,
@@ -236,6 +175,51 @@ impl Turn {
             
             (Direction::North, Direction::West) => Self::Right,
             (Direction::West, Direction::North) => Self::Left,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct CenterNoDirection;
+#[derive(Debug)]
+pub struct DirectionNotCardinal;
+impl TryFrom<Vector2> for Direction {
+    type Error = Either<CenterNoDirection, DirectionNotCardinal>;
+
+    fn try_from(pt: Vector2) -> Result<Self, Self::Error> {
+        let x = pt.x.signum();
+        let y = pt.y.signum();
+        match (x, y) {
+            ( 0,-1) => Ok(Self::North),
+            ( 0, 1) => Ok(Self::South),
+            (-1, 0) => Ok(Self::West),
+            ( 1, 0) => Ok(Self::East),
+            
+            ( 0, 0) => Err(Either::Left(CenterNoDirection)),
+            _ => Err(Either::Right(DirectionNotCardinal)),
+        }
+    }
+}
+impl TryFrom<Vector2> for Direction8 {
+    type Error = CenterNoDirection;
+
+    fn try_from(pt: Vector2) -> Result<Self, Self::Error> {
+        let x = pt.x.signum();
+        let y = pt.y.signum();
+        match (x, y) {
+            (-1, -1) => Ok(Self::NorthWest),
+            ( 0, -1) => Ok(Self::North),
+            ( 1, -1) => Ok(Self::NorthEast),
+
+            (-1,  0) => Ok(Self::West),
+            ( 0,  0) => Err(CenterNoDirection),
+            ( 1,  0) => Ok(Self::East),
+
+            (-1,  1) => Ok(Self::SouthWest),
+            ( 0,  1) => Ok(Self::South),
+            ( 1,  1) => Ok(Self::SouthEast),
+            
+            _ => unreachable!(),
         }
     }
 }

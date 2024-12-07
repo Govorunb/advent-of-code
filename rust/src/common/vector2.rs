@@ -26,11 +26,11 @@ impl Vector2 {
     
     /// Returns an iterator that moves in the given direction each step.<br/>
     /// Note: this iterator **does not terminate**.
-    pub fn ray<'a>(&self, dir: &'a Vector2) -> impl Iterator<Item = Vector2> + 'a {
-        let mut curr = self.clone();
+    pub fn ray(&self, dir: Vector2) -> impl Iterator<Item = Vector2> {
+        let mut curr = *self;
         std::iter::from_fn(move || {
             let item = curr.clone();
-            curr = &curr + dir;
+            curr = curr + dir;
             Some(item)
         })
     }
@@ -47,12 +47,38 @@ impl From<(usize, usize)> for Vector2 {
         Self { x: x as isize, y: y as isize }
     }
 }
+impl From<Direction> for Vector2 {
+    fn from(dir: Direction) -> Self {
+        match dir {
+            Direction::North => Vector2 {x: 0, y:-1},
+            Direction::South => Vector2 {x: 0, y: 1},
+            Direction::East  => Vector2 {x: 1, y: 0},
+            Direction::West  => Vector2 {x:-1, y: 0},
+        }
+    }
+}
+
+impl From<Direction8> for Vector2 {
+    fn from(dir: Direction8) -> Self {
+        match dir {
+            Direction8::North => Vector2 {x: 0, y: -1},
+            Direction8::South => Vector2 {x: 0, y:  1},
+            Direction8::West  => Vector2 {x:-1, y:  0},
+            Direction8::East  => Vector2 {x: 1, y:  0},
+            Direction8::NorthWest => Vector2 {x:-1, y: -1},
+            Direction8::NorthEast => Vector2 {x: 1, y: -1},
+            Direction8::SouthWest => Vector2 {x: 0, y:  1},
+            Direction8::SouthEast => Vector2 {x: 1, y:  0},
+        }
+    }
+}
 
 impl From<Vector2> for (isize, isize) {
     fn from(pt: Vector2) -> Self {
         (pt.x, pt.y)
     }
 }
+
 
 impl TryFrom<Vector2> for Size {
     type Error = ();
@@ -68,27 +94,9 @@ impl TryFrom<Vector2> for Size {
     }
 }
 
-impl Sub for &Vector2 {
-    type Output = Vector2;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Vector2 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
-    }
-}
-
-impl Add for &Vector2 {
-    type Output = Vector2;
-    
-    fn add(self, rhs: Self) -> Self::Output {
-        Vector2 {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-        }
-    }
-}
+impl Add for &Vector2 { type Output = Vector2; fn add(self, rhs: Self) -> Self::Output { *self + *rhs } }
+impl Sub for &Vector2 { type Output = Vector2; fn sub(self, rhs: Self) -> Self::Output { *self - *rhs } }
+impl Neg for &Vector2 { type Output = Vector2; fn neg(self) -> Self::Output { -*self } }
 
 impl Add<Size> for Vector2 {
     type Output = Vector2;
@@ -101,9 +109,11 @@ impl Add<Size> for Vector2 {
     }
 }
 
-impl Neg for &Vector2 {
-    type Output = Vector2;
-    fn neg(self) -> Self::Output {
-        Vector2 {x: -self.x, y: -self.y}
-    }
-}
+impl Add<Direction> for Vector2 { type Output = Self; fn add(self, rhs: Direction) -> Self::Output { self + Self::from(rhs) } }
+impl Sub<Direction> for Vector2 { type Output = Self; fn sub(self, rhs: Direction) -> Self::Output { self - Self::from(rhs) } }
+impl Add<Direction8> for Vector2 { type Output = Self; fn add(self, rhs: Direction8) -> Self::Output { self + Self::from(rhs) } }
+impl Sub<Direction8> for Vector2 { type Output = Self; fn sub(self, rhs: Direction8) -> Self::Output { self - Self::from(rhs) } }
+impl std::ops::AddAssign<Direction> for Vector2 { fn add_assign(&mut self, rhs: Direction) { *self += Self::from(rhs) } }
+impl std::ops::SubAssign<Direction> for Vector2 { fn sub_assign(&mut self, rhs: Direction) { *self -= Self::from(rhs) } }
+impl std::ops::AddAssign<Direction8> for Vector2 { fn add_assign(&mut self, rhs: Direction8) { *self += Self::from(rhs) } }
+impl std::ops::SubAssign<Direction8> for Vector2 { fn sub_assign(&mut self, rhs: Direction8) { *self -= Self::from(rhs) } }

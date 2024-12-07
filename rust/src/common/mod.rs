@@ -3,6 +3,7 @@ mod direction; pub use direction::*;
 mod rect_iter; pub use rect_iter::*;
 mod vector2; pub use vector2::*;
 mod rect; pub use rect::*;
+mod iter; pub use iter::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};

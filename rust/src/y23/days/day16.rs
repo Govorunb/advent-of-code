@@ -173,7 +173,7 @@ impl Contraption {
                 *cell_energized |= mask;
 
                 // move
-                let moved = beam.coords + beam.dir.move_delta();
+                let moved = beam.coords + beam.dir;
                 if !self.grid.bounds().contains(&moved) {return false}
                 beam.coords = moved;
                 

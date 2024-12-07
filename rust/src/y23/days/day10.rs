@@ -176,7 +176,7 @@ impl PipeGrid {
         // infer what pipe under animal is from what it's connected to
         let mut first_pipe = None;
         for dir in Direction::all_clockwise() {
-            let moved = self.animal + dir.move_delta();
+            let moved = self.animal + *dir;
             if let Some(Symbol::Pipe(p)) = self.tiles.get(&moved) {
                 if p.is_connected(dir.opp()) {
                     match first_pipe {
@@ -197,7 +197,7 @@ impl PipeGrid {
                 symbol: Symbol::Pipe(*p),
             });
             dir = p.traverse(dir);
-            pt += dir.move_delta();
+            pt += dir;
             dir = dir.opp();
             curr_tile = self.tiles.get(&pt);
         }
@@ -211,7 +211,7 @@ impl PipeGrid {
         
         let mut turns = 0;
         let delta = self.animal - self.pipes[0].coords;
-        let mut dir = Direction::from_delta(&delta);
+        let mut dir = delta.try_into().unwrap();
         for pipe_tile in self.pipes.as_slice() {
             let pipe = match pipe_tile.symbol {
                 Symbol::Pipe(pipe) => pipe,
@@ -228,16 +228,13 @@ impl PipeGrid {
             let pt = pipe_tile.coords;
             
             if turn == Turn::None {
-                let cw = pt + new_dir.cw().move_delta();
-                let ccw = pt + new_dir.ccw().move_delta();
-                if self.tiles.flat_index(&cw).is_some()
-                    && !self.pipes.iter().any(|&p_| p_.coords == cw) {
-                    partition_r.extend(self.flood_fill(&cw, &partition_r));
-                }
-
-                if self.tiles.flat_index(&ccw).is_some()
-                    && !self.pipes.iter().any(|&p_| p_.coords == ccw) {
-                    partition_l.extend(self.flood_fill(&ccw, &partition_l));
+                let cw = pt + new_dir.cw();
+                let ccw = pt + new_dir.ccw();
+                for (p, par) in [(cw, &mut partition_r), (ccw, &mut partition_l)] {
+                    if self.tiles.flat_index(&p).is_some()
+                        && !self.pipes.iter().any(|&p_| p_.coords == p) {
+                        par.extend(self.flood_fill(&cw, &par));
+                    }
                 }
             } else {
                 let dir_past = dir.opp();
@@ -246,17 +243,14 @@ impl PipeGrid {
                 let outside_is_l = turn == Turn::Right;
                 let partition = if outside_is_l { &mut partition_l } else { &mut partition_r };
 
-                let past = pt + dir_past.move_delta();
-                let behind = pt + dir_behind.move_delta();
-                if self.tiles.flat_index(&past).is_some()
-                    && !self.pipes.iter().any(|&p_| p_.coords == past)
-                    && self.animal != past {
-                    partition.extend(self.flood_fill(&past, partition));
-                }
-                if self.tiles.flat_index(&behind).is_some()
-                    && !self.pipes.iter().any(|&p_| p_.coords == behind)
-                    && self.animal != behind {
-                    partition.extend(self.flood_fill(&behind, partition));
+                let past = pt + dir_past;
+                let behind = pt + dir_behind;
+                for p in [past, behind] {
+                    if self.tiles.bounds().contains(&p)
+                        && !self.pipes.iter().any(|&p_| p_.coords == p)
+                        && self.animal != p {
+                        partition.extend(self.flood_fill(&p, partition));
+                    }
                 }
             }
 

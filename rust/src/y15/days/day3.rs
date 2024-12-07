@@ -22,7 +22,7 @@ impl Walkers {
 
     pub fn move_head(&mut self, head: usize, dir: Direction) {
         let head_ref = self.heads.get_mut(head).unwrap();
-        *head_ref += dir.move_delta();
+        *head_ref += dir;
         self.walked.insert(*head_ref);
     }
 }

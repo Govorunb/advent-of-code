@@ -54,24 +54,10 @@ impl Day10 {
     }
     
     fn rle(s: String) -> String {
-        let mut out = String::new();
-        let mut curr_c: char = Default::default();
-        let mut curr_count: usize = 0;
-        for c in s.chars() {
-            if c == curr_c {
-                curr_count += 1;
-            } else {
-                if curr_count > 0 {
-                    out.extend(curr_count.to_string().chars());
-                    out.push(curr_c);
-                }
-                curr_c = c;
-                curr_count = 1;
-            }
-        }
-        out.extend(curr_count.to_string().chars());
-        out.push(curr_c);
-        
-        out
+        String::from_iter(
+            s.chars()
+                .rle()
+                .map(|(c, count)| format!("{count}{c}"))
+        )
     }
 }

@@ -4,6 +4,7 @@
 #![feature(is_none_or)]
 #![feature(ascii_char_variants)]
 #![feature(let_chains)]
+#![feature(is_sorted)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common;
