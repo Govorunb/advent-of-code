@@ -15,37 +15,37 @@ pub struct Day7 {}
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
-enum Op<'a> {
-    STORE(Operand<'a>),
-    NOT(Operand<'a>),
-    AND(Operand<'a>, Operand<'a>),
-    OR(Operand<'a>, Operand<'a>),
-    LSHIFT(Operand<'a>, Operand<'a>),
-    RSHIFT(Operand<'a>, Operand<'a>),
+enum Op {
+    STORE(Operand),
+    NOT(Operand),
+    AND(Operand, Operand),
+    OR(Operand, Operand),
+    LSHIFT(Operand, Operand),
+    RSHIFT(Operand, Operand),
 }
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
-enum Operand<'a> {
+enum Operand {
     Numeric(u16),
-    Wire(&'a str),
+    Wire(String),
 }
 
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq)]
-struct Instruction<'a> {
-    op: Op<'a>,
-    target: &'a str,
+struct Instruction {
+    op: Op,
+    target: String,
 }
 
-struct Emulator<'a> {
-    wires: FxHashMap<&'a str, Instruction<'a>>,
+struct Emulator {
+    wires: FxHashMap<String, Instruction>,
 }
 
-impl<'a> Emulator<'a> {
-    pub fn get_operand(&mut self, operand: Operand<'a>) -> u16 {
+impl Emulator {
+    pub fn get_operand(&mut self, operand: Operand) -> u16 {
         match operand {
             Operand::Numeric(num) => num,
             Operand::Wire(wire) => {
-                let instruction = self.wires.get(wire).unwrap();
+                let instruction = self.wires.get(&wire).unwrap();
                 let val = match instruction.op.clone() {
                     Op::STORE(val) => self.get_operand(val),
                     Op::NOT(operand) => !self.get_operand(operand),
@@ -54,7 +54,7 @@ impl<'a> Emulator<'a> {
                     Op::LSHIFT(lhs, rhs) => self.get_operand(lhs) << self.get_operand(rhs),
                     Op::RSHIFT(lhs, rhs) => self.get_operand(lhs) >> self.get_operand(rhs),
                 };
-                self.wires.insert(wire, Instruction {
+                self.wires.insert(wire.clone(), Instruction {
                     op: Op::STORE(Operand::Numeric(val)),
                     target: wire,
                 });
@@ -64,9 +64,9 @@ impl<'a> Emulator<'a> {
     }
 }
 
-impl<'a> Operand<'a> {
-    pub fn from(s: &'a str) -> Self {
-        if let Ok(num) = s.parse::<u16>() {
+impl Operand {
+    pub fn from(s: String) -> Self {
+        if let Ok(num) = s.parse() {
             Operand::Numeric(num)
         } else {
             Operand::Wire(s)
@@ -79,23 +79,23 @@ impl Day<7> for Day7 {
     const INPUT: &'static str = include_str!("../Input/day7.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
-        let mut instructions: FxHashMap<&str, Instruction> = lines
+        let mut instructions: FxHashMap<String, Instruction> = lines
             .map(Instruction::from)
-            .map(|i| (i.target, i))
+            .map(|i| (i.clone().target, i))
             .collect();
         let mut emulator = Emulator { wires: instructions.clone() };
-        let a_signal = emulator.get_operand(Operand::Wire("a"));
+        let a_signal = emulator.get_operand(Operand::Wire("a".to_string()));
         match part {
             Part::One => {
                 a_signal
             }
             Part::Two => {
-                instructions.insert("b", Instruction {
+                instructions.insert("b".to_string(), Instruction {
                     op: Op::STORE(Operand::Numeric(a_signal)),
-                    target: "b"
+                    target: "b".to_string()
                 });
                 emulator = Emulator { wires: instructions };
-                emulator.get_operand(Operand::Wire("a"))
+                emulator.get_operand(Operand::Wire("a".to_string()))
             }
         }
     }
@@ -127,17 +127,17 @@ impl Day7 {
 }
 
 static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<lhs>(?<store>\\w+)|NOT (?<not>\\w+)|(?<op1>\\w+) (?<op>AND|OR|[LR]SHIFT) (?<op2>\\w+)) -> (?<rhs>\\w+)").unwrap());
-impl<'a> From<&'a str> for Instruction<'a> {
-    fn from(line: &'a str) -> Self {
+impl From<&str> for Instruction {
+    fn from(line: &str) -> Self {
         let captures = REGEX.captures(line).unwrap();
-        let target = captures.name("rhs").unwrap().as_str();
+        let target = captures.string("rhs");
         let op: Op = if let Some(store) = captures.name("store").map(|m| m.as_str()) {
-            Op::STORE(Operand::from(store))
+            Op::STORE(Operand::from(store.to_string()))
         } else if let Some(not) = captures.name("not").map(|m| m.as_str()) {
-            Op::NOT(Operand::from(not))
+            Op::NOT(Operand::from(not.to_string()))
         } else if let Some(binary) = captures.name("op").map(|m| m.as_str()) {
-            let operand1 = Operand::from(captures.name("op1").unwrap().as_str());
-            let operand2 = Operand::from(captures.name("op2").unwrap().as_str());
+            let operand1 = Operand::from(captures.parse("op1"));
+            let operand2 = Operand::from(captures.parse("op2"));
             match binary {
                 "AND" => Op::AND(operand1, operand2),
                 "OR" => Op::OR(operand1, operand2),

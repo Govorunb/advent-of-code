@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::str::FromStr;
 use itertools::Either;
 use crate::*;
@@ -81,39 +82,38 @@ impl Day8 {
         }
     }
     
-    fn find_antennas(grid: &Grid<Symbol>) -> Vec<Antenna> {
+    fn find_antennas(grid: &Grid<Symbol>) -> HashMap<char, Vec<Antenna>> {
         grid.cells()
             .filter_map(|(pt, &c)| {
                 if let Symbol::Antenna(freq) = c {
                     Some(Antenna { pos: pt, freq })
                 } else {None}
             })
-            .collect_vec()
+            .into_group_map_by(|a| a.freq)
     }
     
-    fn place_antinodes(grid: &Grid<Symbol>, antennas: &[Antenna], part: Part) -> FxHashSet<Vector2> {
+    fn place_antinodes(grid: &Grid<Symbol>, antennas_map: &HashMap<char, Vec<Antenna>>, part: Part) -> FxHashSet<Vector2> {
         let mut result = FxHashSet::default();
-        for (a1, a2) in antennas.iter().cartesian_product(antennas.iter()) {
-            if a1.freq != a2.freq {continue}
+        for (a1, a2) in antennas_map.iter()
+            .flat_map(|(_freq, antennas)| antennas.iter().cartesian_product(antennas.iter()))
+        {
             if a1.pos == a2.pos {continue}
             
             let distance = a2.pos - a1.pos;
-            
             let bounds = grid.bounds();
-            let rays_thing = [(a2.pos, distance), (a1.pos, -distance)];
-            let rays = rays_thing.iter()
-                .map(|(pt, step)| pt.ray(*step).take_while(|x| bounds.contains(x)))
-                .map(|ray| {
-                    match part {
-                        // part one - one pair of antinodes, located `distance` away from each antenna
-                        Part::One => Either::Left(ray.skip(1).take(1)),
-                        // part two - at all points along the line that are multiples of `distance` away (even 0)
-                        Part::Two => Either::Right(ray),
-                    }
-                });
+            let rays_data = [(a2.pos, distance), (a1.pos, -distance)];
+            
+            let rays = rays_data.map(|(start, step)| 
+                start.ray(step).take_while(|p| bounds.contains(p))
+            );
             
             for ray in rays {
-                result.extend(ray);
+                match part {
+                    // one pair of antinodes, located `distance` away from each antenna
+                    Part::One => result.extend(ray.skip(1).take(1)),
+                    // at all points along the line that are multiples of `distance` away (even 0)
+                    Part::Two => result.extend(ray),
+                }
             }
         }
         

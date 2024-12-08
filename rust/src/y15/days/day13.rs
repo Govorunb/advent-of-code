@@ -29,10 +29,10 @@ impl Day<13> for Day13 {
         let mut names: FxHashSet<String> = Default::default();
         let mut rules: FxHashMap<(String, String), isize> = regex.captures_iter(input)
             .map(|c| {
-                let edge = (c.name("name").unwrap().as_str().to_string(), c.name("other").unwrap().as_str().to_string());
+                let edge = (c.string("name"), c.string("other"));
                 names.insert(edge.0.clone());
-                let mut amt = c.name("amt").unwrap().as_str().parse::<isize>().unwrap();
-                if "lose" == c.name("sign").unwrap().as_str() {
+                let mut amt = c.isize("amt");
+                if "lose" == c.str("sign") {
                     amt = -amt;
                 }
                 (edge, amt)

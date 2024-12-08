@@ -24,13 +24,13 @@ impl Vector2 {
             .map(move |offset| self + offset)
     }
     
-    /// Returns an iterator that moves in the given direction each step.<br/>
+    /// Returns an iterator that moves the given `step` each iteration.<br/>
     /// Note: this iterator **does not terminate**.
-    pub fn ray(&self, dir: Vector2) -> impl Iterator<Item = Vector2> {
+    pub fn ray(&self, step: Vector2) -> impl Iterator<Item = Vector2> {
         let mut curr = *self;
         std::iter::from_fn(move || {
             let item = curr;
-            curr += dir;
+            curr += step;
             Some(item)
         })
     }

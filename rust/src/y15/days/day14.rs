@@ -53,11 +53,12 @@ impl Day<14> for Day14 {
         let regex = Regex::new(r#"(?<name>\w+) can fly (?<speed>\d+) km/s for (?<active>\d+) seconds, but then must rest for (?<rest>\d+) seconds."#).unwrap();
         let racers = regex.captures_iter(input)
             .map(|c| {
-                let name = c.string("name");
-                let speed = c.usize("speed");
-                let active = c.usize("active");
-                let rest = c.usize("rest");
-                Reindeer { name, speed, active, rest }
+                Reindeer {
+                    name: c.parse("name"),
+                    speed: c.parse("speed"),
+                    active: c.parse("active"),
+                    rest: c.parse("rest")
+                }
             }).collect_vec();
         // example/input have different time values, this is for tests
         let time = if racers.len() == 2 {1000} else {2503};

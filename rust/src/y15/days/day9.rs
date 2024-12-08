@@ -18,9 +18,9 @@ impl Day<9> for Day9 {
         let mut cities: FxHashSet<String> = FxHashSet::default();
         let regex: Regex = Regex::new(r#"(?<from>\w+) to (?<to>\w+) = (?<dist>\d+)"#).unwrap();
         for cap in regex.captures_iter(input) {
-            let from = cap.name("from").unwrap().as_str().to_string();
-            let to = cap.name("to").unwrap().as_str().to_string();
-            let dist = cap.name("dist").unwrap().as_str().parse().unwrap();
+            let from: String = cap.parse("from");
+            let to: String = cap.parse("to");
+            let dist = cap.parse("dist");
             cities.insert(from.clone());
             cities.insert(to.clone());
             edges.insert((from.clone(), to.clone()), dist);

@@ -74,7 +74,7 @@ impl Day6 {
     }
 }
 
-static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<type>turn on|turn off|toggle) (?<c1>\\d+,\\d+) through (?<c2>\\d+,\\d+)").unwrap());
+static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<type>turn on|turn off|toggle) (?<c1x>\\d+),(?<c1y>\\d+) through (?<c2x>\\d+),(?<c2y>\\d+)").unwrap());
 impl Instruction {
     pub fn parse(line: &str) -> Self {
         let m = REGEX.captures(line).unwrap();
@@ -85,12 +85,8 @@ impl Instruction {
             8 => InstructionType::Off,
             _ => unreachable!()
         };
-        let c1 = m.name("c1").unwrap().as_str()
-            .split_once(',').unwrap();
-        let c2 = m.name("c2").unwrap().as_str()
-            .split_once(',').unwrap();
-        let tl = (c1.0.parse::<isize>().unwrap(), c1.1.parse::<isize>().unwrap()).into();
-        let br = (c2.0.parse::<isize>().unwrap(), c2.1.parse::<isize>().unwrap()).into();
+        let tl = (m.usize("c1x"), m.usize("c1y")).into();
+        let br = (m.usize("c2x"), m.usize("c2y")).into();
         Instruction {
             itype,
             rect: Rect::from_corners(tl, br).unwrap()

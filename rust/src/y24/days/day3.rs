@@ -60,7 +60,6 @@ impl Day3 {
     }
 
     fn mul(c: Captures) -> usize {
-        c.name("num1").unwrap().as_str().parse::<usize>().unwrap()
-        * c.name("num2").unwrap().as_str().parse::<usize>().unwrap()
+        c.usize("num1") * c.usize("num2")
     }
 }
