@@ -53,10 +53,10 @@ impl Day<14> for Day14 {
         let regex = Regex::new(r#"(?<name>\w+) can fly (?<speed>\d+) km/s for (?<active>\d+) seconds, but then must rest for (?<rest>\d+) seconds."#).unwrap();
         let racers = regex.captures_iter(input)
             .map(|c| {
-                let name = c.name("name").unwrap().as_str().to_string();
-                let speed = c.name("speed").unwrap().as_str().parse::<usize>().unwrap();
-                let active = c.name("active").unwrap().as_str().parse::<usize>().unwrap();
-                let rest = c.name("rest").unwrap().as_str().parse::<usize>().unwrap();
+                let name = c.string("name");
+                let speed = c.usize("speed");
+                let active = c.usize("active");
+                let rest = c.usize("rest");
                 Reindeer { name, speed, active, rest }
             }).collect_vec();
         // example/input have different time values, this is for tests
@@ -72,7 +72,7 @@ impl Day<14> for Day14 {
                 let mut positions = vec![0; racers.len()];
                 let mut scores = vec![0usize; racers.len()];
                 for t in 0..time {
-                    println!("=== t={} ===", t+1);
+                    // println!("=== t={} ===", t+1);
                     for (i, r) in racers.iter().enumerate() {
                         // life lesson: never try to be clever
                         positions[i] = r.total_distance(t+1).0;
@@ -84,13 +84,13 @@ impl Day<14> for Day14 {
                         //     println!("{} is resting ({}s left)", r.name, r.cycle_time() - time_in_cycle);
                         // }
                     }
-                    println!("{positions:?}");
+                    // println!("{positions:?}");
                     let highest = positions.iter().max().unwrap();
                     for (i, _) in positions.iter().enumerate().filter(|(i, &p)| p == *highest) {
-                        println!("{} is leading with {highest}", racers[i].name);
+                        // println!("{} is leading with {highest}", racers[i].name);
                         scores[i] += 1;
                     }
-                    println!("scores: {scores:?}\n");
+                    // println!("scores: {scores:?}\n");
                 }
                 
                 *scores.iter().max().unwrap()

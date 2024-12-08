@@ -4,6 +4,7 @@ mod rect_iter; pub use rect_iter::*;
 mod vector2; pub use vector2::*;
 mod rect; pub use rect::*;
 mod iter; pub use iter::*;
+mod parsing; pub use parsing::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};
