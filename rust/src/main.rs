@@ -14,7 +14,7 @@ mod y24;
 pub use common::*;
 
 fn main() {
-    let day = y24::days::Day7::new();
+    let day = y15::days::Day14::new();
     day.test(None);
     day.solve(day.input());
 }

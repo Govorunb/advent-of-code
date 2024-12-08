@@ -12,7 +12,7 @@ mod day10; pub use day10::*;
 mod day11; pub use day11::*;
 mod day12; pub use day12::*;
 mod day13; pub use day13::*;
-// mod day14; pub use day14::*;
+mod day14; pub use day14::*;
 // mod day15; pub use day15::*;
 // mod day16; pub use day16::*;
 // mod day17; pub use day17::*;

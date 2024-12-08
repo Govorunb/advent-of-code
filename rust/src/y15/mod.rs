@@ -24,7 +24,7 @@ pub mod test {
         // Day11::new().test(None); // s t o p
         Day12::new().test(None);
         // Day13::new().test(None); // more graph search... *snore*
-        // Day14::new().test(None);
+        Day14::new().test(None);
         // Day15::new().test(None);
         // Day16::new().test(None);
         // Day17::new().test(None);
