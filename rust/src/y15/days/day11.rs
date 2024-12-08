@@ -70,7 +70,7 @@ impl Day11 {
         }
     }
     
-    fn is_valid(x: &Vec<u8>) -> bool {
+    fn is_valid(x: &[u8]) -> bool {
         Self::rule1(x) && Self::rule2(x) && Self::rule3(x)
     }
     

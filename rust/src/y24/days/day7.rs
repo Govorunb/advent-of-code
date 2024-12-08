@@ -29,25 +29,16 @@ impl Day<7> for Day7 {
         let equations = lines.map(|l| {
             let (total_s, el_s) = l.split_once(':').unwrap();
             let total = total_s.parse::<usize>().unwrap();
-            let els = el_s.split_ascii_whitespace()
+            let elements = el_s.split_ascii_whitespace()
                 .map(|s| s.parse::<usize>().unwrap())
-                .collect_vec();
-            Equation {total, elements: els}
+                .collect();
+            Equation { total, elements }
         }).collect_vec();
-        match part {
-            Part::One => {
-                equations.iter()
-                    .filter(|&eqn| Self::search(eqn.clone(), false))
-                    .map(|eq| eq.total)
-                    .sum()
-            },
-            Part::Two => {
-                equations.iter()
-                    .filter(|&eqn| Self::search(eqn.clone(), true))
-                    .map(|eq| eq.total)
-                    .sum()
-            }
-        }
+        
+        equations.iter()
+            .filter(|&eqn| Self::search(eqn.total, &eqn.elements, part))
+            .map(|eq| eq.total)
+            .sum()
     }
 
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
@@ -76,21 +67,33 @@ impl Day7 {
         }
     }
     
-    fn search(eqtn: Equation, concat: bool) -> bool {
-        if eqtn.elements.len() == 1 {
-            return eqtn.elements[0] == eqtn.total
+    fn search(total: usize, elements: &[usize], part: Part) -> bool {
+        if elements.len() == 1 {return elements[0] == total}
+        
+        // recursing backwards is faster (and also lets us use slices)
+        // as opposed to checking forwards (where each i forces you to complete 3^i checks
+        // (thereabouts, you can sometimes short-circuit maybe a couple places before the end))
+        // when checking backwards, each operator validation failure is equivalent to 3^(i-1) checks
+        // this discovery was unfortunately not mine - but it was still a very fun one
+        let (&last, pop) = elements.split_last().unwrap();
+        
+        // plus
+        if last <= total && Self::search(total - last, pop, part) {return true}
+        
+        // mul
+        // if it doesn't divide cleanly, can't possibly be a mul
+        if total % last == 0 && Self::search(total / last, pop, part) {return true}
+        
+        if let Part::Two = part {
+            // concat
+            let mut total_s = total.to_string();
+            let last_s = last.to_string();
+            if total_s.len() > last_s.len() && total_s.ends_with(&last_s) {
+                total_s.truncate(total_s.len() - last_s.len());
+                if Self::search(total_s.parse().unwrap(), pop, part) {return true}
+            }
         }
         
-        let mut clone = eqtn.clone();
-        let first = clone.elements.remove(0);
-        let mut plus = clone.clone();
-        let mut mul = clone.clone();
-        let mut conc = clone.clone();
-        plus.elements[0] += first;
-        mul.elements[0] *= first;
-        conc.elements[0] = format!("{}{}", first, conc.elements[0]).parse().unwrap();
-        
-        Self::search(plus, concat) || Self::search(mul, concat)
-        || (concat && Self::search(conc, concat))
+        false
     }
 }

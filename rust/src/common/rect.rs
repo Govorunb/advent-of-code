@@ -1,7 +1,7 @@
 use crate::{Vector2, RectIter, Size};
 use std::ops::Range;
 
-#[derive(Clone, Debug, Eq, Hash, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd)]
 pub struct Rect {
     base: Vector2,
     size: Size,
@@ -36,8 +36,8 @@ impl Rect {
         self.base - Vector2 {x: 1, y: 1} + self.size
     }
     
-    pub fn iter(&self) -> RectIter {
-        RectIter::new(self.clone())
+    pub fn iter(self) -> RectIter {
+        RectIter::new(self)
     }
     
     pub fn x_range(&self) -> Range<isize> {

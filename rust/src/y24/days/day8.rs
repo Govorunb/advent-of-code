@@ -49,7 +49,7 @@ impl Day<8> for Day8 {
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let grid: Grid<Symbol> = Grid::from_str(input).unwrap();
         let antennas = Self::find_antennas(&grid);
-        let antinodes = Self::place_antinodes(&grid, &antennas, part);
+        let antinodes = Self::place_antinodes(&antennas, grid.bounds(), part);
         
         // println!("{antinodes:?}");
         
@@ -92,7 +92,7 @@ impl Day8 {
             .into_group_map_by(|a| a.freq)
     }
     
-    fn place_antinodes(grid: &Grid<Symbol>, antennas_map: &HashMap<char, Vec<Antenna>>, part: Part) -> FxHashSet<Vector2> {
+    fn place_antinodes(antennas_map: &HashMap<char, Vec<Antenna>>, bounds: Rect, part: Part) -> FxHashSet<Vector2> {
         let mut result = FxHashSet::default();
         for (a1, a2) in antennas_map.iter()
             .flat_map(|(_freq, antennas)| antennas.iter().cartesian_product(antennas.iter()))
@@ -100,7 +100,6 @@ impl Day8 {
             if a1.pos == a2.pos {continue}
             
             let distance = a2.pos - a1.pos;
-            let bounds = grid.bounds();
             let rays_data = [(a2.pos, distance), (a1.pos, -distance)];
             
             let rays = rays_data.map(|(start, step)| 

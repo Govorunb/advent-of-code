@@ -95,7 +95,7 @@ impl<T> Grid<T> {
     pub fn height(&self) -> usize { self.rect.height() }
     pub fn size(&self) -> Size { self.rect.size() }
     pub fn base(&self) -> Vector2 { self.rect.top_left() }
-    pub fn bounds(&self) -> &Rect { &self.rect }
+    pub fn bounds(&self) -> Rect { self.rect }
     
     /// Returns the flattened index that corresponds to the given coordinates.
     /// "flattened" here means the index in a (totally hypothetical) backing 1D array
@@ -195,23 +195,15 @@ impl<T> Grid<T> {
     }
 
     pub fn coords(&self) -> RectIter {
-        RectIter::new(self.rect.clone())
+        self.rect.iter()
     }
 
     pub fn cells(&self) -> impl DoubleEndedIterator<Item = (Vector2, &T)> + Clone {
-        self.coords()
-            .map(move |pt| (pt, &self[pt]))
+        self.coords().zip(self.elements())
     }
 
     pub fn cells_mut(&mut self) -> impl DoubleEndedIterator<Item = (Vector2, &mut T)> {
-        // can't do it the other way
-        // (`self.coords().map(|pt| &mut self[pt])`)
-        // because closure can't capture self
-        // and i cba to make an iterator struct
-        let w = self.width();
-        self.elements_mut()
-            .enumerate() // can't zip because zip isn't double ended
-            .map(move |(i, e)| ((i % w, i / w).into(), e))
+        self.coords().zip(self.elements_mut())
     }
 
     /// Iterates over the grid's items, indexed by a point travelling from start in the given direction.
@@ -279,9 +271,6 @@ impl<T: Clone> Grid<T> {
             .collect_vec()
     }
 }
-
-// no implementation for IntoIterator for Grid<T>
-// because it would require a lifetime
 
 impl<'a, T: 'a> IntoIterator for &'a Grid<T> {
     type Item = &'a [T];

@@ -11,7 +11,7 @@ pub struct RectIter {
 impl RectIter {
     pub fn new(rect: Rect) -> Self {
         Self {
-            rect: rect.clone(),
+            rect,
             start: rect.top_left(),
             end: rect.bottom_right()
         }
@@ -34,7 +34,6 @@ impl Iterator for RectIter {
         Some(item)
     }
 
-    // never should've put this on Iterator in the first place
     fn size_hint(&self) -> (usize, Option<usize>) {
         let len = self.len();
         (len, Some(len))

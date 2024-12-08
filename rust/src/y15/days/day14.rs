@@ -87,7 +87,7 @@ impl Day<14> for Day14 {
                     }
                     // println!("{positions:?}");
                     let highest = positions.iter().max().unwrap();
-                    for (i, _) in positions.iter().enumerate().filter(|(i, &p)| p == *highest) {
+                    for (i, _) in positions.iter().enumerate().filter(|(_i, &p)| p == *highest) {
                         // println!("{} is leading with {highest}", racers[i].name);
                         scores[i] += 1;
                     }

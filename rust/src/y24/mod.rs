@@ -17,7 +17,7 @@ pub mod test {
         Day4::new().test(None);
         Day5::new().test(None);
         // Day6::new().test(None); // slow
-        // Day7::new().test(None); // it begins again
+        Day7::new().test(None);
         Day8::new().test(None);
         // Day9::new().test(None);
         // Day10::new().test(None);
