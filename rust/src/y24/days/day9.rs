@@ -131,9 +131,8 @@ impl Disk {
             } = blocks[right_head]
                 else {unreachable!()};
             
+            while let Some(Block{page: Page::Used {..}, ..}) = blocks.get(first_free) {first_free += 1};
             let mut left_head = first_free;
-            while let Some(Block{page: Page::Used {..}, ..}) = blocks.get(left_head) {left_head += 1};
-            first_free = left_head;
             while {
                 while let Some(Block{page: Page::Used {..}, ..}) = blocks.get(left_head) {left_head += 1};
                 left_head < right_head
