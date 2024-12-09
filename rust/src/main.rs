@@ -5,6 +5,7 @@
 #![feature(ascii_char_variants)]
 #![feature(let_chains)]
 #![feature(is_sorted)]
+#![feature(iter_array_chunks)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common;
@@ -14,7 +15,7 @@ mod y24;
 pub use common::*;
 
 fn main() {
-    let day = y15::days::Day15::new();
+    let day = y24::days::Day9::new();
     day.test(None);
     day.solve(day.input());
 }
