@@ -119,6 +119,7 @@ impl Disk {
     fn compact_p2(&mut self) {
         let mut blocks = self.blocks();
         let mut right_head = blocks.len() - 1;
+        let mut first_free = 0;
         while {
             while let Some(Block{page: Page::Free, ..}) = blocks.get(right_head) {right_head -= 1}
             right_head > 0
@@ -130,7 +131,9 @@ impl Disk {
             } = blocks[right_head]
                 else {unreachable!()};
             
-            let mut left_head = 0;
+            let mut left_head = first_free;
+            while let Some(Block{page: Page::Used {..}, ..}) = blocks.get(left_head) {left_head += 1};
+            first_free = left_head;
             while {
                 while let Some(Block{page: Page::Used {..}, ..}) = blocks.get(left_head) {left_head += 1};
                 left_head < right_head
@@ -162,6 +165,9 @@ impl Disk {
                         size: excess_free
                     });
                     right_head += 1;
+                }
+                if left_head == first_free {
+                    first_free += 1;
                 }
                 break;
             }
