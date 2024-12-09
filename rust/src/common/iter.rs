@@ -53,6 +53,13 @@ pub trait Rle<T> {
     fn rle(self) -> impl Iterator<Item = (T, usize)>;
 }
 
+pub trait RleBy<T> {
+    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item = (T, usize)>
+        where
+            F: Fn(&T) -> K,
+            K: PartialEq;
+}
+
 impl<T: PartialEq + Clone, I: Iterator<Item = T> + Clone> Rle<T> for I {
     fn rle(self) -> impl Iterator<Item=(T, usize)> {
         // adapted from https://stackoverflow.com/a/55676567 (which is absolute magic)
@@ -61,6 +68,23 @@ impl<T: PartialEq + Clone, I: Iterator<Item = T> + Clone> Rle<T> for I {
                 it.next()
                     .map(|v| (v.clone(), 1 + it.peeking_take_while(|v2| *v2 == v).count()))
                     
+            })
+    }
+}
+
+impl<T, I: Iterator<Item = T>> RleBy<T> for I {
+    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item=(T, usize)>
+    where
+        F: Fn(&T) -> K,
+        K: PartialEq
+    {
+        self.peekable()
+            .batching(move |it| {
+                it.next()
+                    .map(|v| {
+                        let key = key_selector(&v);
+                        (v, 1 + it.peeking_take_while(|v2| key_selector(v2) == key).count())
+                    })
             })
     }
 }
