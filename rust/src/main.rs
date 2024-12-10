@@ -8,14 +8,11 @@
 #![feature(iter_array_chunks)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
-pub mod common;
-mod y15;
-mod y23;
-mod y24;
-pub use common::*;
+pub mod common; pub use common::*;
+mod y15; mod y23; mod y24;
 
 fn main() {
-    let day = y24::days::Day9::new();
+    let day = y24::days::Day10::new();
     day.test(None);
     day.solve(day.input());
 }

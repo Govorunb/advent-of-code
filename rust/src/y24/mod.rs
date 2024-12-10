@@ -20,7 +20,7 @@ pub mod test {
         Day7::new().test(None);
         Day8::new().test(None);
         Day9::new().test(None);
-        // Day10::new().test(None);
+        Day10::new().test(None);
         // Day11::new().test(None);
         // Day12::new().test(None);
         // Day13::new().test(None);
