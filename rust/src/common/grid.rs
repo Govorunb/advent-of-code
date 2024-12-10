@@ -341,3 +341,19 @@ impl<T: Sync + Send> Grid<T> {
         self.elements.par_chunks_exact_mut(self.rect.width())
     }
 }
+
+impl Grid<usize> {
+    pub fn from_digits(s: &str, radix: u32) -> Self {
+        let width = s.lines().next().unwrap().len();
+        let mut elements = s.chars()
+            .filter_map(|c| c.to_digit(radix).map(|d| d as usize))
+            .collect_vec();
+        let (height, rem) = elements.len().div_rem(&width);
+        debug_assert!(rem == 0, "did not divide cleanly");
+        elements.shrink_to_fit();
+        Self {
+            elements,
+            rect: Rect::from_origin((width, height).into()).unwrap()
+        }
+    }
+}

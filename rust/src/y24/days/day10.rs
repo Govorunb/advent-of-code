@@ -28,15 +28,7 @@ impl Day<10> for Day10 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day10.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let width = input.lines().next().unwrap().len();
-        let height = input.lines().count();
-        let mut grid: Grid<usize> = Grid::from_origin(Size {width, height}).unwrap();
-        for (y, line) in input.lines().enumerate() {
-            for (x, c) in line.chars().enumerate() {
-                let pt: Vector2 = (x,y).into();
-                grid[pt] = c.to_digit(10).unwrap() as usize;
-            }
-        }
+        let grid = Grid::from_digits(input, 10);
         // println!("{grid}");
         
         let trailheads = grid.cells()
