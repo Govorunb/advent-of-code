@@ -85,7 +85,7 @@ impl Day10 {
     }
     
     fn count_nines(grid: &Grid<usize>, pos: Vector2, seen: &mut FxHashSet<Vector2>) {
-        let self_height = *grid.get(&pos).unwrap();
+        let self_height = grid[pos];
         if self_height == 9 {
             seen.insert(pos);
             return;
@@ -106,7 +106,7 @@ impl Day10 {
     }
 
     fn count_trails(grid: &Grid<usize>, pos: Vector2, count: &mut usize) {
-        let self_height = *grid.get(&pos).unwrap();
+        let self_height = grid[pos];
         if self_height == 9 {
             *count += 1;
             return;
