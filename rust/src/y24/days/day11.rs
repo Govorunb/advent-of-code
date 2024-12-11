@@ -1,4 +1,5 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::HashMap;
+use num::Integer;
 use crate::*;
 
 pub const DAY11_EXAMPLE: &str =
@@ -31,10 +32,11 @@ impl Day<11> for Day11 {
                 if stone == 0 {
                     update(1, count);
                 } else {
-                    let digits = stone.to_string();
-                    if digits.len() % 2 == 0 {
-                        update(digits[..digits.len()/2].parse().unwrap(), count);
-                        update(digits[digits.len()/2..].parse().unwrap(), count);
+                    let num_digits = 1 + stone.ilog10();
+                    if num_digits % 2 == 0 {
+                        let (left, right) = stone.div_rem(&10usize.pow(num_digits / 2));
+                        update(left, count);
+                        update(right, count);
                     } else {
                         update(stone * 2024, count);
                     }
