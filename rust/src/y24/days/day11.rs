@@ -26,7 +26,7 @@ impl Day<11> for Day11 {
             
             // borrowing rules made me put this here
             let mut update = |stone: usize, count|
-                *stones.entry(stone).or_insert(0) += count;
+                *stones.entry(stone).or_default() += count;
             
             for (stone, count) in curr_round.into_iter() {
                 if stone == 0 {

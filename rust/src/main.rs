@@ -6,13 +6,14 @@
 #![feature(let_chains)]
 #![feature(is_sorted)]
 #![feature(iter_array_chunks)]
+#![feature(iter_repeat_n)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common; pub use common::*;
 mod y15; mod y23; mod y24;
 
 fn main() {
-    let day = y24::days::Day11::new();
+    let day = y15::days::Day15::new();
     day.test(None);
     day.solve(day.input());
 }
