@@ -73,7 +73,7 @@ impl Day<15> for Day15 {
         [
             test_cases![
                 (DAY15_EXAMPLE, 62842880),
-                (self.input(), 18965440), // solved this one manually in desmos
+                (self.input(), 18965440), // solved this one manually in desmos https://www.desmos.com/calculator/ehfhvcx2ka
             ],
             test_cases![
                 (DAY15_EXAMPLE, 57600000),
