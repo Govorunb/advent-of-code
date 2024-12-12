@@ -273,22 +273,10 @@ impl PipeGrid {
             return vec![];
         }
         
-        let mut white: Vec<Vector2> = vec![*pt];
-        let mut black: Vec<Vector2> = vec![];
-        
-        while let Some(tile) = white.pop() {
-            if !black.contains(&tile) {
-                black.push(tile);
-            }
-            for adj in tile.adjacent() {
-                if !black.contains(&adj) && !white.contains(&adj)
-                    && self.tiles.flat_index(&adj).is_some()
-                    && !self.pipes.iter().any(|t| t.coords == adj) {
-                    white.push(adj);
-                }
-            }
-        }
-        black
+        flood_fill_adjacent(pt, |_, &adj| {
+            self.tiles.bounds().contains(&adj)
+                && !self.pipes.iter().any(|t| t.coords == adj)
+        })
     }
 }
 

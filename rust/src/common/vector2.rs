@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::{Direction, Direction8, Size};
 use std::ops::{Add, Neg, Sub};
 
@@ -15,19 +16,19 @@ impl Vector2 {
     pub fn down() -> Vector2 { Self { x: 0, y: 1 } }
     pub fn left() -> Vector2 { Self { x: -1, y: 0 } }
     pub fn right() -> Vector2 { Self { x: 1, y: 0 } }
-    pub fn adjacent(&self) -> impl Iterator<Item = Vector2> + '_ {
+    pub fn adjacent(self) -> impl Iterator<Item = Vector2> {
         Direction::deltas()
-            .map(move |offset| self + offset)
+            .map(move |&offset| self + offset)
     }
-    pub fn around(&self) -> impl Iterator<Item = Vector2> + '_ {
+    pub fn around(self) -> impl Iterator<Item = Vector2> {
         Direction8::deltas()
-            .map(move |offset| self + offset)
+            .map(move |&offset| self + offset)
     }
     
     /// Returns an iterator that moves the given `step` each iteration.<br/>
     /// Note: this iterator **does not terminate**.
-    pub fn ray(&self, step: Vector2) -> impl Iterator<Item = Vector2> {
-        let mut curr = *self;
+    pub fn ray(self, step: Vector2) -> impl Iterator<Item = Vector2> {
+        let mut curr = self;
         std::iter::from_fn(move || {
             let item = curr;
             curr += step;
@@ -117,3 +118,9 @@ impl std::ops::AddAssign<Direction> for Vector2 { fn add_assign(&mut self, rhs: 
 impl std::ops::SubAssign<Direction> for Vector2 { fn sub_assign(&mut self, rhs: Direction) { *self -= Self::from(rhs) } }
 impl std::ops::AddAssign<Direction8> for Vector2 { fn add_assign(&mut self, rhs: Direction8) { *self += Self::from(rhs) } }
 impl std::ops::SubAssign<Direction8> for Vector2 { fn sub_assign(&mut self, rhs: Direction8) { *self -= Self::from(rhs) } }
+
+impl Display for Vector2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({},{})", self.x, self.y)
+    }
+}

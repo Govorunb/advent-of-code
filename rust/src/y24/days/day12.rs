@@ -125,26 +125,17 @@ impl Garden {
         for (pt, &plant) in self.grid.cells() {
             if visited.contains(&pt) {continue}
 
-            let mut white: Vec<Vector2> = vec![pt];
-            let mut black: Vec<Vector2> = vec![];
             let mut fences = FxHashSet::default();
-
-            while let Some(tile) = white.pop() {
-                if !black.contains(&tile) {
-                    black.push(tile);
+            
+            let points = flood_fill_adjacent(&pt, |&tile, &adj| {
+                if self.grid.get(&adj).is_some_and(|&adj_plant| adj_plant == plant) {
+                    true
+                } else {
+                    fences.insert((tile, Direction::try_from(adj - tile).unwrap()));
+                    false
                 }
-                for adj in tile.adjacent() {
-                    if !black.contains(&adj) && !white.contains(&adj) {
-                        if self.grid.get(&adj).is_some_and(|&adj_plant| adj_plant == plant) {
-                            white.push(adj);
-                        } else {
-                            fences.insert((tile, Direction::try_from(adj - tile).unwrap()));
-                        }
-                    }
-                }
-            }
-            let points = black;
-            visited.extend(points.clone());
+            });
+            visited.extend(points.iter());
             self.regions.push(Region {
                 plant,
                 points,
@@ -160,26 +151,19 @@ impl Region {
         let mut visited: FxHashSet<(Vector2, Direction)> = FxHashSet::default();
         for fence in &self.fences {
             if visited.contains(fence) {continue}
-            visited.insert(*fence);
+
             let (pos, direction) = *fence;
             
-            let mut side_length = 0;
-            for dir in direction.sides() {
-                let mut curr = pos;
-                while self.fences.contains(&(curr, direction)) {
-                    visited.insert((curr, direction));
-                    // println!("buh {:?} -> {:?} -> {:?}", (pos, direction), dir, (curr, direction));
-                    curr += dir;
-                    side_length += 1;
-                }
-                // println!("{:?} -> {:?} = {:?}", (pos, direction), dir, side_length);
-            }
-            if side_length > 0 {
-                total += 1;
-            }
+            let side = flood_fill(&pos,
+                |&tile| direction.sides().into_iter().map(move |d| tile + d),
+                |_, &adj| self.fences.contains(&(adj, direction))
+            );
+            visited.extend(side.into_iter().map(|pt| (pt, direction)));
+            
+            total += 1;
         }
         
-        // println!("{self:?} has {total} sides");
+        // println!("{}@{} has {total} sides", self.plant, self.points[0]);
 
         total
     }

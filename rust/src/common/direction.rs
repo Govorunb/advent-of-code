@@ -94,10 +94,7 @@ impl Direction {
     }
 
     pub fn sides(&self) -> [Direction; 2] {
-        match self {
-            Direction::North | Direction::South => [Direction::West, Direction::East],
-            Direction::East | Direction::West => [Direction::North, Direction::South],
-        }
+        [self.turn(Turn::Left), self.turn(Turn::Right)]
     }
     
     pub fn all_clockwise() -> Iter<'static, Direction> {

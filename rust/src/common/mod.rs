@@ -5,6 +5,7 @@ mod vector2; pub use vector2::*;
 mod rect; pub use rect::*;
 mod iter; pub use iter::*;
 mod parsing; pub use parsing::*;
+mod flood_fill; pub use flood_fill::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};
