@@ -1,10 +1,4 @@
-use crate::test_cases;
-use crate::common::*;
-
-pub const DAY9_EXAMPLE: &str =
-"0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45";
+use crate::*;
 
 pub struct Day9 {
     
@@ -63,6 +57,7 @@ impl History {
 impl Day<9> for Day9 {
     type Output = isize;
     const INPUT: &'static str = include_str!("../Input/day9.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         input.lines()
             .map(|l| {
@@ -75,16 +70,20 @@ impl Day<9> for Day9 {
             })
             .sum()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY9_EXAMPLE, 114),
-                (self.input(), 2101499000),
+                (Self::EXAMPLES[0], 114),
+                (Self::INPUT, 2101499000),
             ],
             test_cases![
-                (DAY9_EXAMPLE, 2),
-                (self.input(), 1089),
+                (Self::EXAMPLES[0], 2),
+                (Self::INPUT, 1089),
             ]
         ]
     }

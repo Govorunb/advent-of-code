@@ -1,19 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY3_EXAMPLE: &str =
-"467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-";
-
 pub struct Day3 {
 }
 
@@ -50,16 +37,27 @@ impl Day<3> for Day3 {
             Part::Two => gear_ratio_sum,
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598.."
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY3_EXAMPLE, 4361),
-                (self.input(), 549908),
+                (Self::EXAMPLES[0], 4361),
+                (Self::INPUT, 549908),
             ],
             test_cases![
-                (DAY3_EXAMPLE, 467835),
-                (self.input(), 81166799),
+                (Self::EXAMPLES[0], 467835),
+                (Self::INPUT, 81166799),
             ]
         ]
     }
@@ -82,6 +80,7 @@ impl Day3 {
             // cell at given coords must be inside a number
             .filter(|row| row.get(x).is_some_and(Cell::is_digit))
             .map(|row| {
+                // todo: this is a flood fill
                 // go left until there's no digit
                 let left = (0..x).rev()
                     .find(|i| !row[*i].is_digit())

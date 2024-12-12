@@ -35,11 +35,10 @@ impl Day<11> for Day11 {
             test_cases![
                 ("abcdefgh", "abcdffaa".to_string()),
                 ("ghijklmn", "ghjaabcc".to_string()),
-                // (self.input(), 0),
+                // (Self::INPUT, 0),
             ],
             test_cases![
-                // (DAY11_EXAMPLE, 0),
-                // (self.input(), 0),
+                // (Self::INPUT, 0),
             ]
         ]
     }

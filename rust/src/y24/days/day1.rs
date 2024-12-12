@@ -1,20 +1,13 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY1_EXAMPLE: &str =
-"3   4
-4   3
-2   5
-1   3
-3   9
-3   3";
-
 pub struct Day1 {
 }
 
 impl Day<1> for Day1 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day1.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let (mut left, mut right): (Vec<_>, Vec<_>) = lines
@@ -42,16 +35,23 @@ impl Day<1> for Day1 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"3   4
+4   3
+2   5
+1   3
+3   9
+3   3"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY1_EXAMPLE, 11),
-                (self.input(), 2375403),
+                (Self::EXAMPLES[0], 11),
+                (Self::INPUT, 2375403),
             ],
             test_cases![
-                (DAY1_EXAMPLE, 31),
-                // (self.input(), 0),
+                (Self::EXAMPLES[0], 31),
+                // (Self::INPUT, 0),
             ]
         ]
     }

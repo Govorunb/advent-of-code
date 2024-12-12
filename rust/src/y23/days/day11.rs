@@ -1,18 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY11_EXAMPLE: &str =
-"...#......
-.......#..
-#.........
-..........
-......#...
-.#........
-.........#
-..........
-.......#..
-#...#.....";
-
 pub struct Day11 {
     
 }
@@ -82,6 +70,7 @@ impl SparseGalaxiesGrid {
 impl Day<11> for Day11 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day11.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid = SparseGalaxiesGrid::parse(input);
         let expansion = match part {
@@ -96,16 +85,27 @@ impl Day<11> for Day11 {
             })
         })
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"...#......
+.......#..
+#.........
+..........
+......#...
+.#........
+.........#
+..........
+.......#..
+#...#....."
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY11_EXAMPLE, 374),
-                (self.input(), 9556712),
+                (Self::EXAMPLES[0], 374),
+                (Self::INPUT, 9556712),
             ],
             test_cases![
-                (DAY11_EXAMPLE, 82000210),
-                (self.input(), 678626199476),
+                (Self::EXAMPLES[0], 82000210),
+                (Self::INPUT, 678626199476),
             ]
         ]
     }

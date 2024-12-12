@@ -1,9 +1,6 @@
 // replace all ~ with the day number
 use crate::*;
 
-pub const DAY~_EXAMPLE: &str =
-"";
-
 pub struct Day~ {
     
 }
@@ -22,16 +19,18 @@ impl Day<~> for Day~ {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+""
+];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY~_EXAMPLE, 0),
-                // (self.input(), 0),
+                (Self::EXAMPLES[0], 0),
+                // (Self::INPUT, 0),
             ],
             test_cases![
-                // (DAY~_EXAMPLE, 0),
-                // (self.input(), 0),
+                // (Self::EXAMPLES[0], 0),
+                // (Self::INPUT, 0),
             ]
         ]
     }

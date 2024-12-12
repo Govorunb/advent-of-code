@@ -1,11 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY15_EXAMPLE_HASH: &str =
-"HASH";
-pub const DAY15_EXAMPLE: &str = 
-"rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7";
-
 pub struct Day15 {
     
 }
@@ -69,6 +64,7 @@ struct Lens {
 impl Day<15> for Day15 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day15.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let init_sequence = input
             .split(',');
@@ -113,17 +109,20 @@ impl Day<15> for Day15 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+        "rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7",
+        "HASH"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY15_EXAMPLE_HASH, 52),
-                (DAY15_EXAMPLE, 1320),
-                (self.input(), 505427),
+                (Self::EXAMPLES[0], 1320),
+                (Self::EXAMPLES[1], 52),
+                (Self::INPUT, 505427),
             ],
             test_cases![
-                (DAY15_EXAMPLE, 145),
-                (self.input(), 243747),
+                (Self::EXAMPLES[0], 145),
+                (Self::INPUT, 243747),
             ]
         ]
     }

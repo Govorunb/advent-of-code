@@ -4,29 +4,12 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 use crate::*;
 
-pub const DAY4_EXAMPLE2: &str =
-"MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX";
-pub const DAY4_EXAMPLE1: &str = 
-"..X...
-.SAMX.
-.A..A.
-XMAS.S
-.X....";
-
 pub struct Day4;
 
 impl Day<4> for Day4 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day4.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let grid: Grid<char> = Grid::from_str(input).unwrap();
         match part {
@@ -50,17 +33,33 @@ impl Day<4> for Day4 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"..X...
+.SAMX.
+.A..A.
+XMAS.S
+.X....",
+"MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY4_EXAMPLE1, 4),
-                (DAY4_EXAMPLE2, 18),
-                (self.input(), 2557),
+                (Self::EXAMPLES[0], 4),
+                (Self::EXAMPLES[1], 18),
+                (Self::INPUT, 2557),
             ],
             test_cases![
-                (DAY4_EXAMPLE2, 9),
-                (self.input(), 1854),
+                (Self::EXAMPLES[1], 9),
+                (Self::INPUT, 1854),
             ]
         ]
     }
@@ -85,8 +84,8 @@ impl Day4 {
         grid.coords()
             .filter(|pt| grid[pt] == head) // e.g. "ABCD" can only start from 'A'
             .cartesian_product(directions) // search all cells around
-            .filter(|(pt, &dir)|
-                grid.ray(*pt, dir).skip(1) // skip pt itself
+            .filter(|&(pt, &dir)|
+                grid.ray(pt, dir).skip(1) // skip pt itself
                     .map(|(_p,s)| s)
                     .take(tail.len())
                     .eq(tail)

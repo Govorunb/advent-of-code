@@ -2,12 +2,6 @@ use crate::*;
 use std::ops::Add;
 use std::sync::LazyLock;
 
-const DAY6_EXAMPLE: &str =
-"turn on 0,0 through 999,999
-toggle 0,0 through 999,0
-turn off 499,499 through 500,500
-";
-
 pub struct Day6 {
 }
 
@@ -48,15 +42,20 @@ impl Day<6> for Day6 {
         }
     }
 
+    const EXAMPLES: &'static [&'static str] = &[
+"turn on 0,0 through 999,999
+toggle 0,0 through 999,0
+turn off 499,499 through 500,500"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY6_EXAMPLE, 998996),
-                (self.input(), 377891),
+                (Self::EXAMPLES[0], 998996),
+                (Self::INPUT, 377891),
             ],
             test_cases![
-                (DAY6_EXAMPLE, 1001996),
-                (self.input(), 14110788),
+                (Self::EXAMPLES[0], 1001996),
+                (Self::INPUT, 14110788),
             ]
         ]
     }

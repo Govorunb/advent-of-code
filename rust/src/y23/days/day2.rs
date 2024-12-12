@@ -1,12 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY2_EXAMPLE: &str =
-"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
-Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
-Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
-Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
 
 pub struct Day2 {
 }
@@ -51,15 +45,22 @@ impl Day<2> for Day2 {
             }
         }
     }
+    const EXAMPLES: &'static [&'static str] = &[
+"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY2_EXAMPLE, 8),
-                (self.input(), 1931),
+                (Self::EXAMPLES[0], 8),
+                (Self::INPUT, 1931),
             ],
             test_cases![
-                (DAY2_EXAMPLE, 2286),
-                (self.input(), 83105),
+                (Self::EXAMPLES[0], 2286),
+                (Self::INPUT, 83105),
             ]
         ]
     }

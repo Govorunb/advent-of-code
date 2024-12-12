@@ -7,23 +7,6 @@ use std::{collections::HashSet, hash::Hasher};
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY13_EXAMPLE_1: &str =
-"#.##..##.
-..#.##.#.
-##......#
-##......#
-..#.##.#.
-..##..##.
-#.#.##.#.";
-pub const DAY13_EXAMPLE_2: &str =
-"#...##..#
-#....#..#
-..##..###
-#####.##.
-#####.##.
-..##..###
-#....#..#";
-
 pub struct Day13 {
     
 }
@@ -155,6 +138,7 @@ impl Reflection {
 impl Day<13> for Day13 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day13.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let valleys = input.split("\r\n\r\n")
             .map(Valley::parse).collect_vec();
@@ -179,18 +163,33 @@ impl Day<13> for Day13 {
         .map(|r| r.score())
         .sum()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.",
+"#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY13_EXAMPLE_1, 5),
-                (DAY13_EXAMPLE_2, 400),
-                (self.input(), 35360),
+                (Self::EXAMPLES[0], 5),
+                (Self::EXAMPLES[1], 400),
+                (Self::INPUT, 35360),
             ],
             test_cases![
-                (DAY13_EXAMPLE_1, 300),
-                (DAY13_EXAMPLE_2, 100),
-                (self.input(), 36755),
+                (Self::EXAMPLES[0], 300),
+                (Self::EXAMPLES[1], 100),
+                (Self::INPUT, 36755),
             ]
         ]
     }

@@ -6,37 +6,6 @@ use rayon::iter::ParallelIterator;
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY16_EXAMPLE: &str =
-r".|...\....
-|.-.\.....
-.....|-...
-........|.
-..........
-.........\
-..../.\\..
-.-.-/..|..
-.|....-|.\
-..//.|....";
-
-pub const DAY16_TEST_1: &str = 
-r".|......
-.-\.....
-..../\..
-.|../...
-..\../..";
-
-pub const DAY16_TEST_2: &str = 
-r".|.....\
-.-\.....
-..../\..
-.|..\../
-..\../..";
-
-pub const DAY16_TEST_3: &str = 
-r"|..........
-...........
--\.........";
-
 pub struct Day16 {
     
 }
@@ -230,6 +199,7 @@ impl Contraption {
 impl Day<16> for Day16 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day16.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let c: Contraption = input.parse().expect("failed to parse grid");
         match part {
@@ -287,19 +257,43 @@ impl Day<16> for Day16 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+r#".|...\....
+|.-.\.....
+.....|-...
+........|.
+..........
+.........\
+..../.\\..
+.-.-/..|..
+.|....-|.\
+..//.|...."#,
+r#".|......
+.-\.....
+..../\..
+.|../...
+..\../.."#,
+r#".|.....\
+.-\.....
+..../\..
+.|..\../
+..\../.."#,
+r#"|..........
+...........
+-\........."#,
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY16_EXAMPLE, 46),
-                (DAY16_TEST_1, 19),
-                (DAY16_TEST_2, 25),
-                (DAY16_TEST_3, 4),
-                (self.input(), 7517),
+                (Self::EXAMPLES[0], 46),
+                (Self::EXAMPLES[1], 19),
+                (Self::EXAMPLES[2], 25),
+                (Self::EXAMPLES[3], 4),
+                (Self::INPUT, 7517),
             ],
             test_cases![
-                (DAY16_EXAMPLE, 51),
-                (self.input(), 7741),
+                (Self::EXAMPLES[0], 51),
+                (Self::INPUT, 7741),
             ]
         ]
     }

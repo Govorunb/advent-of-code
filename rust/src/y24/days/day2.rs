@@ -1,13 +1,5 @@
 use crate::test_cases;
 use crate::common::*;
-
-pub const DAY2_EXAMPLE: &str = "7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9";
-
 pub struct Day2 {}
 
 #[derive(Debug, Clone)]
@@ -18,6 +10,7 @@ struct Report {
 impl Day<2> for Day2 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day2.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let tolerant = match part {
@@ -35,16 +28,23 @@ impl Day<2> for Day2 {
             .filter(|&s| s)
             .count()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY2_EXAMPLE, 2),
-                (self.input(), 371),
+                (Self::EXAMPLES[0], 2),
+                (Self::INPUT, 371),
             ],
             test_cases![
-                (DAY2_EXAMPLE, 4),
-                (self.input(), 426),
+                (Self::EXAMPLES[0], 4),
+                (Self::INPUT, 426),
             ],
         ]
     }

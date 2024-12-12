@@ -1,19 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY5_EXAMPLE1: &str =
-"ugknbfddgicrmopn
-aaa
-jchzalrnumimnmhp
-haegwjzuvuyypxyu
-dvszwmarrgswjxmb";
-
-pub const DAY5_EXAMPLE2: &str =
-"qjhvhtzxzqqjkmpb
-xxyxx
-uurcxstgmygtbstg
-ieodomkazucvgmuy";
-
 pub struct Day5 {
     forbidden: Vec<String>
 }
@@ -36,16 +23,26 @@ impl Day<5> for Day5 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"ugknbfddgicrmopn
+aaa
+jchzalrnumimnmhp
+haegwjzuvuyypxyu
+dvszwmarrgswjxmb",
+"qjhvhtzxzqqjkmpb
+xxyxx
+uurcxstgmygtbstg
+ieodomkazucvgmuy",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY5_EXAMPLE1, 2),
-                (self.input(), 255),
+                (Self::EXAMPLES[0], 2),
+                (Self::INPUT, 255),
             ],
             test_cases![
-                (DAY5_EXAMPLE2, 2),
-                // (self.input(), 0),
+                (Self::EXAMPLES[1], 2),
+                // (Self::INPUT, 0),
             ]
         ]
     }

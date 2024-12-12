@@ -1,50 +1,6 @@
 use std::str::FromStr;
 use crate::*;
 
-pub const DAY12_EXAMPLE: &str =
-"AAAA
-BBCD
-BBCC
-EEEC
-";
-
-pub const DAY12_EXAMPLE2: &str =
-"OOOOO
-OXOXO
-OOOOO
-OXOXO
-OOOOO
-";
-
-pub const DAY12_EXAMPLE3: &str = 
-"RRRRIICCFF
-RRRRIICCCF
-VVRRRCCFFF
-VVRCCCJFFF
-VVVVCJJCFE
-VVIVCCJJEE
-VVIIICJJEE
-MIIIIIJJEE
-MIIISIJEEE
-MMMISSJEEE
-";
-
-pub const DAY12_EXAMPLE4: &str = 
-"EEEEE
-EXXXX
-EEEEE
-EXXXX
-EEEEE
-";
-
-pub const DAY12_EXAMPLE5: &str = 
-"AAAAAA
-AAABBA
-AAABBA
-ABBAAA
-ABBAAA
-AAAAAA
-";
 pub struct Day12 {
     
 }
@@ -64,6 +20,7 @@ struct Garden {
 impl Day<12> for Day12 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day12.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut garden = Garden::new(input);
         garden.find_regions();
@@ -84,22 +41,53 @@ impl Day<12> for Day12 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"AAAA
+BBCD
+BBCC
+EEEC",
+"OOOOO
+OXOXO
+OOOOO
+OXOXO
+OOOOO",
+"RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE",
+"EEEEE
+EXXXX
+EEEEE
+EXXXX
+EEEEE",
+"AAAAAA
+AAABBA
+AAABBA
+ABBAAA
+ABBAAA
+AAAAAA"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY12_EXAMPLE, 140),
-                (DAY12_EXAMPLE2, 772),
-                (DAY12_EXAMPLE3, 1930),
-                (self.input(), 1461752),
+                (Self::EXAMPLES[0], 140),
+                (Self::EXAMPLES[1], 772),
+                (Self::EXAMPLES[2], 1930),
+                (Self::INPUT, 1461752),
             ],
             test_cases![
-                (DAY12_EXAMPLE, 80),
-                (DAY12_EXAMPLE2, 436),
-                (DAY12_EXAMPLE3, 1206),
-                (DAY12_EXAMPLE4, 236),
-                (DAY12_EXAMPLE5, 368),
-                (self.input(), 904114),
+                (Self::EXAMPLES[0], 80),
+                (Self::EXAMPLES[1], 436),
+                (Self::EXAMPLES[2], 1206),
+                (Self::EXAMPLES[3], 236),
+                (Self::EXAMPLES[4], 368),
+                (Self::INPUT, 904114),
             ]
         ]
     }

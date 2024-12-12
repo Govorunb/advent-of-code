@@ -1,34 +1,4 @@
-use crate::test_cases;
-use crate::common::*;
-
-
-pub const DAY8_EXAMPLE1: &str =
-"RL
-
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)";
-pub const DAY8_EXAMPLE2: &str =
-"LLR
-
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)";
-pub const DAY8_EXAMPLE3: &str =
-"LR
-
-11A = (11B, XXX)
-11B = (XXX, 11Z)
-11Z = (11B, XXX)
-22A = (22B, XXX)
-22B = (22C, 22C)
-22C = (22Z, 22Z)
-22Z = (22B, 22B)
-XXX = (XXX, XXX)";
+use crate::*;
 
 pub struct Day8 {
     
@@ -64,6 +34,7 @@ impl Head<'_> {
 impl Day<8> for Day8 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day8.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let instructions = input.lines().next().unwrap();
         let graph: FxHashMap<&str, (&str, &str)> = input.lines().skip(2).map(|l| {
@@ -104,19 +75,44 @@ impl Day<8> for Day8 {
             .reduce(|acc, item| num::Integer::lcm(&acc, &item))
             .unwrap()
     }
+    const EXAMPLES: &'static [&'static str] = &[
+"RL
 
+AAA = (BBB, CCC)
+BBB = (DDD, EEE)
+CCC = (ZZZ, GGG)
+DDD = (DDD, DDD)
+EEE = (EEE, EEE)
+GGG = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)",
+"LLR
+
+AAA = (BBB, BBB)
+BBB = (AAA, ZZZ)
+ZZZ = (ZZZ, ZZZ)",
+"LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY8_EXAMPLE1, 2),
-                (DAY8_EXAMPLE2, 6),
-                (self.input(), 13301),
+                (Self::EXAMPLES[0], 2),
+                (Self::EXAMPLES[1], 6),
+                (Self::INPUT, 13301),
             ],
             test_cases![
-                (DAY8_EXAMPLE1, 2),
-                (DAY8_EXAMPLE2, 6),
-                (DAY8_EXAMPLE3, 6),
-                (self.input(), 7309459565207),
+                (Self::EXAMPLES[0], 2),
+                (Self::EXAMPLES[1], 6),
+                (Self::EXAMPLES[2], 6),
+                (Self::INPUT, 7309459565207),
             ]
         ]
     }

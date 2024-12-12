@@ -1,16 +1,5 @@
 use crate::*;
 
-pub const DAY7_EXAMPLE: &str =
-"190: 10 19
-3267: 81 40 27
-83: 17 5
-156: 15 6
-7290: 6 8 6 15
-161011: 16 10 13
-192: 17 8 14
-21037: 9 7 18 13
-292: 11 6 16 20";
-
 pub struct Day7 {
     
 }
@@ -24,6 +13,7 @@ struct Equation {
 impl Day<7> for Day7 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day7.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let equations = lines.map(|l| {
@@ -40,16 +30,26 @@ impl Day<7> for Day7 {
             .map(|eq| eq.total)
             .sum()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY7_EXAMPLE, 3749),
-                (self.input(), 850435817339),
+                (Self::EXAMPLES[0], 3749),
+                (Self::INPUT, 850435817339),
             ],
             test_cases![
-                (DAY7_EXAMPLE, 11387),
-                (self.input(), 104824810233437),
+                (Self::EXAMPLES[0], 11387),
+                (Self::INPUT, 104824810233437),
             ]
         ]
     }

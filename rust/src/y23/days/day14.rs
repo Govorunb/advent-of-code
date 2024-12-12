@@ -2,18 +2,6 @@ use crate::test_cases;
 use crate::common::*;
 use std::fmt::Display;
 
-pub const DAY14_EXAMPLE: &str =
-"O....#....
-O.OO#....#
-.....##...
-OO.#O....O
-.O.....O#.
-O.#..O.#.#
-..O..#O..O
-.......O..
-#....###..
-#OO..#....";
-
 pub struct Day14 {
     
 }
@@ -211,6 +199,7 @@ impl Platform {
 impl Day<14> for Day14 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day14.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid = Platform::parse(input);
         match part {
@@ -223,16 +212,27 @@ impl Day<14> for Day14 {
         }
         grid.load()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#...."
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY14_EXAMPLE, 136),
-                (self.input(), 109424),
+                (Self::EXAMPLES[0], 136),
+                (Self::INPUT, 109424),
             ],
             test_cases![
-                (DAY14_EXAMPLE, 64),
-                (self.input(), 102509),
+                (Self::EXAMPLES[0], 64),
+                (Self::INPUT, 102509),
             ]
         ]
     }

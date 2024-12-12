@@ -29,10 +29,10 @@ impl Day<10> for Day10 {
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (self.input(), 360154),
+                (Self::INPUT, 360154),
             ],
             test_cases![
-                (self.input(), 5103798),
+                (Self::INPUT, 5103798),
             ]
         ]
     }

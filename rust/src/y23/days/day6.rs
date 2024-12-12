@@ -1,10 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY6_EXAMPLE: &str =
-"Time:      7  15   30
-Distance:  9  40  200";
-
 pub struct Day6 {
 }
 
@@ -25,6 +21,7 @@ impl Race {
 impl Day<6> for Day6 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day6.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {
             Part::One => {
@@ -61,16 +58,19 @@ impl Day<6> for Day6 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"Time:      7  15   30
+Distance:  9  40  200"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY6_EXAMPLE, 288),
-                (self.input(), 345015),
+                (Self::EXAMPLES[0], 288),
+                (Self::INPUT, 345015),
             ],
             test_cases![
-                (DAY6_EXAMPLE, 71503),
-                (self.input(), 42588603),
+                (Self::EXAMPLES[0], 71503),
+                (Self::INPUT, 42588603),
                 ("Time: 100\nDistance: 1000", 77),
             ]
         ]

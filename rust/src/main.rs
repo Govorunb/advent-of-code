@@ -7,6 +7,7 @@
 #![feature(is_sorted)]
 #![feature(iter_array_chunks)]
 #![feature(iter_repeat_n)]
+#![feature(generic_arg_infer)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common; pub use common::*;

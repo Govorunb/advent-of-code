@@ -1,14 +1,12 @@
 #![allow(dead_code)]
 use crate::*;
 
-pub const DAY3_EXAMPLE1: &str = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
-pub const DAY3_EXAMPLE2: &str = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
-
 pub struct Day3 {}
 
 impl Day<3> for Day3 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day3.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         match part {
             Part::One => {
@@ -33,16 +31,19 @@ impl Day<3> for Day3 {
             },
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+        "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
+        "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY3_EXAMPLE1, 161),
-                (self.input(), 179571322),
+                (Self::EXAMPLES[0], 161),
+                (Self::INPUT, 179571322),
             ],
             test_cases![
-                (DAY3_EXAMPLE2, 48),
-                (self.input(), 103811193),
+                (Self::EXAMPLES[1], 48),
+                (Self::INPUT, 103811193),
             ],
         ]
     }

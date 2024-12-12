@@ -1,44 +1,7 @@
 #![allow(dead_code)]
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 use std::ops::Range;
-
-pub const DAY5_EXAMPLE: &str = 
-"seeds: 79 14 55 13
-
-seed-to-soil map:
-50 98 2
-52 50 48
-
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
-
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
-
-water-to-light map:
-88 18 7
-18 25 70
-
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
-
-temperature-to-humidity map:
-0 69 1
-1 0 69
-
-humidity-to-location map:
-60 56 37
-56 93 4
-";
 
 pub struct Day5 {
 }
@@ -407,20 +370,56 @@ impl Almanac {
 impl Day<5> for Day5 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day5.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let buh: Almanac = Almanac::parse(input, part);
         buh.brute_force()
     }
+    const EXAMPLES: &'static [&'static str] = &[
+"seeds: 79 14 55 13
 
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4
+"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY5_EXAMPLE, 35),
-                (self.input(), 806029445),
+                (Self::EXAMPLES[0], 35),
+                (Self::INPUT, 806029445),
             ],
             test_cases![
-                (DAY5_EXAMPLE, 46),
-                // (self.input(), 59370572), // bruteforce takes too long
+                (Self::EXAMPLES[0], 46),
+                // (Self::INPUT, 59370572), // bruteforce takes too long
             ]
         ]
     }

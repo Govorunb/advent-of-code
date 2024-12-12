@@ -1,10 +1,5 @@
 use crate::*;
 
-pub const DAY9_EXAMPLE: &str =
-"London to Dublin = 464
-London to Belfast = 518
-Dublin to Belfast = 141";
-
 pub struct Day9 {
     
 }
@@ -66,16 +61,20 @@ impl Day<9> for Day9 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"London to Dublin = 464
+London to Belfast = 518
+Dublin to Belfast = 141"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY9_EXAMPLE, 605),
-                (self.input(), 207),
+                (Self::EXAMPLES[0], 605),
+                (Self::INPUT, 207),
             ],
             test_cases![
-                (DAY9_EXAMPLE, 982),
-                (self.input(), 804),
+                (Self::EXAMPLES[0], 982),
+                (Self::INPUT, 804),
             ]
         ]
     }

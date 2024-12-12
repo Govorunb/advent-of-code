@@ -1,27 +1,6 @@
 use std::fmt::{Formatter, Write};
 use std::str::FromStr;
-use std::sync::{Arc, Mutex};
 use crate::*;
-
-pub const DAY6_EXAMPLE: &str =
-"....#.....
-.........#
-..........
-..#.......
-.......#..
-..........
-.#..^.....
-........#.
-#.........
-......#...";
-
-pub const DAY6_EXAMPLE2: &str =
-"\
-...##.....
-........#.
-...^......
-.......#..\
-";
 
 pub struct Day6 {
     
@@ -86,6 +65,7 @@ impl Display for Symbol {
 impl Day<6> for Day6 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day6.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut grid: Grid<Symbol> = Grid::from_str(input).unwrap();
         let guard_cell = grid.cells().find(|(_, s)| matches!(s, Symbol::Guard(_))).unwrap();
@@ -155,18 +135,37 @@ impl Day<6> for Day6 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...",
+"...##.....
+........#.
+...^......
+.......#..",
+"...#
+#...
+.^..
+.#..",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY6_EXAMPLE, 41),
-                (self.input(), 4903),
+                (Self::EXAMPLES[0], 41),
+                (Self::INPUT, 4903),
             ],
             test_cases![
-                (DAY6_EXAMPLE, 6),
-                (DAY6_EXAMPLE2, 1),
-                ("...#\n#...\n.^..\n.#..", 0),
-                (self.input(), 1911),
+                (Self::EXAMPLES[0], 6),
+                (Self::EXAMPLES[1], 1),
+                (Self::EXAMPLES[2], 0),
+                (Self::INPUT, 1911),
             ]
         ]
     }

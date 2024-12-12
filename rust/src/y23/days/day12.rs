@@ -6,14 +6,6 @@ use std::collections::{HashSet, VecDeque};
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY12_EXAMPLE: &str =
-"???.### 1,1,3
-.??..??...?##. 1,1,3
-?#?#?#?#?#?#?#? 1,3,1,6
-????.#...#... 4,1,1
-????.######..#####. 1,6,5
-?###???????? 3,2,1";
-
 pub struct Day12 {
     
 }
@@ -254,6 +246,7 @@ impl Row {
 impl Day<12> for Day12 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day12.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut record = input.lines()
             .map(Row::parse)
@@ -272,7 +265,14 @@ impl Day<12> for Day12 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
@@ -302,12 +302,12 @@ impl Day<12> for Day12 {
                 
                 ("??.?? 1,1", 4),
                 ("???.?? 1,1", 7),
-                (DAY12_EXAMPLE, 21),
-                //(self.input(), 0),
+                (Self::EXAMPLES[0], 21),
+                //(Self::INPUT, 0),
             ],
             test_cases![
-                //(DAY12_EXAMPLE, 0),
-                //(self.input(), 0),
+                //(Self::EXAMPLES[0], 0),
+                //(Self::INPUT, 0),
             ]
         ]
     }

@@ -59,7 +59,7 @@ pub trait Day<const DAY: u8>
 {
     type Output: Display + PartialEq + std::fmt::Debug + Clone;
     const INPUT: &'static str;
-    #[allow(private_bounds)] // the whole point is sealing it
+    #[expect(private_bounds)] // the whole point is sealing it
     type TestCase: TestCase<Self::Output> = TestCaseImpl<Self::Output>;
     fn day(&self) -> u8 {DAY}
     fn input(&self) -> &'static str {Self::INPUT}
@@ -76,6 +76,7 @@ pub trait Day<const DAY: u8>
     }
     fn solve_part(&self, input: &str, part: Part) -> Self::Output;
 
+    const EXAMPLES: &'static [&'static str] = &[];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2];
     fn test(&self, part: Option<Part>) {
         let [p1, p2] = self.test_cases();

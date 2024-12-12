@@ -37,11 +37,11 @@ impl Day<4> for Day4 {
             test_cases![
                 ("abcdef", 609043),
                 ("pqrstuv", 1048970),
-                (self.input(), 282749),
+                (Self::INPUT, 282749),
             ],
             test_cases![
                 // no examples for part 2 were provided
-                (self.input(), 9962624),
+                (Self::INPUT, 9962624),
             ]
         ]
     }

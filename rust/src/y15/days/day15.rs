@@ -1,10 +1,5 @@
 use crate::*;
 
-pub const DAY15_EXAMPLE: &str =
-"Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
-Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
-";
-
 pub struct Day15 {
     
 }
@@ -68,16 +63,19 @@ impl Day<15> for Day15 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
+Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY15_EXAMPLE, 62842880),
-                (self.input(), 18965440), // solved this one manually in desmos https://www.desmos.com/calculator/ehfhvcx2ka
+                (Self::EXAMPLES[0], 62842880),
+                (Self::INPUT, 18965440), // solved this one manually in desmos https://www.desmos.com/calculator/ehfhvcx2ka
             ],
             test_cases![
-                (DAY15_EXAMPLE, 57600000),
-                (self.input(), 15862900),
+                (Self::EXAMPLES[0], 57600000),
+                (Self::INPUT, 15862900),
             ]
         ]
     }

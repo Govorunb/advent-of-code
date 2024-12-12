@@ -1,14 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 use std::{cmp::Ordering, sync::atomic::{AtomicBool, Ordering as AOrdering}};
-
-pub const DAY7_EXAMPLE: &str =
-"32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483";
 
 pub struct Day7 {
     
@@ -152,6 +144,7 @@ static DEBUG: AtomicBool = AtomicBool::new(false);
 impl Day<7> for Day7 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day7.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         let mut hands = lines.map(|line| {
@@ -183,16 +176,22 @@ impl Day<7> for Day7 {
                 acc + (i + 1) * h.bid
             })
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY7_EXAMPLE, 6440),
-                (self.input(), 246795406),
+                (Self::EXAMPLES[0], 6440),
+                (Self::INPUT, 246795406),
             ],
             test_cases![
-                (DAY7_EXAMPLE, 5905),
-                (self.input(), 249356515),
+                (Self::EXAMPLES[0], 5905),
+                (Self::INPUT, 249356515),
             ]
         ]
     }

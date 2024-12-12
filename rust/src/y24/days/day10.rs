@@ -3,23 +3,6 @@ use itertools::Either;
 use num::Integer;
 use crate::*;
 
-pub const DAY10_EXAMPLE: &str =
-"0123
-1234
-8765
-9876
-";
-pub const DAY10_EXAMPLE2: &str =
-"89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732
-";
-
 pub struct Day10 {
     
 }
@@ -27,6 +10,7 @@ pub struct Day10 {
 impl Day<10> for Day10 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day10.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let grid = Grid::from_digits(input, 10);
         // println!("{grid}");
@@ -48,17 +32,30 @@ impl Day<10> for Day10 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"0123
+1234
+8765
+9876",
+"89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY10_EXAMPLE, 1),
-                (DAY10_EXAMPLE2, 36),
-                (self.input(), 629),
+                (Self::EXAMPLES[0], 1),
+                (Self::EXAMPLES[1], 36),
+                (Self::INPUT, 629),
             ],
             test_cases![
-                (DAY10_EXAMPLE2, 81),
-                (self.input(), 1242),
+                (Self::EXAMPLES[1], 81),
+                (Self::INPUT, 1242),
             ]
         ]
     }

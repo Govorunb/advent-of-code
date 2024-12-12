@@ -3,25 +3,6 @@ use crate::common::*;
 
 use std::ops::Range;
 
-pub const DAY19_EXAMPLE: &str =
-"px{a<2006:qkq,m>2090:A,rfg}
-pv{a>1716:R,A}
-lnx{m>1548:A,A}
-rfg{s<537:gd,x>2440:R,A}
-qs{s>3448:A,lnx}
-qkq{x<1416:A,crn}
-crn{x>2662:A,R}
-in{s<1351:px,qqz}
-qqz{s>2770:qs,m<1801:hdj,R}
-gd{a>3333:R,R}
-hdj{m>838:A,pv}
-
-{x=787,m=2655,a=1222,s=2876}
-{x=1679,m=44,a=2067,s=496}
-{x=2036,m=264,a=79,s=2244}
-{x=2461,m=1339,a=466,s=291}
-{x=2127,m=1623,a=2188,s=1013}";
-
 pub struct Day19 {
     
 }
@@ -283,6 +264,7 @@ impl AcceptableRanges {
 impl Day<19> for Day19 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day19.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let newlines_fixed = input.replace("\r\n", "\n");
         let (workflows_str, parts_str) = newlines_fixed
@@ -323,12 +305,30 @@ impl Day<19> for Day19 {
             }
         }
     }
+    const EXAMPLES: &'static [&'static str] = &[
+"px{a<2006:qkq,m>2090:A,rfg}
+pv{a>1716:R,A}
+lnx{m>1548:A,A}
+rfg{s<537:gd,x>2440:R,A}
+qs{s>3448:A,lnx}
+qkq{x<1416:A,crn}
+crn{x>2662:A,R}
+in{s<1351:px,qqz}
+qqz{s>2770:qs,m<1801:hdj,R}
+gd{a>3333:R,R}
+hdj{m>838:A,pv}
 
+{x=787,m=2655,a=1222,s=2876}
+{x=1679,m=44,a=2067,s=496}
+{x=2036,m=264,a=79,s=2244}
+{x=2461,m=1339,a=466,s=291}
+{x=2127,m=1623,a=2188,s=1013}"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY19_EXAMPLE, 19114),
-                (self.input(), 487623),
+                (Self::EXAMPLES[0], 19114),
+                (Self::INPUT, 487623),
             ],
             test_cases![
                 // simplest possible case
@@ -348,8 +348,8 @@ impl Day<19> for Day19 {
                   +(4000-500)*(4000-500) // in (x>500) * c (m>500)
                   +(500-19)*1999         // in (20<=x<=500) * d (->b) * b (m<=1999)
                 )*4000*4000),
-                (DAY19_EXAMPLE, 167409079868000),
-                (self.input(), 113550238315130),
+                (Self::EXAMPLES[0], 167409079868000),
+                (Self::INPUT, 113550238315130),
             ]
         ]
     }

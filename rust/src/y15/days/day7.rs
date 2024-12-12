@@ -1,16 +1,6 @@
 use std::sync::LazyLock;
 use crate::*;
 
-pub const DAY7_EXAMPLE: &str =
-"123 -> x
-456 -> y
-x AND y -> d
-x OR y -> e
-x LSHIFT 2 -> f
-y RSHIFT 2 -> g
-NOT x -> h
-NOT y -> a"; // replaced 'i' with 'a' to be able to test
-
 pub struct Day7 {}
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
@@ -99,16 +89,25 @@ impl Day<7> for Day7 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+        "123 -> x
+456 -> y
+x AND y -> d
+x OR y -> e
+x LSHIFT 2 -> f
+y RSHIFT 2 -> g
+NOT x -> h
+NOT y -> a", // replaced 'i' with 'a' to be able to test
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY7_EXAMPLE, 65079),
-                (self.input(), 956),
+                (Self::EXAMPLES[0], 65079),
+                (Self::INPUT, 956),
             ],
             test_cases![
-                // (DAY7_EXAMPLE, 0),
-                (self.input(), 40149),
+                // (Self::EXAMPLES[0], 0),
+                (Self::INPUT, 40149),
             ],
         ]
     }

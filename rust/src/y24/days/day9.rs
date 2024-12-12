@@ -1,9 +1,6 @@
 use std::fmt::Formatter;
 use crate::*;
 
-pub const DAY9_EXAMPLE: &str =
-"2333133121414131402";
-
 pub struct Day9 {
     
 }
@@ -41,6 +38,7 @@ impl Display for Disk {
 impl Day<9> for Day9 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day9.txt");
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let mut disk = Disk::parse(input);
         // println!("{disk}");
@@ -52,16 +50,18 @@ impl Day<9> for Day9 {
         
         disk.checksum()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+        "2333133121414131402"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY9_EXAMPLE, 1928),
-                (self.input(), 6461289671426),
+                (Self::EXAMPLES[0], 1928),
+                (Self::INPUT, 6461289671426),
             ],
             test_cases![
-                (DAY9_EXAMPLE, 2858),
-                (self.input(), 6488291456470),
+                (Self::EXAMPLES[0], 2858),
+                (Self::INPUT, 6488291456470),
             ]
         ]
     }
@@ -185,8 +185,8 @@ impl Disk {
     fn blocks(&self) -> Vec<Block> {
         self.pages.iter()
             .enumerate()
-            .rle_by(|(_, &p)| p)
-            .map(|((i, p), size)| Block {page: *p, start: i, size})
+            .rle_by(|&(_, p)| p)
+            .map(|((i, &p), size)| Block {page: p, start: i, size})
             .collect_vec()
     }
 }

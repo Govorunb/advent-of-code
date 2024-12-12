@@ -1,12 +1,5 @@
 use crate::*;
 
-pub const DAY8_EXAMPLE: &str =
-r#"""
-"abc"
-"aaa\"aaa"
-"\x27"
-"#;
-
 pub struct Day8;
 
 impl Day<8> for Day8 {
@@ -27,17 +20,23 @@ impl Day<8> for Day8 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+r#"""
+"abc"
+"aaa\"aaa"
+"\x27"
+"#
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY8_EXAMPLE, 12), // 23 - 11
+                (Self::EXAMPLES[0], 12), // 23 - 11
                 (r#""\\\x20\"""#, 7), // 10 - 3
-                (self.input(), 1371),
+                (Self::INPUT, 1371),
             ],
             test_cases![
-                (DAY8_EXAMPLE, 19), // 42 - 23
-                (self.input(), 2117),
+                (Self::EXAMPLES[0], 19), // 42 - 23
+                (Self::INPUT, 2117),
             ]
         ]
     }

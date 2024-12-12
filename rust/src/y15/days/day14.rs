@@ -1,10 +1,6 @@
 use num::Integer;
 use crate::*;
 
-pub const DAY14_EXAMPLE: &str =
-"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
-Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.";
-
 pub struct Day14 {
     
 }
@@ -87,7 +83,7 @@ impl Day<14> for Day14 {
                     }
                     // println!("{positions:?}");
                     let highest = positions.iter().max().unwrap();
-                    for (i, _) in positions.iter().enumerate().filter(|(_i, &p)| p == *highest) {
+                    for (i, _) in positions.iter().enumerate().filter(|&(_i, p)| p == highest) {
                         // println!("{} is leading with {highest}", racers[i].name);
                         scores[i] += 1;
                     }
@@ -98,16 +94,19 @@ impl Day<14> for Day14 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
+Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY14_EXAMPLE, 1120),
-                (self.input(), 2660),
+                (Self::EXAMPLES[0], 1120),
+                (Self::INPUT, 2660),
             ],
             test_cases![
-                (DAY14_EXAMPLE, 689),
-                (self.input(), 1256),
+                (Self::EXAMPLES[0], 689),
+                (Self::INPUT, 1256),
             ]
         ]
     }

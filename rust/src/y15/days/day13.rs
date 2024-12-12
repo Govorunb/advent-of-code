@@ -2,20 +2,6 @@ use std::collections::HashSet;
 use rustc_hash::FxBuildHasher;
 use crate::*;
 
-pub const DAY13_EXAMPLE: &str =
-"Alice would gain 54 happiness units by sitting next to Bob.
-Alice would lose 79 happiness units by sitting next to Carol.
-Alice would lose 2 happiness units by sitting next to David.
-Bob would gain 83 happiness units by sitting next to Alice.
-Bob would lose 7 happiness units by sitting next to Carol.
-Bob would lose 63 happiness units by sitting next to David.
-Carol would lose 62 happiness units by sitting next to Alice.
-Carol would gain 60 happiness units by sitting next to Bob.
-Carol would gain 55 happiness units by sitting next to David.
-David would gain 46 happiness units by sitting next to Alice.
-David would lose 7 happiness units by sitting next to Bob.
-David would gain 41 happiness units by sitting next to Carol.";
-
 pub struct Day13 {
     
 }
@@ -51,16 +37,29 @@ impl Day<13> for Day13 {
 
         arrangement.cost.unwrap()
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+"Alice would gain 54 happiness units by sitting next to Bob.
+Alice would lose 79 happiness units by sitting next to Carol.
+Alice would lose 2 happiness units by sitting next to David.
+Bob would gain 83 happiness units by sitting next to Alice.
+Bob would lose 7 happiness units by sitting next to Carol.
+Bob would lose 63 happiness units by sitting next to David.
+Carol would lose 62 happiness units by sitting next to Alice.
+Carol would gain 60 happiness units by sitting next to Bob.
+Carol would gain 55 happiness units by sitting next to David.
+David would gain 46 happiness units by sitting next to Alice.
+David would lose 7 happiness units by sitting next to Bob.
+David would gain 41 happiness units by sitting next to Carol.",
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (DAY13_EXAMPLE, 330),
-                (self.input(), 664),
+                (Self::EXAMPLES[0], 330),
+                (Self::INPUT, 664),
             ],
             test_cases![
-                // (DAY13_EXAMPLE, 0),
-                (self.input(), 640),
+                // (Self::EXAMPLES[0], 0),
+                (Self::INPUT, 640),
             ]
         ]
     }

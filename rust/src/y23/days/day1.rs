@@ -1,18 +1,6 @@
 use crate::test_cases;
 use crate::common::*;
 
-pub const DAY1_EXAMPLE_P1: &str = "1abc2
-pqr3stu8vwx
-a1b2c3d4e5f
-treb7uchet";
-pub const DAY1_EXAMPLE_P2: &str = "two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen";
-
 pub struct Day1 {
     digit_strings: FxIndexMap<&'static str, usize>,
 }
@@ -25,6 +13,19 @@ impl Day<1> for Day1 {
             .map(|l| self.parse_line(l, part))
             .sum()
     }
+    const EXAMPLES: &'static [&'static str] = &[
+"1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet",
+"two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen"
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
@@ -32,8 +33,8 @@ impl Day<1> for Day1 {
                 ("pqr3stu8vwx", 38),
                 ("a1b2c3d4e5f", 15),
                 ("treb7uchet", 77),
-                (DAY1_EXAMPLE_P1, 142),
-                (self.input(), 54601),
+                (Self::EXAMPLES[0], 142),
+                (Self::INPUT, 54601),
             ],
             test_cases![
                 ("one1", 11),
@@ -44,8 +45,8 @@ impl Day<1> for Day1 {
                 ("4nineeightseven2", 42),
                 ("zoneight234", 14),
                 ("7pqrstsixteen", 76),
-                (DAY1_EXAMPLE_P2, 281),
-                (self.input(), 54078),
+                (Self::EXAMPLES[1], 281),
+                (Self::INPUT, 54078),
             ]
         ]
     }
