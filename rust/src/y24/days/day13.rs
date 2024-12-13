@@ -7,9 +7,7 @@ pub struct Day13 {
 impl Day<13> for Day13 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day13.txt");
-    const EXAMPLES: &'static [&'static str] = &[
-""
-];
+
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
         let lines = input.lines();
         match part {
@@ -21,7 +19,9 @@ impl Day<13> for Day13 {
             }
         }
     }
-
+    const EXAMPLES: &'static [&'static str] = &[
+""
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![

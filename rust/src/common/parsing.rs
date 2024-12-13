@@ -15,7 +15,7 @@ pub trait NamedCaptureGroupsHelpers {
     fn isize(&self, name: &str) -> isize;
 }
 
-impl<'h> NamedCaptureGroupsHelpers for Captures<'h> {
+impl NamedCaptureGroupsHelpers for Captures<'_> {
     fn str(&self, name: &str) -> &str {
         self.name(name).unwrap().as_str()
     }

@@ -1,12 +1,9 @@
 #![feature(trait_alias)]
 #![feature(associated_type_defaults)]
 #![feature(ascii_char)]
-#![feature(is_none_or)]
 #![feature(ascii_char_variants)]
 #![feature(let_chains)]
-#![feature(is_sorted)]
 #![feature(iter_array_chunks)]
-#![feature(iter_repeat_n)]
 #![feature(generic_arg_infer)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
@@ -14,7 +11,7 @@ pub mod common; pub use common::*;
 mod y15; mod y23; mod y24;
 
 fn main() {
-    let day = y24::days::Day12::new();
+    let day = y24::days::Day13::new();
     day.test(None);
     day.solve(day.input());
 }

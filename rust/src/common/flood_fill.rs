@@ -13,22 +13,25 @@ where
     I: Iterator<Item = T>,
     F: FnMut(&T, &T) -> bool,
 {
-    let mut white: Vec<T> = vec![start.clone()];
-    let mut black: Vec<T> = vec![];
-    while let Some(tile) = white.pop() {
-        if !black.contains(&tile) {
-            black.push(tile.clone());
+    // stack (Vec<T>, push/pop) makes DFS, queue (VecDeque<T>, push_back/pop_front) makes BFS
+    // BFS may be more appropriate in some scenarios; DFS, on the other hand, generally doesn't explode in memory usage
+    let mut to_examine: Vec<T> = vec![start.clone()];
+    // maybe make this a generator/iterator?
+    let mut results: Vec<T> = vec![];
+    while let Some(tile) = to_examine.pop() {
+        if !results.contains(&tile) {
+            results.push(tile.clone());
         }
         for adj in neighbours(&tile) {
-            if !black.contains(&adj) && !white.contains(&adj)
+            if !results.contains(&adj) && !to_examine.contains(&adj)
                 && filter(&tile, &adj)
             {
-                white.push(adj);
+                to_examine.push(adj);
             }
         }
     }
-    
-    black
+
+    results
 }
 
 pub fn flood_fill_adjacent<P>(start: &Vector2, filter: P) -> Vec<Vector2>

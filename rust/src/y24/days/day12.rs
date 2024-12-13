@@ -116,12 +116,11 @@ impl Garden {
             let mut fences = FxHashSet::default();
             
             let points = flood_fill_adjacent(&pt, |&tile, &adj| {
-                if self.grid.get(&adj).is_some_and(|&adj_plant| adj_plant == plant) {
-                    true
-                } else {
+                let belongs = self.grid.get(&adj).is_some_and(|&adj_plant| adj_plant == plant);
+                if !belongs {
                     fences.insert((tile, Direction::try_from(adj - tile).unwrap()));
-                    false
                 }
+                belongs
             });
             visited.extend(points.iter());
             self.regions.push(Region {
@@ -136,7 +135,7 @@ impl Garden {
 impl Region {
     fn sides(&self) -> usize {
         let mut total = 0;
-        let mut visited: FxHashSet<(Vector2, Direction)> = FxHashSet::default();
+        let mut visited = FxHashSet::default();
         for fence in &self.fences {
             if visited.contains(fence) {continue}
 
