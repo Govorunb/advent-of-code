@@ -14,8 +14,7 @@ impl Day<5> for Day5 {
     const INPUT: &'static str = include_str!("../Input/day5.txt");
 
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let bruh = input.replace("\r", "");
-        let (rules_s, updates_s) = bruh.split_once("\n\n").unwrap();
+        let (rules_s, updates_s) = input.split_once("\n\n").unwrap();
         let rules = rules_s.lines().map(|rs| {
             let (x,y) = rs.split_once('|').unwrap();
             Rule { print: x.parse().unwrap(), before: y.parse().unwrap()}

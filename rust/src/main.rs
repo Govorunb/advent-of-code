@@ -5,6 +5,7 @@
 #![feature(let_chains)]
 #![feature(iter_array_chunks)]
 #![feature(generic_arg_infer)]
+#![feature(int_roundings)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common; pub use common::*;

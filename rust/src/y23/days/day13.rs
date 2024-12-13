@@ -140,7 +140,7 @@ impl Day<13> for Day13 {
     const INPUT: &'static str = include_str!("../Input/day13.txt");
 
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let valleys = input.split("\r\n\r\n")
+        let valleys = input.split("\n\n")
             .map(Valley::parse).collect_vec();
         let hashes = valleys.iter()
             .map(|v| (v.grid.clone(), v.make_hashes()))

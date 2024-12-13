@@ -337,7 +337,6 @@ impl Almanac {
     }
 
     fn parse(input: &str, part: Part) -> Self {
-        let input = input.replace("\r\n", "\n");
         let mut sections = input.split("\n\n");
 
         let first_line = sections.next().unwrap()

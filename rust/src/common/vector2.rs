@@ -1,6 +1,6 @@
 use std::fmt::Display;
 use crate::{Direction, Direction8, Size};
-use std::ops::{Add, Neg, Sub};
+use std::ops::{Add, Mul, MulAssign, Neg, Sub};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd, Default)]
 #[derive(derive_more::Add, derive_more::AddAssign, derive_more::Sub, derive_more::SubAssign, derive_more::From, derive_more::Neg)]
@@ -118,6 +118,42 @@ impl std::ops::AddAssign<Direction> for Vector2 { fn add_assign(&mut self, rhs: 
 impl std::ops::SubAssign<Direction> for Vector2 { fn sub_assign(&mut self, rhs: Direction) { *self -= Self::from(rhs) } }
 impl std::ops::AddAssign<Direction8> for Vector2 { fn add_assign(&mut self, rhs: Direction8) { *self += Self::from(rhs) } }
 impl std::ops::SubAssign<Direction8> for Vector2 { fn sub_assign(&mut self, rhs: Direction8) { *self -= Self::from(rhs) } }
+
+impl Mul<isize> for Vector2 {
+    type Output = Vector2;
+    fn mul(self, rhs: isize) -> Self::Output {
+        Self {
+            x: self.x * rhs,
+            y: self.y * rhs
+        }
+    }
+}
+impl Mul<usize> for Vector2 {
+    type Output = Vector2;
+    fn mul(self, rhs: usize) -> Self::Output {
+        self.mul(rhs as isize)
+    }
+}
+impl Mul<Vector2> for isize {
+    type Output = Vector2;
+    fn mul(self, rhs: Vector2) -> Self::Output {rhs*self}
+}
+impl Mul<Vector2> for usize {
+    type Output = Vector2;
+    fn mul(self, rhs: Vector2) -> Self::Output {rhs*self}
+}
+impl MulAssign<isize> for Vector2 {
+    fn mul_assign(&mut self, rhs: isize) {
+        self.x *= rhs;
+        self.y *= rhs;
+    }
+}
+
+impl MulAssign<usize> for Vector2 {
+    fn mul_assign(&mut self, rhs: usize) {
+        self.mul_assign(rhs as isize)
+    }
+}
 
 impl Display for Vector2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

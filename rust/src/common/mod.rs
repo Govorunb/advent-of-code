@@ -31,10 +31,7 @@ pub enum Part
 
 impl Display for Part {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Part::One => 1,
-            Part::Two => 2
-        })
+        write!(f, "{}", *self as usize)
     }
 }
 
@@ -65,6 +62,7 @@ pub trait Day<const DAY: u8>
     fn input(&self) -> &'static str {Self::INPUT}
     fn solve(&self, input: &str) {
         println!("day {}", self.day());
+        let input = &input.replace("\r\n", "\n");
         let mut sw = Stopwatch::start_new();
         for part in [Part::One, Part::Two] {
             sw.restart();
@@ -92,7 +90,7 @@ pub trait Day<const DAY: u8>
     }
     fn test_part(&self, part: Part, test_cases: Vec<Self::TestCase>) {
         for (i, case) in test_cases.into_iter().enumerate() {
-            let (input, expected) = (case.input(), case.expected());
+            let (input, expected) = (&case.input().replace("\r\n", "\n"), case.expected());
             let got = self.solve_part(input, part);
             assert_eq!(expected, got, "d{DAY} p{part} case {} - expected {expected}, got {got}", i+1);
         }

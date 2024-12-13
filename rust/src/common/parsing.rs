@@ -1,6 +1,6 @@
 use std::str::FromStr;
 use regex::Captures;
-
+use crate::Vector2;
 // todo: macro wizardry (if possible)
 // accept regex and type
 // autofill struct initializer from named captures
@@ -13,6 +13,7 @@ pub trait NamedCaptureGroupsHelpers {
     fn string(&self, name: &str) -> String;
     fn usize(&self, name: &str) -> usize;
     fn isize(&self, name: &str) -> isize;
+    fn vec2(&self, x_name: &str, y_name: &str) -> Vector2;
 }
 
 impl NamedCaptureGroupsHelpers for Captures<'_> {
@@ -30,4 +31,7 @@ impl NamedCaptureGroupsHelpers for Captures<'_> {
     fn string(&self, name: &str) -> String {self.parse(name)}
     fn usize(&self, name: &str) -> usize {self.parse(name)}
     fn isize(&self, name: &str) -> isize {self.parse(name)}
+    fn vec2(&self, x_name: &str, y_name: &str) -> Vector2 {
+        Vector2 {x: self.parse(x_name), y: self.parse(y_name) }
+    }
 }

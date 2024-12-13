@@ -266,11 +266,8 @@ impl Day<19> for Day19 {
     const INPUT: &'static str = include_str!("../Input/day19.txt");
 
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let newlines_fixed = input.replace("\r\n", "\n");
-        let (workflows_str, parts_str) = newlines_fixed
-            .split_once("\n\n").unwrap_or_else(|| {
-                panic!("{}", newlines_fixed);
-            });
+        let (workflows_str, parts_str) = input
+            .split_once("\n\n").unwrap();
         let workflows: FxIndexMap<String, Workflow> = workflows_str.lines()
             .map(str::trim)
             .map_into::<Workflow>()
