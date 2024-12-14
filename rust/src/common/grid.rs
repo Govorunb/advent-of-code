@@ -216,6 +216,16 @@ impl<T> Grid<T> {
             item
         }).fuse() // already behaves like fused but w/e
     }
+    
+    pub fn map_clone<U, F>(&self, map: F) -> Grid<U>
+    where
+        F: Fn(&T) -> U,
+    {
+        Grid {
+            rect: self.rect,
+            elements: self.elements.iter().map(map).collect_vec(),
+        }
+    }
 }
 
 impl<T: Default + Clone> Grid<T> {

@@ -40,28 +40,37 @@ impl Day<14> for Day14 {
                     quadrants[quadrant] += 1;
                     // println!("{robot:?} -> {} in {quadrant}", robot.pos);
                 }
-                // println!("{}", Self::robot_grid(bounds, &moved_robots));
+                // println!("{}", Self::grid(bounds, &moved_robots));
                 
-                quadrants.iter().product::<usize>()
+                quadrants.iter().product()
             }
             Part::Two => {
                 let mut t = 0;
-                loop {
+                'outer: loop {
                     let mut moved_robots = robots.clone();
+                    // i assumed *all* the robots would align into the tree pattern
+                    // so, naturally, all positions should have then been unique
+                    // turns out it's only a few of the robots - pure ~~dumb luck~~ Christmas miracle that this worked anyway
+                    let mut positions = FxHashSet::default();
                     for robot in &mut moved_robots {
                         robot.do_move(t, bounds);
+                        if !positions.insert(robot.pos) {
+                            t += 1;
+                            continue 'outer;
+                        }
                     }
-                    // pure dumb luck that this worked
-                    let grid = Self::robot_grid(bounds, &moved_robots);
-                    if grid.elements().all(|&c| c == '.' || c == '1') {
-                        println!("\n\nt={t}:\n{grid}");
-                        return t;
+                    if cfg!(debug_assertions) {
+                        let grid = Self::grid(bounds, &moved_robots);
+                        let printable = grid.map_clone(|count| match count {
+                            0 => '.',
+                            &c => char::from_digit(c as u32, 10).unwrap(),
+                        });
+                        println!("\n\nt={t}:\n{printable}");
                     }
-                    t += 1;
+                    return t;
                 }
             },
         }
-        
     }
     const EXAMPLES: &'static [&'static str] = &[
 "p=0,4 v=3,-3
@@ -86,7 +95,7 @@ p=9,5 v=-3,-3
             ],
             test_cases![
                 // (Self::EXAMPLES[0], 0),
-                // (Self::INPUT, 6876),
+                (Self::INPUT, 6876),
             ]
         ]
     }
@@ -104,13 +113,10 @@ impl Day14 {
         }
     }
 
-    fn robot_grid(bounds: Size, moved_robots: &Vec<Robot>) -> Grid<char> {
-        let mut grid: Grid<char> = Grid::fill_with(bounds, '.').unwrap();
+    fn grid(bounds: Size, moved_robots: &Vec<Robot>) -> Grid<usize> {
+        let mut grid = Grid::from_origin(bounds).unwrap();
         for robot in moved_robots {
-            grid[robot.pos] = match grid[robot.pos].to_digit(10) {
-                None => '1',
-                Some(c) => (c + 1).to_string().chars().next().unwrap(),
-            };
+            grid[robot.pos] += 1;
         }
         grid
     }
