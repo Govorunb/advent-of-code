@@ -8,6 +8,7 @@ pub struct Rect {
 }
 
 impl Rect {
+    /// Returns [`None`] if the given `size` has zero width or height.
     pub fn new(base: Vector2, size: Size) -> Option<Self> {
         if size.width > 0 && size.height > 0 {
             Some(Self { base, size })

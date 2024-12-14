@@ -35,6 +35,13 @@ impl Vector2 {
             Some(item)
         })
     }
+    
+    pub fn wrap(&self, bounds: Size) -> Vector2 {
+        let mut out = *self;
+        out.x = out.x.rem_euclid(bounds.width as isize);
+        out.y = out.y.rem_euclid(bounds.height as isize);
+        out
+    }
 }
 
 impl From<Size> for Vector2 {

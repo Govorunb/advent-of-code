@@ -236,6 +236,7 @@ impl<T: Default + Clone> Grid<T> {
         }
     }
     
+    /// Only returns [`None`] if the given `size` has zero width or height (as then no [`Rect`] can be constructed).
     pub fn from_origin(size: Size) -> Option<Self> {
         let rect = Rect::from_origin(size)?;
         Some(Self::new(rect))
