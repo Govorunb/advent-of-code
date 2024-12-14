@@ -21,7 +21,7 @@ impl Day<~> for Day~ {
     }
     const EXAMPLES: &'static [&'static str] = &[
 ""
-];
+    ];
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
