@@ -95,16 +95,16 @@ impl Day<15> for Day15 {
             .find(|&c| *c.1 == Symbol::Robot)
             .unwrap().0;
         for dir in moves {
-            let mut clone = grid.clone();
-            if Self::try_move(&mut clone, robot_pos, dir) {
+            // safety clone - if only one side of BoxL/BoxR can move, that side will push and we can't roll that back
+            // i wrote a version that didn't clone but it was like 100 more LoC and 10x less readable, i think i'll take the 3ms hit
+            let backup = grid.clone();
+            if Self::try_move(&mut grid, robot_pos, dir) {
+                // println!("before moving ({robot_pos})->{dir:?}:\n{grid}");
                 robot_pos += dir;
-                // println!("before moving {dir:?}:\n{grid}");
-                grid = clone;
-                // println!("after moving {dir:?}:\n{grid}");
+                // println!("after moving ({robot_pos})->{dir:?}:\n{grid}");
+            } else {
+                grid = backup; // if you reach this line, you can put "restored backups" on your resume
             }
-            // else if !clone.cells().eq(grid.cells()) {
-            //     panic!("mutated but couldn't move!\n{grid}\n\n\n{clone}");
-            // }
         }
         
         // println!("{grid}");

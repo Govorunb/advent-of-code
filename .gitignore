@@ -1,5 +1,7 @@
 Input/
 /rust/target/
+/rust/flamegraph.svg
+/rust/perf.data*
 /rust/Cargo.lock
 /csharp/**/bin/
 /csharp/**/obj/
