@@ -40,30 +40,56 @@ impl Day<14> for Day14 {
                     quadrants[quadrant] += 1;
                     // println!("{robot:?} -> {} in {quadrant}", robot.pos);
                 }
-                // println!("{}", Self::grid(bounds, &moved_robots));
                 
                 quadrants.iter().product()
             }
             Part::Two => {
-                let upper_limit = bounds.width * bounds.height;
-                for t in 0..=upper_limit {
+                // clever solution - idea by x8uurg
+                // each robot's X coordinate necessarily has a cycle of at most W (width), likewise for Y
+                // then, the following must hold:
+                // target % bounds.width = target_x
+                // target % bounds.height = target_y
+                // instead of searching W * H, we can search W and H separately (W + H)
+                // then, repeatedly add e.g. H to target_y and compare it (mod W) to target_x
+                // the total computation cost should be at most 2*max(W,H)
+                let mut x_cycle = (0,0); // t, max_xs
+                let mut y_cycle = (0,0); // t, max_ys
+                for t in 0..bounds.width.max(bounds.height) {
                     let mut moved_robots = robots.clone();
-                    // pure ~~dumb luck~~ Christmas miracle that this works
-                    // (it came from an incorrect assumption that *all* robots would align in the form of the tree)
-                    if !moved_robots.iter_mut()
-                        .map(|r| r.do_move(t, bounds))
-                        .all_unique()
-                    {
-                        continue;
+                    let mut xs = vec![0usize; bounds.width];
+                    let mut ys = vec![0usize; bounds.height];
+                    for robot in &mut moved_robots {
+                        robot.pos = robot.do_move(t, bounds);
+                        xs[robot.pos.x as usize] += 1;
+                        ys[robot.pos.y as usize] += 1;
                     }
-                    
-                    if cfg!(debug_assertions) {
-                        println!("\n\nt={t}");
-                        println!("{}", Self::grid(bounds, &moved_robots));
-                    }
-                    return t;
+                    let max_xs = *xs.iter().max().unwrap();
+                    let max_ys = *ys.iter().max().unwrap();
+                    if x_cycle.1 < max_xs {x_cycle = (t, max_xs)}
+                    if y_cycle.1 < max_ys {y_cycle = (t, max_ys)}
                 }
-                unreachable!()
+                
+                let target_x = x_cycle.0;
+                let target_y = y_cycle.0;
+                
+                // println!("{target_x}:{target_y}");
+                
+                let target = (0..bounds.width)
+                    .map(|n| target_y + bounds.height * n)
+                    .find(|t| t % bounds.width == target_x)
+                    .unwrap();
+                if cfg!(debug_assertions) {
+                    let moved_robots = robots.iter()
+                        .map(|r| {
+                            Robot {
+                                pos: r.do_move(target, bounds),
+                                vel: r.vel,
+                            }
+                        })
+                        .collect_vec();
+                    println!("{}", Self::grid(bounds, &moved_robots));
+                }
+                target
             },
         }
     }
@@ -119,7 +145,7 @@ impl Day14 {
 }
 
 impl Robot {
-    fn do_move(&mut self, steps: usize, bounds: Size) -> Vector2 {
+    fn do_move(&self, steps: usize, bounds: Size) -> Vector2 {
         (self.pos + self.vel * steps).wrap(bounds)
     }
     
