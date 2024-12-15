@@ -204,7 +204,7 @@ impl Day<16> for Day16 {
         let c: Contraption = input.parse().expect("failed to parse grid");
         match part {
             Part::One => {
-                c.count_energized(Vector2::zero(), Direction::East)
+                c.count_energized(Vector2::ZERO, Direction::East)
             },
             Part::Two => {
                 let width = c.grid.width();

@@ -121,7 +121,7 @@ impl PipeGrid {
         // infer what pipe under animal is from what it's connected to
         let mut first_pipe = None;
         for dir in Direction::all_clockwise() {
-            let moved = self.animal + *dir;
+            let moved = self.animal + dir;
             if let Some(Symbol::Pipe(p)) = self.tiles.get(&moved) {
                 if p.is_connected(dir.opp()) {
                     match first_pipe {

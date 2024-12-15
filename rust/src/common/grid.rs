@@ -18,7 +18,7 @@ pub struct Grid<T> {
     elements: Vec<T>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd)]
+#[derive(Default, Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd)]
 pub struct Size {
     pub width: usize,
     pub height: usize,

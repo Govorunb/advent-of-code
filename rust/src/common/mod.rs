@@ -22,7 +22,7 @@ use rustc_hash::FxHasher;
 use indexmap::{IndexMap, IndexSet};
 use stopwatch::Stopwatch;
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum Part
 {
     #[default]

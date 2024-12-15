@@ -1,7 +1,4 @@
-use std::iter::Rev;
 use std::ops::Neg;
-use std::slice::Iter;
-use std::sync::LazyLock;
 use itertools::Either;
 use crate::Vector2;
 
@@ -33,32 +30,8 @@ pub enum Turn {
     Opposite,
 }
 
-static AROUND: LazyLock<Vec<Vector2>> = LazyLock::new(||
-    vec![
-        Vector2 {x:-1,y:-1}, Vector2 {x: 0,y:-1}, Vector2 {x: 1,y:-1},
-        Vector2 {x:-1,y: 0},                      Vector2 {x: 1,y: 0},
-        Vector2 {x:-1,y: 1}, Vector2 {x: 0,y: 1}, Vector2 {x: 1,y: 1},
-    ]
-);
-
-static ADJACENT: LazyLock<Vec<Vector2>> = LazyLock::new(||
-    vec![
-                             Vector2 {x: 0,y:-1},
-        Vector2 {x:-1,y: 0},                      Vector2 {x: 1,y: 0},
-                             Vector2 {x: 0,y: 1},
-    ]
-);
-
-static CORNERS: LazyLock<Vec<Vector2>> = LazyLock::new(||
-    vec![
-        Vector2 {x:-1,y:-1},                      Vector2 {x: 1,y:-1},
-
-        Vector2 {x:-1,y: 1},                      Vector2 {x: 1,y: 1},
-    ]
-);
-
 impl Direction {
-    pub fn opp(&self) -> Self {
+    pub const fn opp(&self) -> Self {
         match self {
             Self::North => Self::South,
             Self::South => Self::North,
@@ -67,7 +40,7 @@ impl Direction {
         }
     }
     
-    pub fn cw(&self) -> Self {
+    pub const fn cw(&self) -> Self {
         match self {
             Self::North => Self::East,
             Self::South => Self::West,
@@ -76,7 +49,7 @@ impl Direction {
         }
     }
 
-    pub fn ccw(&self) -> Self {
+    pub const fn ccw(&self) -> Self {
         match self {
             Self::North => Self::West,
             Self::South => Self::East,
@@ -84,7 +57,7 @@ impl Direction {
             Self::West => Self::South,
         }
     }
-    pub fn turn(&self, turn: Turn) -> Self {
+    pub const fn turn(&self, turn: Turn) -> Self {
         match turn {
             Turn::None => *self,
             Turn::Left => self.ccw(),
@@ -93,25 +66,21 @@ impl Direction {
         }
     }
 
-    pub fn sides(&self) -> [Direction; 2] {
+    pub const fn sides(&self) -> [Direction; 2] {
         [self.turn(Turn::Left), self.turn(Turn::Right)]
     }
     
-    pub fn all_clockwise() -> Iter<'static, Direction> {
-        [Direction::North, Direction::East, Direction::South, Direction::West].iter()
+    pub const fn all_clockwise() -> [Direction; 4] {
+        [Direction::North, Direction::East, Direction::South, Direction::West]
     }
     
-    pub fn all_counterclockwise() -> Rev<Iter<'static, Direction>> {
-        Self::all_clockwise().rev()
-    }
-    
-    pub fn deltas() -> Iter<'static, Vector2> {
-        ADJACENT.iter()
+    pub const fn all_counterclockwise() -> [Direction;4] {
+        [Direction::North, Direction::West, Direction::South, Direction::East]
     }
 }
 
 impl Direction8 {
-    pub fn opp(&self) -> Direction8 {
+    pub const fn opp(&self) -> Direction8 {
         match self {
             Self::North => Self::South,
             Self::West => Self::East,
@@ -125,22 +94,13 @@ impl Direction8 {
         }
     }
     
-    pub fn all_clockwise() -> Iter<'static, Direction8> {
+    pub const fn all_clockwise() -> [Direction8;8] {
         [
             Self::North, Self::NorthEast,
             Self::East, Self::SouthEast,
             Self::South, Self::SouthWest,
             Self::West, Self::NorthWest
-        ].iter()
-    }
-    pub fn deltas() -> Iter<'static, Vector2> {
-        AROUND.iter()
-    }
-    pub fn cardinal_deltas() -> Iter<'static, Vector2> {
-        Direction::deltas()
-    }
-    pub fn corner_deltas() -> Iter<'static, Vector2> {
-        CORNERS.iter()
+        ]
     }
 }
 
@@ -155,7 +115,7 @@ impl Neg for Direction {
 }
 
 impl Turn {
-    pub fn from_corner(from: Direction, to: Direction) -> Self {
+    pub const fn from_corner(from: Direction, to: Direction) -> Self {
         // just hoping this compiles to a LUT
         match (from, to) {
             (Direction::North, Direction::North) => Self::None,

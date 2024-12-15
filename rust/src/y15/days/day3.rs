@@ -13,7 +13,7 @@ struct Walkers {
 
 impl Walkers {
     fn new(heads: usize) -> Self {
-        let starting_pos = Vector2 { x: 0, y: 0 };
+        let starting_pos = Vector2::ZERO;
         Self {
             heads: vec![starting_pos; heads],
             walked: HashSet::from([starting_pos]),

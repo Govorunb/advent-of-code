@@ -14,13 +14,13 @@ impl Day<4> for Day4 {
         let grid: Grid<char> = Grid::from_str(input).unwrap();
         match part {
             Part::One => {
-                Self::word_search(grid,"XMAS", Direction8::deltas())
+                Self::word_search(grid,"XMAS", &Vector2::AROUND)
             },
             Part::Two => {
                 grid.coords()
                     .filter(|pt| {
                         grid[pt] == 'A' // centered on 'A'
-                        && Direction8::corner_deltas().take(2)
+                        && Vector2::CORNERS.iter().take(2)
                             .filter(|&dir| {
                                 let pt2 = pt + dir; // top left/right
                                 let opp = pt - dir; // bottom right/left
@@ -77,7 +77,7 @@ impl Day4 {
         }
     }
     
-    fn word_search<'a>(grid: Grid<char>, pat: &str, directions: impl Iterator<Item = &'a Vector2> + Clone) -> usize {
+    fn word_search<'a>(grid: Grid<char>, pat: &str, directions: &[Vector2]) -> usize {
         let mut chars = pat.chars();
         let head = chars.next().unwrap();
         let tail: &Vec<char> = &chars.collect_vec();
