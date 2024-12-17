@@ -121,7 +121,7 @@ impl Garden {
                     fences.insert((tile, Direction::try_from(adj - tile).unwrap()));
                 }
                 belongs
-            });
+            }).collect_vec();
             visited.extend(points.iter());
             self.regions.push(Region {
                 plant,

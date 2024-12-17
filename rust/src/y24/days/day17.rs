@@ -49,16 +49,10 @@ impl Day<17> for Day17 {
 Register B: (?<B>-?\d+)
 Register C: (?<C>-?\d+)
 
-Program: (?<prog>[0-7,]*)"#).unwrap();
+Program: (?<prog>.*)"#).unwrap();
         let mut cpu = regex.captures_iter(input)
             .map(|c| {
-                // program can jump to an odd ip
-                // let prog_regex = Regex::new(r#"(?<inst>[0-7]),(?<oper>[0-7])"#).unwrap();
-                // let program = prog_regex.captures_iter(c.str("prog"))
-                //     .map(|c_| (c_.usize("inst").into(), c_.usize("oper")))
-                //     .collect_vec();
-                let program = c.str("prog")
-                    .chars()
+                let program = c.str("prog").chars()
                     .filter_map(|c| c.to_digit(10).map(|d| d as usize))
                     .collect_vec();
                 Cpu {

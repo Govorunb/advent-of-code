@@ -151,12 +151,13 @@ impl PipeGrid {
     }
 
     fn inside_pipe_network(&self) -> usize {
-        let mut partition_r: FxHashSet<Vector2> = FxHashSet::default();
-        let mut partition_l: FxHashSet<Vector2> = FxHashSet::default();
+        let mut partition_r = FxHashSet::default();
+        let mut partition_l = FxHashSet::default();
         
         let mut turns = 0;
         let delta = self.animal - self.pipes[0].coords;
         let mut dir = delta.try_into().unwrap();
+        let pipe_coords: FxHashSet<Vector2> = self.pipes.iter().map(|&p| p.coords).collect();
         for pipe_tile in self.pipes.as_slice() {
             let pipe = match pipe_tile.symbol {
                 Symbol::Pipe(pipe) => pipe,
@@ -177,8 +178,8 @@ impl PipeGrid {
                 let ccw = pt + new_dir.ccw();
                 for (p, par) in [(cw, &mut partition_r), (ccw, &mut partition_l)] {
                     if self.tiles.flat_index(&p).is_some()
-                        && !self.pipes.iter().any(|&p_| p_.coords == p) {
-                        par.extend(self.flood_fill(&cw, par));
+                        && !pipe_coords.contains(&p) {
+                        par.extend(self.flood_fill(&cw, par, &pipe_coords));
                     }
                 }
             } else {
@@ -192,9 +193,9 @@ impl PipeGrid {
                 let behind = pt + dir_behind;
                 for p in [past, behind] {
                     if self.tiles.bounds().contains(&p)
-                        && !self.pipes.iter().any(|&p_| p_.coords == p)
+                        && !pipe_coords.contains(&p)
                         && self.animal != p {
-                        partition.extend(self.flood_fill(&p, partition));
+                        partition.extend(self.flood_fill(&p, partition, &pipe_coords));
                     }
                 }
             }
@@ -212,16 +213,14 @@ impl PipeGrid {
 
         visited.len()
     }
-
-    fn flood_fill(&self, pt: &Vector2, visited: &FxHashSet<Vector2>) -> Vec<Vector2> {
+    
+    fn flood_fill(&self, pt: &Vector2, visited: &FxHashSet<Vector2>, pipes: &FxHashSet<Vector2>) -> Vec<Vector2> {
         if visited.contains(pt) {
             return vec![];
         }
         
-        flood_fill_adjacent(pt, |_, &adj| {
-            self.tiles.bounds().contains(&adj)
-                && !self.pipes.iter().any(|t| t.coords == adj)
-        })
+        flood_fill_adjacent(pt, |_, &adj| self.tiles.bounds().contains(&adj) && !pipes.contains(&adj))
+            .collect_vec()
     }
 }
 
@@ -303,6 +302,7 @@ L7JLJL-JLJLJL--JLJ.L",
                 (Self::EXAMPLES[3], 4),
                 (Self::EXAMPLES[4], 8),
                 (Self::EXAMPLES[5], 10),
+                (Self::INPUT, 351),
             ]
         ]
     }
