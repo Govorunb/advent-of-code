@@ -15,7 +15,7 @@ mod day13; pub use day13::*;
 mod day14; pub use day14::*;
 mod day15; pub use day15::*;
 mod day16; pub use day16::*;
-// mod day17; pub use day17::*;
+mod day17; pub use day17::*;
 // mod day18; pub use day18::*;
 // mod day19; pub use day19::*;
 // mod day20; pub use day20::*;

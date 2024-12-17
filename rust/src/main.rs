@@ -7,13 +7,15 @@
 #![feature(generic_arg_infer)]
 #![feature(int_roundings)]
 #![feature(const_trait_impl)]
+#![feature(coroutines)]
+#![feature(iter_from_coroutine)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common; pub use common::*;
 mod y15; mod y23; mod y24;
 
 fn main() {
-    let day = y24::days::Day16::new();
+    let day = y24::days::Day17::new();
     day.test(None);
     day.solve(day.input());
 }
