@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fmt::Formatter;
 use pathfinding::prelude::astar;
 use crate::*;
@@ -19,7 +20,7 @@ impl Day<18> for Day18 {
                 }
             }).collect_vec();
         
-        let is_example = input.lines().count() < 100;
+        let is_example = input.lines().nth(100).is_none();
         let side = if is_example {7} else {71};
         let size = Size {width: side, height: side};
         
@@ -28,10 +29,10 @@ impl Day<18> for Day18 {
         for byte in &bytes[..p1_fall_amt] {
             grid[byte] = '#';
         }
-        let (path, cost) = Self::search(&grid).unwrap();
         match part {
             Part::One => {
-                // for p in path {
+                let (_path, cost) = Self::search(&grid).unwrap();
+                // for p in _path {
                 //     grid[&p] = 'o';
                 // }
                 // println!("{grid}");
@@ -39,17 +40,35 @@ impl Day<18> for Day18 {
                 cost.to_string()
             },
             Part::Two => {
-                let mut path_pts: FxHashSet<Vector2> = FxHashSet::from_iter(path);
-                for b in bytes.iter().skip(p1_fall_amt) {
-                    grid[b] = '#';
-                    if !path_pts.contains(b) {continue}
-                    
-                    let Some((path, _)) = Self::search(&grid)
-                        else {return b.to_string()};
-                    path_pts.clear();
-                    path_pts.extend(path);
+                // binary search is a teeny bit faster (>10x)
+                // let (path, _) = Self::search(&grid).unwrap();
+                // let mut path_pts: FxHashSet<Vector2> = FxHashSet::from_iter(path);
+                // for b in bytes.iter().skip(p1_fall_amt) {
+                //     grid[b] = '#';
+                //     if !path_pts.contains(b) {continue}
+                //     
+                //     let Some((path, _)) = Self::search(&grid)
+                //         else {return b.to_string()};
+                //     path_pts.clear();
+                //     path_pts.extend(path);
+                // }
+                // unreachable!()
+                let mut low = p1_fall_amt;
+                let mut high = bytes.len()-1;
+                while high - low > 1 {
+                    let mid = (low + high) / 2;
+                    for b in &bytes[low..=mid] {
+                        grid[b] = '#';
+                    }
+                    for b in &bytes[(mid+1)..=high] {
+                        grid[b] = '.';
+                    }
+                    match Self::search(&grid) {
+                        Some(_) => low = mid,
+                        None => high = mid
+                    }
                 }
-                unreachable!()
+                bytes[high].to_string()
             }
         }
     }
