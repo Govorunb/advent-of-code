@@ -29,16 +29,13 @@ impl Rect {
     pub const fn width(&self) -> usize { self.size.width }
     pub const fn height(&self) -> usize { self.size.height }
     pub const fn size(&self) -> Size { self.size }
+    pub const fn area(&self) -> usize { self.size.width * self.size.height }
     
     pub const fn top_left(&self) -> Vector2 {
         self.base
     }
     pub const fn bottom_right(&self) -> Vector2 {
         self.base + self.size + Vector2::TOP_LEFT
-    }
-    
-    pub fn iter(self) -> RectIter {
-        RectIter::new(self)
     }
     
     pub const fn x_range(&self) -> Range<isize> {
@@ -52,6 +49,16 @@ impl Rect {
         self.x_range().contains(&point.x) && self.y_range().contains(&point.y)
     }
 }
+
+impl IntoIterator for Rect {
+    type Item = Vector2;
+    type IntoIter = RectIter;
+    
+    fn into_iter(self) -> Self::IntoIter {
+        RectIter::new(self)
+    }
+}
+
 #[test]
 fn test_rect_contains() {
     let rect = Rect {

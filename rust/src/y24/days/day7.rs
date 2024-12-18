@@ -1,3 +1,4 @@
+use num::Integer;
 use crate::*;
 
 pub struct Day7 {
@@ -18,9 +19,9 @@ impl Day<7> for Day7 {
         let lines = input.lines();
         let equations = lines.map(|l| {
             let (total_s, el_s) = l.split_once(':').unwrap();
-            let total = total_s.parse::<usize>().unwrap();
+            let total = total_s.parse().unwrap();
             let elements = el_s.split_ascii_whitespace()
-                .map(|s| s.parse::<usize>().unwrap())
+                .map(|s| s.parse().unwrap())
                 .collect();
             Equation { total, elements }
         }).collect_vec();

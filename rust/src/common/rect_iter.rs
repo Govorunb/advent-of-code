@@ -3,17 +3,22 @@ use std::iter::FusedIterator;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Eq, Hash)]
 pub struct RectIter {
-    rect: Rect,
     start: Vector2,
     end: Vector2,
+    front: Vector2,
+    back: Vector2,
 }
 
 impl RectIter {
     pub fn new(rect: Rect) -> Self {
+        let start = rect.top_left();
+        let end = rect.bottom_right();
+        
         Self {
-            rect,
-            start: rect.top_left(),
-            end: rect.bottom_right()
+            start,
+            end,
+            front: start,
+            back: end,
         }
     }
 }
@@ -22,13 +27,13 @@ impl Iterator for RectIter {
     type Item = Vector2;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.start.y > self.end.y { return None }
+        if self.front.y > self.back.y { return None }
 
-        let item = self.start;
-        self.start.x += 1;
-        if self.start.x > self.rect.bottom_right().x {
-            self.start.x = self.rect.top_left().x;
-            self.start.y += 1;
+        let item = self.front;
+        self.front.x += 1;
+        if self.front.x > self.end.x {
+            self.front.x = self.start.x;
+            self.front.y += 1;
         }
         // println!("{:?} forward {:?}", item, self.start);
         Some(item)
@@ -42,15 +47,15 @@ impl Iterator for RectIter {
 
 impl DoubleEndedIterator for RectIter {
     fn next_back(&mut self) -> Option<Self::Item> {
-        if self.start.y > self.end.y { return None }
+        if self.back.y < self.start.y { return None }
 
-        let item = self.end;
-        self.end.x -= 1;
-        if self.end.x < self.rect.top_left().x {
-            self.end.x = self.rect.bottom_right().x;
-            self.end.y -= 1;
+        let item = self.back;
+        self.back.x -= 1;
+        if self.back.x < self.start.x {
+            self.back.x = self.end.x;
+            self.back.y -= 1;
         }
-        // println!("{:?} back {:?}", item, self.end);
+        // println!("{:?} back {:?}", item, self.back);
         Some(item)
     }
 }
@@ -59,11 +64,38 @@ impl ExactSizeIterator for RectIter {
     // The default implementation is overly defensive and uses assert_eq! on size_hint
     // we know exactly what we're returning so it's not a problem
     fn len(&self) -> usize {
-        match (usize::try_from(self.end.y - self.start.y), usize::try_from(self.end.x - self.start.x)) {
-            (Ok(y_diff), Ok(x_diff)) => (self.rect.width() * y_diff) + x_diff,
-            _ => 0
+        let width = 1 + self.end.x - self.start.x;
+        if self.back.y < self.front.y {
+            0
+        } else {
+            let y_rem = self.back.y - self.front.y;
+            let x_rem = 1 + self.back.x - self.front.x;
+            (width * y_rem + x_rem) as usize
         }
     }
 }
 
 impl FusedIterator for RectIter {}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn test_rect_iter() {
+        use crate::{Rect, Size, Vector2};
+        
+        for width in 3..10 {
+            for height in 3..10 {
+                let rect = Rect::from_origin(Size {width, height}).unwrap();
+                let mut iter = rect.into_iter();
+                let full_len = width * height;
+                assert_eq!(iter.size_hint(), (full_len, Some(full_len)));
+                assert_eq!(iter.next(), Some(Vector2{x: 0, y: 0}));
+                assert_eq!(iter.size_hint(), (full_len-1, Some(full_len-1)));
+                iter.nth(full_len - 3); // consume all but last element
+                assert_eq!(iter.size_hint(), (1, Some(1)));
+                assert_eq!(iter.next(), Some((width-1, height-1).into()));
+                assert_eq!(iter.size_hint(), (0, Some(0)));
+            }
+        }
+    }
+}

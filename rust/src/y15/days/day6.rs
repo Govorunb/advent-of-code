@@ -84,8 +84,8 @@ impl Instruction {
             8 => InstructionType::Off,
             _ => unreachable!()
         };
-        let tl = (m.usize("c1x"), m.usize("c1y")).into();
-        let br = (m.usize("c2x"), m.usize("c2y")).into();
+        let tl = m.vec2("c1x", "c1y");
+        let br = m.vec2("c2x", "c2y");
         Instruction {
             itype,
             rect: Rect::from_corners(tl, br).unwrap()
@@ -96,7 +96,7 @@ impl Instruction {
         for y in self.rect.y_range() {
             for x in self.rect.x_range() {
                 let pt = (x,y).into();
-                let cell: &mut _ = grid.get_mut(&pt).unwrap();
+                let cell = grid.get_mut(&pt).unwrap();
                 *cell = match self.itype {
                     InstructionType::On => true,
                     InstructionType::Off => false,
@@ -109,7 +109,7 @@ impl Instruction {
         for y in self.rect.y_range() {
             for x in self.rect.x_range() {
                 let pt = (x,y).into();
-                let cell: &mut _ = grid.get_mut(&pt).unwrap();
+                let cell = grid.get_mut(&pt).unwrap();
                 *cell = match self.itype {
                     InstructionType::On => cell.add(1),
                     InstructionType::Off => cell.saturating_sub(1),

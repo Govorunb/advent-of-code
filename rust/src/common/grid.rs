@@ -197,7 +197,7 @@ impl<T> Grid<T> {
     }
 
     pub fn coords(&self) -> RectIter {
-        self.rect.iter()
+        self.rect.into_iter()
     }
 
     pub fn cells(&self) -> impl DoubleEndedIterator<Item = (Vector2, &T)> + Clone {
