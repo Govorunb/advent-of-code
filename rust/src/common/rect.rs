@@ -22,29 +22,29 @@ impl Rect {
             return None;
         }
         let base = top_left;
-        let size = (bottom_right - base + Vector2 {x: 1, y: 1}).try_into().ok()?;
+        let size = (bottom_right - base + Vector2::ONE).try_into().ok()?;
         Some(Self { base, size })
     }
     
-    pub fn width(&self) -> usize { self.size.width }
-    pub fn height(&self) -> usize { self.size.height }
-    pub fn size(&self) -> Size { self.size }
+    pub const fn width(&self) -> usize { self.size.width }
+    pub const fn height(&self) -> usize { self.size.height }
+    pub const fn size(&self) -> Size { self.size }
     
-    pub fn top_left(&self) -> Vector2 {
+    pub const fn top_left(&self) -> Vector2 {
         self.base
     }
-    pub fn bottom_right(&self) -> Vector2 {
-        self.base - Vector2 {x: 1, y: 1} + self.size
+    pub const fn bottom_right(&self) -> Vector2 {
+        self.base + self.size + Vector2::TOP_LEFT
     }
     
     pub fn iter(self) -> RectIter {
         RectIter::new(self)
     }
     
-    pub fn x_range(&self) -> Range<isize> {
+    pub const fn x_range(&self) -> Range<isize> {
         self.base.x .. (self.base.x + self.size.width as isize)
     }
-    pub fn y_range(&self) -> Range<isize> {
+    pub const fn y_range(&self) -> Range<isize> {
         self.base.y .. (self.base.y + self.size.height as isize)
     }
     

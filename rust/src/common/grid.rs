@@ -80,12 +80,14 @@ impl<TErr, T: TryFrom<char, Error = TErr> + Clone> FromStr for Grid<T> {
 
 impl<T: Display> Display for Grid<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in self.rows() {
+        let mut rows = self.rows();
+        for row in &mut rows {
             for cell in row {
                 write!(f, "{}", cell)?;
             }
             writeln!(f)?;
         }
+        debug_assert_eq!(rows.remainder().len(), 0);
         Ok(())
     }
 }

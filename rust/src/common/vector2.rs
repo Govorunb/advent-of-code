@@ -18,7 +18,7 @@ impl Vector2 {
     pub const TOP_LEFT: Vector2 = Vector2::UP + Vector2::LEFT;
     pub const TOP_RIGHT: Vector2 = Vector2::UP + Vector2::RIGHT;
     pub const BOTTOM_LEFT: Vector2 = Vector2::DOWN + Vector2::LEFT;
-    pub const BOTTOM_RIGHT: Vector2 = Vector2::DOWN + Vector2::RIGHT;
+    pub const BOTTOM_RIGHT: Vector2 = Vector2::ONE;
     pub const AROUND: [Vector2; 8] = [
         Vector2::TOP_LEFT,    Vector2::UP,   Vector2::TOP_RIGHT,
         Vector2::LEFT,                       Vector2::RIGHT,
@@ -54,14 +54,14 @@ impl Vector2 {
         })
     }
     
-    pub const fn wrap(&self, bounds: Size) -> Vector2 {
-        let mut out = *self;
+    pub const fn wrap(self, bounds: Size) -> Vector2 {
+        let mut out = self;
         out.x = out.x.rem_euclid(bounds.width as isize);
         out.y = out.y.rem_euclid(bounds.height as isize);
         out
     }
 
-    pub const fn cartesian_distance(&self, other: Vector2) -> usize {
+    pub const fn cartesian_distance(self, other: Vector2) -> usize {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
     }
 }
