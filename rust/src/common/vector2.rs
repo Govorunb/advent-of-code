@@ -60,6 +60,10 @@ impl Vector2 {
         out.y = out.y.rem_euclid(bounds.height as isize);
         out
     }
+
+    pub const fn cartesian_distance(&self, other: Vector2) -> usize {
+        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
 }
 
 impl From<Size> for Vector2 {

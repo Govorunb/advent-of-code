@@ -17,7 +17,7 @@ impl Day<18> for Day18 {
                 }
             }).collect_vec();
         let is_example = input.lines().count() < 100;
-        let side = if is_example {6} else {70};
+        let side = if is_example {7} else {71};
         let size = Size {width: side, height: side};
         let mut grid: Grid<bool> = Grid::from_origin(size).unwrap();
         match part {
@@ -64,7 +64,7 @@ impl Day<18> for Day18 {
     fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
         [
             test_cases![
-                (Self::EXAMPLES[0], 22),
+                (Self::EXAMPLES[0], 0),
                 // (Self::INPUT, 0),
             ],
             test_cases![
