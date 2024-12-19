@@ -12,14 +12,10 @@ impl Day<5> for Day5 {
         let lines = input.lines();
         match part {
             Part::One => {
-                lines
-                    .filter(Self::is_nice_p1)
-                    .count()
+                lines.filter(Self::is_nice_p1).count()
             },
             Part::Two => {
-                lines
-                    .filter(Self::is_nice_p2)
-                    .count()
+                lines.filter(Self::is_nice_p2).count()
             }
         }
     }
@@ -42,7 +38,7 @@ ieodomkazucvgmuy",
             ],
             test_cases![
                 (Self::EXAMPLES[1], 2),
-                // (Self::INPUT, 0),
+                (Self::INPUT, 55),
             ]
         ]
     }
@@ -50,7 +46,8 @@ ieodomkazucvgmuy",
 
 impl Day5 {
     fn is_nice_p1(line: &&str) -> bool {
-        fn is_vowel(c: char) -> bool {"aeiou".contains(c)}
+        let is_vowel = |c| "aeiou".contains(c);
+        
         let mut vowels = 0;
         if is_vowel(line.chars().next().unwrap()) { vowels = 1; }
         let mut has_double = false;
@@ -66,35 +63,36 @@ impl Day5 {
     
     fn is_nice_p2(line: &&str) -> bool {
         let mut has_wrapped = false;
-        let mut has_double = false;
+        let has_double = &mut false;
         let mut seeds: FxIndexMap<char, Vec<(usize, char)>> = FxIndexMap::default();
-        
-        let mut check_double = move |i, prev: char, curr: char| {
-            if has_double || prev != curr {return;}
-            
+
+        let mut check_pairs = |i: usize, prev: char, curr: char, has: &mut bool| {
+            if *has { return; }
+
             match seeds.entry(prev) {
-                Entry::Occupied(mut repeats) => {
-                    repeats.get_mut().push((i, curr));
-                    has_double = repeats.get().iter().any(|&(ri, rc)| ri < i-1 && rc == curr);
-                },
+                Entry::Occupied(mut seen) => {
+                    *has |= seen.get().iter().any(|&(ri, rc)| ri < i - 1 && rc == curr);
+                    seen.get_mut().push((i, curr));
+                }
                 Entry::Vacant(v) => {
-                    v.insert(vec![(i, curr)]);
+                    v.insert_entry(vec![(i, curr)]);
                 },
             }
         };
         
         // manually check first and second
-        check_double(1, line.chars().nth(0).unwrap(), line.chars().nth(1).unwrap());
+        check_pairs(1, line.chars().nth(0).unwrap(), line.chars().nth(1).unwrap(), has_double);
         
         for (i, (a, b, c)) in line.chars().tuple_windows().enumerate() {
-            check_double(i, b, c);
+            // `i` is the index of `a`
+            check_pairs(i+2, b, c, has_double);
             // enclosed by the same character on both sides, e.g. aba/aaa/exe
             // essentially line[i-2] == line[i]
             if a == c {
                 has_wrapped = true;
             }
             
-            if has_double && has_wrapped {
+            if *has_double && has_wrapped {
                 return true;
             }
         }

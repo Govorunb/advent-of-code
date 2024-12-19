@@ -114,3 +114,31 @@ macro_rules! aoc_year {
         "20".to_string() + &module_path!().split("::").nth(1).unwrap()[1..]
     }
 }
+
+#[macro_export]
+macro_rules! aoc_day {
+    (
+        day = $day:literal,
+        output = $output:ty,
+        examples = [$($example:literal),* $(,)?],
+        tests = $tests:expr,
+        solve = |$input:ident, $part:ident| $solve:expr
+    ) => {
+        use paste::paste;
+        
+        paste! {
+            pub struct [<Day $day>];
+            impl Day<$day> for [<Day $day>] {
+                type Output = $output;
+                const INPUT: &'static str = include_str!(concat!("../Input/day", stringify!($day), ".txt"));
+                fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+                    let $input = input;
+                    let $part = part;
+                    $solve
+                }
+                const EXAMPLES: &'static [&'static str] = &[$($example),*];
+                fn test_cases(&self) -> [Vec<Self::TestCase>; 2] { $tests }
+            }
+        }
+    }
+}

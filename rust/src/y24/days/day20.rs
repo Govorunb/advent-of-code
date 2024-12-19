@@ -1,7 +1,7 @@
 use crate::*;
 
 aoc_day!(
-    day = 1,
+    day = 20,
     output = usize,
     examples = [""],
     tests = [
