@@ -1,28 +1,34 @@
-use crate::*;
 use std::ops::Add;
 use std::sync::LazyLock;
+use crate::*;
 
-pub struct Day6;
-
-struct Instruction {
-    itype: InstructionType,
-    rect: Rect,
-}
-
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
-enum InstructionType { On, Off, Toggle }
-
-impl Day<6> for Day6 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day6.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 6,
+    output = usize,
+    examples = [
+"turn on 0,0 through 999,999
+toggle 0,0 through 999,0
+turn off 499,499 through 500,500",
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 998996),
+            (Self::INPUT, 377891),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 1001996),
+            (Self::INPUT, 14110788),
+        ]
+    ],
+    solve = |input, part| {
+        const SIDE: usize = 1000;
         let lines = input.lines();
         let instructions = lines
             .map_into::<Instruction>()
             .collect_vec();
         match part {
             Part::One => {
-                let mut grid: Grid<bool> = Grid::from_origin((1000,1000).into()).unwrap();
+                let mut grid: Grid<bool> = Grid::from_origin(Size::square(SIDE)).unwrap();
                 for instruction in instructions.iter() {
                     instruction.apply_p1(&mut grid);
                 }
@@ -31,7 +37,7 @@ impl Day<6> for Day6 {
                     .count()
             },
             Part::Two => {
-                let mut grid: Grid<usize> = Grid::from_origin((1000,1000).into()).unwrap();
+                let mut grid: Grid<usize> = Grid::from_origin(Size::square(SIDE)).unwrap();
                 for instruction in instructions.iter() {
                     instruction.apply_p2(&mut grid);
                 }
@@ -40,26 +46,15 @@ impl Day<6> for Day6 {
             }
         }
     }
+);
 
-    const EXAMPLES: &'static [&'static str] = &[
-"turn on 0,0 through 999,999
-toggle 0,0 through 999,0
-turn off 499,499 through 500,500"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 998996),
-                (Self::INPUT, 377891),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 1001996),
-                (Self::INPUT, 14110788),
-            ]
-        ]
-    }
+struct Instruction {
+    itype: InstructionType,
+    rect: Rect,
 }
 
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+enum InstructionType { On, Off, Toggle }
 
 static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<type>turn on|turn off|toggle) (?<c1x>\\d+),(?<c1y>\\d+) through (?<c2x>\\d+),(?<c2y>\\d+)").unwrap());
 impl Instruction {

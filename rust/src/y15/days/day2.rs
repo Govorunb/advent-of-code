@@ -1,15 +1,33 @@
 use crate::*;
 
-pub struct Day2;
-
 struct Box(usize, usize, usize);
 
-impl Day<2> for Day2 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day2.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 2,
+    output = usize,
+    examples = [""],
+    tests = [
+        test_cases![
+            ("2x3x4", 58),
+            ("1x1x10", 43),
+            (Self::INPUT, 1586300),
+        ],
+        test_cases![
+            ("2x3x4", 34),
+            ("1x1x10", 14),
+            (Self::INPUT, 3737498),
+        ]
+    ],
+    solve = |input, part| {
+        fn parse(line: &str) -> Box {
+            let parts = line.split('x')
+                .map(|s| s.parse().unwrap())
+                .collect_vec();
+    
+            Box(parts[0], parts[1], parts[2])
+        }
         let lines = input.lines();
-        let boxes = lines.map(Day2::parse);
+        let boxes = lines.map(parse);
         match part {
             Part::One => {
                 boxes
@@ -39,27 +57,4 @@ impl Day<2> for Day2 {
             }
         }
     }
-
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                ("2x3x4", 58),
-                ("1x1x10", 43)
-            ],
-            test_cases![
-                ("2x3x4", 34),
-                ("1x1x10", 14),
-            ]
-        ]
-    }
-}
-
-impl Day2 {
-    fn parse(line: &str) -> Box {
-        let parts = line.split('x')
-            .map(|s| s.parse().unwrap())
-            .collect_vec();
-
-        Box(parts[0], parts[1], parts[2])
-    }
-}
+);

@@ -4,13 +4,38 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 use crate::*;
 
-pub struct Day4;
-
-impl Day<4> for Day4 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day4.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 4,
+    output = usize,
+    examples = [
+"..X...
+.SAMX.
+.A..A.
+XMAS.S
+.X....",
+"MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 4),
+            (Self::EXAMPLES[1], 18),
+            (Self::INPUT, 2557),
+        ],
+        test_cases![
+            (Self::EXAMPLES[1], 9),
+            (Self::INPUT, 1854),
+        ]
+    ],
+    solve = |input, part| {
         let grid: Grid<char> = Grid::from_str(input).unwrap();
         match part {
             Part::One => {
@@ -33,41 +58,10 @@ impl Day<4> for Day4 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"..X...
-.SAMX.
-.A..A.
-XMAS.S
-.X....",
-"MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 4),
-                (Self::EXAMPLES[1], 18),
-                (Self::INPUT, 2557),
-            ],
-            test_cases![
-                (Self::EXAMPLES[1], 9),
-                (Self::INPUT, 1854),
-            ]
-        ]
-    }
-}
+);
 
 impl Day4 {
-    
-    fn word_search<'a>(grid: Grid<char>, pat: &str, directions: &[Vector2]) -> usize {
+    fn word_search(grid: Grid<char>, pat: &str, directions: &[Vector2]) -> usize {
         let mut chars = pat.chars();
         let head = chars.next().unwrap();
         let tail: &Vec<char> = &chars.collect_vec();

@@ -2,18 +2,33 @@ use std::cmp::Ordering;
 use num::Integer;
 use crate::*;
 
-pub struct Day14;
-
-#[derive(Debug, Clone, PartialEq)]
-struct Robot {
-    pos: Vector2,
-    vel: Vector2,
-}
-
-impl Day<14> for Day14 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day14.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 14,
+    output = usize,
+    examples = [
+"p=0,4 v=3,-3
+p=6,3 v=-1,-3
+p=10,3 v=-1,2
+p=2,0 v=2,-1
+p=0,0 v=1,3
+p=3,0 v=-2,-2
+p=7,6 v=-1,-3
+p=3,0 v=-1,-2
+p=9,3 v=2,3
+p=7,3 v=-1,2
+p=2,4 v=2,-3
+p=9,5 v=-3,-3"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 12),
+            (Self::INPUT, 216027840),
+        ],
+        test_cases![
+            (Self::INPUT, 6876),
+        ]
+    ],
+    solve = |input, part| {
         let regex = Regex::new(r#"p=(?<px>\d+),(?<py>\d+) v=(?<vx>-?\d+),(?<vy>-?\d+)"#).unwrap();
         let robots = regex.captures_iter(input)
             .map(|c|{
@@ -91,36 +106,16 @@ impl Day<14> for Day14 {
             },
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"p=0,4 v=3,-3
-p=6,3 v=-1,-3
-p=10,3 v=-1,2
-p=2,0 v=2,-1
-p=0,0 v=1,3
-p=3,0 v=-2,-2
-p=7,6 v=-1,-3
-p=3,0 v=-1,-2
-p=9,3 v=2,3
-p=7,3 v=-1,2
-p=2,4 v=2,-3
-p=9,5 v=-3,-3"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 12),
-                (Self::INPUT, 216027840),
-            ],
-            test_cases![
-                (Self::INPUT, 6876),
-            ]
-        ]
-    }
+);
+
+
+#[derive(Debug, Clone, PartialEq)]
+struct Robot {
+    pos: Vector2,
+    vel: Vector2,
 }
 
-
 impl Day14 {
-
     fn grid(bounds: Size, moved_robots: &Vec<Robot>) -> Grid<char> {
         let mut grid = Grid::from_origin(bounds).unwrap();
         for robot in moved_robots {

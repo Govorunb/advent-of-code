@@ -3,13 +3,35 @@ use itertools::Either;
 use num::Integer;
 use crate::*;
 
-pub struct Day10;
-
-impl Day<10> for Day10 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day10.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 10,
+    output = usize,
+    examples = [
+"0123
+1234
+8765
+9876",
+"89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 1),
+            (Self::EXAMPLES[1], 36),
+            (Self::INPUT, 629),
+        ],
+        test_cases![
+            (Self::EXAMPLES[1], 81),
+            (Self::INPUT, 1242),
+        ]
+    ],
+    solve = |input, part| {
         let grid = Grid::from_digits(input, 10);
         // println!("{grid}");
         
@@ -30,38 +52,9 @@ impl Day<10> for Day10 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"0123
-1234
-8765
-9876",
-"89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 1),
-                (Self::EXAMPLES[1], 36),
-                (Self::INPUT, 629),
-            ],
-            test_cases![
-                (Self::EXAMPLES[1], 81),
-                (Self::INPUT, 1242),
-            ]
-        ]
-    }
-}
-
+);
 
 impl Day10 {
-    
     fn trailhead_score(grid: &Grid<usize>, start: Vector2) -> usize {
         let mut seen_nines = FxHashSet::default();
         

@@ -1,19 +1,31 @@
 use num::Integer;
 use crate::*;
 
-pub struct Day7;
-
-#[derive(Debug, Clone)]
-struct Equation {
-    total: usize,
-    elements: Vec<usize>,
-}
-
-impl Day<7> for Day7 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day7.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 7,
+    output = usize,
+    examples = [
+"190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 3749),
+            (Self::INPUT, 850435817339),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 11387),
+            (Self::INPUT, 104824810233437),
+        ]
+    ],
+    solve = |input, part| {
         let lines = input.lines();
         let equations = lines.map(|l| {
             let (total_s, el_s) = l.split_once(':').unwrap();
@@ -29,33 +41,15 @@ impl Day<7> for Day7 {
             .map(|eq| eq.total)
             .sum()
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"190: 10 19
-3267: 81 40 27
-83: 17 5
-156: 15 6
-7290: 6 8 6 15
-161011: 16 10 13
-192: 17 8 14
-21037: 9 7 18 13
-292: 11 6 16 20"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 3749),
-                (Self::INPUT, 850435817339),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 11387),
-                (Self::INPUT, 104824810233437),
-            ]
-        ]
-    }
+);
+
+#[derive(Debug, Clone)]
+struct Equation {
+    total: usize,
+    elements: Vec<usize>,
 }
 
 impl Day7 {
-    
     fn search(total: usize, elements: &[usize], part: Part) -> bool {
         if elements.len() == 1 {return elements[0] == total}
         

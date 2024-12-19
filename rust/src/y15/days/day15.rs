@@ -1,20 +1,23 @@
 use crate::*;
 
-pub struct Day15;
-
-struct Ingredient {
-    name: String,
-    capacity: isize,
-    durability: isize,
-    flavor: isize,
-    texture: isize,
-    calories: usize,
-}
-
-impl Day<15> for Day15 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day15.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 15,
+    output = usize,
+    examples = [
+"Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
+Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 62842880),
+            (Self::INPUT, 18965440), // solved this one manually in desmos https://www.desmos.com/calculator/ehfhvcx2ka
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 57600000),
+            (Self::INPUT, 15862900),
+        ]
+    ],
+    solve = |input, part| {
         let regex = Regex::new(r#"(?<name>\w+): capacity (?<capacity>-?\d+), durability (?<durability>-?\d+), flavor (?<flavor>-?\d+), texture (?<texture>-?\d+), calories (?<calories>-?\d+)"#).unwrap();
         let ingredients = regex.captures_iter(input)
             .map(|c| {
@@ -61,27 +64,20 @@ impl Day<15> for Day15 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
-Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 62842880),
-                (Self::INPUT, 18965440), // solved this one manually in desmos https://www.desmos.com/calculator/ehfhvcx2ka
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 57600000),
-                (Self::INPUT, 15862900),
-            ]
-        ]
-    }
+);
+
+
+struct Ingredient {
+    name: String,
+    capacity: isize,
+    durability: isize,
+    flavor: isize,
+    texture: isize,
+    calories: usize,
 }
 
 
 impl Day15 {
-    
     fn score(ingredients: &[Ingredient], counts: &[isize]) -> usize {
         let mut capacity = 0;
         let mut durability = 0;

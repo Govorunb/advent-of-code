@@ -1,45 +1,10 @@
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day12;
-#[derive(Debug, Clone)]
-struct Region {
-    plant: char,
-    points: Vec<Vector2>,
-    fences: FxHashSet<(Vector2, Direction)>,
-}
-
-#[derive(Debug, Clone)]
-struct Garden {
-    grid: Grid<char>,
-    regions: Vec<Region>,
-}
-
-impl Day<12> for Day12 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day12.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let mut garden = Garden::new(input);
-        garden.find_regions();
-        match part {
-            Part::One => {
-                // for region in garden.regions {
-                //     println!("{:?}", region);
-                // }
-
-                garden.regions.iter()
-                    .map(|r| r.points.len() * r.fences.len())
-                    .sum()
-            },
-            Part::Two => {
-                garden.regions.iter()
-                    .map(|r| r.points.len() * r.sides())
-                    .sum()
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
+aoc_day!(
+    day = 12,
+    output = usize,
+    examples = [
 "AAAA
 BBCD
 BBCC
@@ -70,25 +35,56 @@ AAABBA
 ABBAAA
 ABBAAA
 AAAAAA"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 140),
-                (Self::EXAMPLES[1], 772),
-                (Self::EXAMPLES[2], 1930),
-                (Self::INPUT, 1461752),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 80),
-                (Self::EXAMPLES[1], 436),
-                (Self::EXAMPLES[2], 1206),
-                (Self::EXAMPLES[3], 236),
-                (Self::EXAMPLES[4], 368),
-                (Self::INPUT, 904114),
-            ]
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 140),
+            (Self::EXAMPLES[1], 772),
+            (Self::EXAMPLES[2], 1930),
+            (Self::INPUT, 1461752),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 80),
+            (Self::EXAMPLES[1], 436),
+            (Self::EXAMPLES[2], 1206),
+            (Self::EXAMPLES[3], 236),
+            (Self::EXAMPLES[4], 368),
+            (Self::INPUT, 904114),
         ]
+    ],
+    solve = |input, part| {
+        let mut garden = Garden::new(input);
+        garden.find_regions();
+        match part {
+            Part::One => {
+                // for region in garden.regions {
+                //     println!("{:?}", region);
+                // }
+
+                garden.regions.iter()
+                    .map(|r| r.points.len() * r.fences.len())
+                    .sum()
+            },
+            Part::Two => {
+                garden.regions.iter()
+                    .map(|r| r.points.len() * r.sides())
+                    .sum()
+            }
+        }
     }
+);
+
+#[derive(Debug, Clone)]
+struct Region {
+    plant: char,
+    points: Vec<Vector2>,
+    fences: FxHashSet<(Vector2, Direction)>,
+}
+
+#[derive(Debug, Clone)]
+struct Garden {
+    grid: Grid<char>,
+    regions: Vec<Region>,
 }
 
 impl Garden {

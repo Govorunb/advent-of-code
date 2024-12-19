@@ -2,33 +2,10 @@ use std::cmp::Ordering;
 use std::sync::LazyLock;
 use crate::*;
 
-pub struct Day1;
-
-static DIGIT_STRINGS: LazyLock<FxIndexMap<&'static str, usize>>
-= LazyLock::new(|| {
-    // bruh moment
-    // From<[(K, V); N]> is only implemented for <K,V, RandomState>
-    FxIndexMap::from_iter([
-        ("one", 1),
-        ("two", 2),
-        ("three", 3),
-        ("four", 4),
-        ("five", 5),
-        ("six", 6),
-        ("seven", 7),
-        ("eight", 8),
-        ("nine", 9),
-    ])
-});
-impl Day<1> for Day1 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day1.txt");
-    fn solve_part(&self, input: &str, part: Part) -> usize {
-        input.lines()
-            .map(|l| self.parse_line(l, part))
-            .sum()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
+aoc_day!(
+    day = 1,
+    output = usize,
+    examples = [
 "1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
@@ -39,10 +16,9 @@ abcone2threexyz
 xtwone3four
 4nineeightseven2
 zoneight234
-7pqrstsixteen"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
+7pqrstsixteen",
+    ],
+    tests = [
             test_cases![
                 ("1abc2", 12),
                 ("pqr3stu8vwx", 38),
@@ -63,12 +39,34 @@ zoneight234
                 (Self::EXAMPLES[1], 281),
                 (Self::INPUT, 54078),
             ]
-        ]
+        ],
+    solve = |input, part| {
+        input.lines()
+            .map(|l| Self::parse_line(l, part))
+            .sum()
     }
-}
+);
+
+
+static DIGIT_STRINGS: LazyLock<FxIndexMap<&'static str, usize>>
+= LazyLock::new(|| {
+    // bruh moment
+    // From<[(K, V); N]> is only implemented for <K,V, RandomState>
+    FxIndexMap::from_iter([
+        ("one", 1),
+        ("two", 2),
+        ("three", 3),
+        ("four", 4),
+        ("five", 5),
+        ("six", 6),
+        ("seven", 7),
+        ("eight", 8),
+        ("nine", 9),
+    ])
+});
 
 impl Day1 {
-    fn parse_line(&self, line: &str, part: Part) -> usize {
+    fn parse_line(line: &str, part: Part) -> usize {
         if line.is_empty() {
             return 0;
         }

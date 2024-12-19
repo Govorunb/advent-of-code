@@ -1,7 +1,52 @@
 use std::sync::LazyLock;
 use crate::*;
 
-pub struct Day7;
+aoc_day!(
+    day = 7,
+    output = u16,
+    examples = [
+"123 -> x
+456 -> y
+x AND y -> d
+x OR y -> e
+x LSHIFT 2 -> f
+y RSHIFT 2 -> g
+NOT x -> h
+NOT y -> a", // replaced 'i' with 'a' to be able to test
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 65079),
+            (Self::INPUT, 956),
+        ],
+        test_cases![
+            // (Self::EXAMPLES[0], 0),
+            (Self::INPUT, 40149),
+        ],
+    ],
+    solve = |input, part| {
+        let lines = input.lines();
+        let mut instructions: FxHashMap<String, Instruction> = lines
+            .map(Instruction::from)
+            .map(|i| (i.clone().target, i))
+            .collect();
+        let mut emulator = Emulator { wires: instructions.clone() };
+        let a_signal = emulator.get_operand(Operand::Wire("a".to_string()));
+        match part {
+            Part::One => {
+                a_signal
+            }
+            Part::Two => {
+                instructions.insert("b".to_string(), Instruction {
+                    op: Op::STORE(Operand::Numeric(a_signal)),
+                    target: "b".to_string()
+                });
+                emulator = Emulator { wires: instructions };
+                emulator.get_operand(Operand::Wire("a".to_string()))
+            }
+        }
+    }
+);
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
@@ -63,56 +108,6 @@ impl Operand {
         }
     }
 }
-
-impl Day<7> for Day7 {
-    type Output = u16;
-    const INPUT: &'static str = include_str!("../Input/day7.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let lines = input.lines();
-        let mut instructions: FxHashMap<String, Instruction> = lines
-            .map(Instruction::from)
-            .map(|i| (i.clone().target, i))
-            .collect();
-        let mut emulator = Emulator { wires: instructions.clone() };
-        let a_signal = emulator.get_operand(Operand::Wire("a".to_string()));
-        match part {
-            Part::One => {
-                a_signal
-            }
-            Part::Two => {
-                instructions.insert("b".to_string(), Instruction {
-                    op: Op::STORE(Operand::Numeric(a_signal)),
-                    target: "b".to_string()
-                });
-                emulator = Emulator { wires: instructions };
-                emulator.get_operand(Operand::Wire("a".to_string()))
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-        "123 -> x
-456 -> y
-x AND y -> d
-x OR y -> e
-x LSHIFT 2 -> f
-y RSHIFT 2 -> g
-NOT x -> h
-NOT y -> a", // replaced 'i' with 'a' to be able to test
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 65079),
-                (Self::INPUT, 956),
-            ],
-            test_cases![
-                // (Self::EXAMPLES[0], 0),
-                (Self::INPUT, 40149),
-            ],
-        ]
-    }
-}
-
 
 static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<lhs>(?<store>\\w+)|NOT (?<not>\\w+)|(?<op1>\\w+) (?<op>AND|OR|[LR]SHIFT) (?<op2>\\w+)) -> (?<rhs>\\w+)").unwrap());
 impl From<&str> for Instruction {

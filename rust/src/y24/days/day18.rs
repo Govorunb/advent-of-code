@@ -3,12 +3,47 @@ use std::fmt::Formatter;
 use pathfinding::prelude::astar;
 use crate::*;
 
-pub struct Day18;
-
-impl Day<18> for Day18 {
-    type Output = String;
-    const INPUT: &'static str = include_str!("../Input/day18.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 18,
+    output = String,
+    examples = [
+"5,4
+4,2
+4,5
+3,0
+2,1
+6,3
+2,4
+1,5
+0,6
+3,3
+2,6
+5,1
+1,2
+5,5
+2,5
+6,5
+1,4
+0,4
+6,4
+1,1
+6,1
+1,0
+0,5
+1,6
+2,0"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], "22".to_string()),
+            (Self::INPUT, "404".to_string()),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], "(6,1)".to_string()), // index 20
+            (Self::INPUT, "(27,60)".to_string()), // index 2873
+        ]
+    ],
+    solve = |input, part| {
         let bytes = input.lines()
             .map(|line| {
                 let (x,y) = line.split_once(',').unwrap();
@@ -70,50 +105,9 @@ impl Day<18> for Day18 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"5,4
-4,2
-4,5
-3,0
-2,1
-6,3
-2,4
-1,5
-0,6
-3,3
-2,6
-5,1
-1,2
-5,5
-2,5
-6,5
-1,4
-0,4
-6,4
-1,1
-6,1
-1,0
-0,5
-1,6
-2,0"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], "22".to_string()),
-                (Self::INPUT, "404".to_string()),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], "(6,1)".to_string()), // index 20
-                (Self::INPUT, "(27,60)".to_string()), // index 2873
-            ]
-        ]
-    }
-}
-
+);
 
 impl Day18 {
-
     fn search(grid: &Grid<char>) -> Option<(Vec<Vector2>, usize)> {
         let start = grid.bounds().bottom_right();
         let goal = grid.base();

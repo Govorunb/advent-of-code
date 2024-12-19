@@ -1,6 +1,50 @@
 use crate::*;
 
-pub struct Day19;
+aoc_day!(
+    day = 19,
+    output = usize,
+    examples = [
+"r, wr, b, g, bwu, rb, gb, br
+
+brwrr
+bggr
+gbbr
+rrbgbr
+ubwu
+bwurrg
+brgr
+bbrgwb"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 6),
+            (Self::INPUT, 233),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 16),
+            (Self::INPUT, 691316989225259),
+        ]
+    ],
+    solve = |input, part| {
+        let (avail_s, pats) = input.split_once("\n\n").unwrap();
+        let avail = avail_s.split(", ").collect_vec();
+        match part {
+            Part::One => {
+                // let regex = Regex::new(&format!(r#"^(?:{})+$"#, avail.join("|"))).unwrap();
+                pats.lines()
+                    // .filter(|l| regex.is_match(l))
+                    .filter(|l| p1(&avail, l))
+                    .count()
+            },
+            Part::Two => {
+                // grrrrr i can't regex anymore
+                pats.lines()
+                    .map(|line| p2(&avail, line))
+                    .sum()
+            }
+        }
+    }
+);
 
 fn p1(avail: &[&str], target: &str) -> bool {
     let res = p1_funcy(avail, target);
@@ -60,52 +104,3 @@ fn p2_impy<'a>(avail: &[&str], target: &'a str, dp: &mut FxHashMap<&'a str, usiz
     }
     out
 }
-
-impl Day<19> for Day19 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day19.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let (avail_s, pats) = input.split_once("\n\n").unwrap();
-        let avail = avail_s.split(", ").collect_vec();
-        match part {
-            Part::One => {
-                // let regex = Regex::new(&format!(r#"^(?:{})+$"#, avail.join("|"))).unwrap();
-                pats.lines()
-                    // .filter(|l| regex.is_match(l))
-                    .filter(|l| p1(&avail, l))
-                    .count()
-            },
-            Part::Two => {
-                // grrrrr i can't regex anymore
-                pats.lines()
-                    .map(|line| p2(&avail, line))
-                    .sum()
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"r, wr, b, g, bwu, rb, gb, br
-
-brwrr
-bggr
-gbbr
-rrbgbr
-ubwu
-bwurrg
-brgr
-bbrgwb"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 6),
-                (Self::INPUT, 233),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 16),
-                (Self::INPUT, 691316989225259),
-            ]
-        ]
-    }
-}
-

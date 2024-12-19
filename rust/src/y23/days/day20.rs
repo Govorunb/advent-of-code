@@ -2,13 +2,21 @@
 #![allow(dead_code)]
 use crate::*;
 
-pub struct Day20;
-
-impl Day<20> for Day20 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day20.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 20,
+    output = usize,
+    examples = [""],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 0),
+            // (Self::INPUT, 0),
+        ],
+        test_cases![
+            // (Self::EXAMPLES[0], 0),
+            // (Self::INPUT, 0),
+        ]
+    ],
+    solve = |input, part| {
         let lines = input.lines();
         match part {
             Part::One => {
@@ -19,21 +27,4 @@ impl Day<20> for Day20 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-        ""
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 0),
-                // (Self::INPUT, 0),
-            ],
-            test_cases![
-                // (Self::EXAMPLES[0], 0),
-                // (Self::INPUT, 0),
-            ]
-        ]
-    }
-}
-
-
+);

@@ -1,11 +1,24 @@
 use crate::*;
 
-pub struct Day9;
-
-impl Day<9> for Day9 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day9.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 9,
+    output = usize,
+    examples = [
+"London to Dublin = 464
+London to Belfast = 518
+Dublin to Belfast = 141"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 605),
+            (Self::INPUT, 207),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 982),
+            (Self::INPUT, 804),
+        ]
+    ],
+    solve = |input, part| {
         // tsp... sigh
         let mut edges: FxHashMap<(String, String), usize> = FxHashMap::default();
         let mut cities: FxHashSet<String> = FxHashSet::default();
@@ -59,24 +72,7 @@ impl Day<9> for Day9 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"London to Dublin = 464
-London to Belfast = 518
-Dublin to Belfast = 141"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 605),
-                (Self::INPUT, 207),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 982),
-                (Self::INPUT, 804),
-            ]
-        ]
-    }
-}
+);
 
 struct Tour {
     pub distance: Option<usize>,

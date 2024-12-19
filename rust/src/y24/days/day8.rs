@@ -3,7 +3,44 @@ use std::str::FromStr;
 use itertools::Either;
 use crate::*;
 
-pub struct Day8;
+aoc_day!(
+    day = 8,
+    output = usize,
+    examples = [
+"............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 14),
+            (Self::INPUT, 323),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 34),
+            (Self::INPUT, 1077),
+        ]
+    ],
+    solve = |input, part| {
+        let grid: Grid<Symbol> = Grid::from_str(input).unwrap();
+        let antennas = Self::find_antennas(&grid);
+        let antinodes = Self::place_antinodes(&antennas, grid.bounds(), part);
+        
+        // println!("{antinodes:?}");
+        
+        antinodes.len()
+    }
+);
+
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum Symbol {
@@ -27,49 +64,7 @@ struct Antenna {
     freq: char,
 }
 
-impl Day<8> for Day8 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day8.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let grid: Grid<Symbol> = Grid::from_str(input).unwrap();
-        let antennas = Self::find_antennas(&grid);
-        let antinodes = Self::place_antinodes(&antennas, grid.bounds(), part);
-        
-        // println!("{antinodes:?}");
-        
-        antinodes.len()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"............
-........0...
-.....0......
-.......0....
-....0.......
-......A.....
-............
-............
-........A...
-.........A..
-............
-............",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 14),
-                (Self::INPUT, 323),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 34),
-                (Self::INPUT, 1077),
-            ]
-        ]
-    }
-}
-
 impl Day8 {
-    
     fn find_antennas(grid: &Grid<Symbol>) -> HashMap<char, Vec<Antenna>> {
         grid.cells()
             .filter_map(|(pt, &c)| {

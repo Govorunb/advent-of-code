@@ -1,8 +1,59 @@
-use crate::*;
-
 use std::{cmp::Ordering, sync::atomic::{AtomicBool, Ordering as AOrdering}};
 
-pub struct Day7;
+use crate::*;
+
+aoc_day!(
+    day = 7,
+    output = usize,
+    examples = [
+"32T3K 765
+T55J5 684
+KK677 28
+KTJJT 220
+QQQJA 483"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 6440),
+            (Self::INPUT, 246795406),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 5905),
+            (Self::INPUT, 249356515),
+        ]
+    ],
+    solve = |input, part| {
+        let lines = input.lines();
+        let mut hands = lines.map(|line| {
+            let (hand_text, bid_text) = line.split_once(' ').unwrap();
+            let cards = hand_text.chars().map(|c| Hand::card_score(&c, part)).collect_vec();
+            let mut sorted_cards = cards.clone();
+            sorted_cards.sort_unstable();
+            sorted_cards.reverse();
+            let rank = Hand::evaluate(&sorted_cards).rank;
+            Hand {
+                cards,
+                rank,
+                bid: bid_text.parse().unwrap(),
+            }
+        }).collect_vec();
+        match part {
+            Part::One => {
+                DEBUG.store(false, AOrdering::Relaxed);
+            },
+            Part::Two => {
+                //DEBUG.store(true, AOrdering::Relaxed);
+                hands.iter_mut().for_each(|hand| hand.rank = hand.p2_rank());
+            }
+        }
+        hands.sort_unstable_by(|h1, h2| h1.compare(h2));
+        hands.iter()
+            .enumerate()
+            .fold(0, |acc, (i, h)| {
+                acc + (i + 1) * h.bid
+            })
+    }
+);
 
 struct Hand {
     cards: Vec<usize>,
@@ -138,60 +189,3 @@ impl Hand {
 }
 
 static DEBUG: AtomicBool = AtomicBool::new(false);
-
-impl Day<7> for Day7 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day7.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let lines = input.lines();
-        let mut hands = lines.map(|line| {
-            let (hand_text, bid_text) = line.split_once(' ').unwrap();
-            let cards = hand_text.chars().map(|c| Hand::card_score(&c, part)).collect_vec();
-            let mut sorted_cards = cards.clone();
-            sorted_cards.sort_unstable();
-            sorted_cards.reverse();
-            let rank = Hand::evaluate(&sorted_cards).rank;
-            Hand {
-                cards,
-                rank,
-                bid: bid_text.parse().unwrap(),
-            }
-        }).collect_vec();
-        match part {
-            Part::One => {
-                DEBUG.store(false, AOrdering::Relaxed);
-            },
-            Part::Two => {
-                //DEBUG.store(true, AOrdering::Relaxed);
-                hands.iter_mut().for_each(|hand| hand.rank = hand.p2_rank());
-            }
-        }
-        hands.sort_unstable_by(|h1, h2| h1.compare(h2));
-        hands.iter()
-            .enumerate()
-            .fold(0, |acc, (i, h)| {
-                acc + (i + 1) * h.bid
-            })
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 6440),
-                (Self::INPUT, 246795406),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 5905),
-                (Self::INPUT, 249356515),
-            ]
-        ]
-    }
-}
-

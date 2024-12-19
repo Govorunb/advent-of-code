@@ -1,14 +1,31 @@
 use indexmap::map::Entry;
 use crate::*;
 
-pub struct Day5;
-
-const FORBIDDEN: [(char, char); 4] = [('a','b'), ('c','d'), ('p','q'), ('x','y')];
-
-impl Day<5> for Day5 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day5.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 5,
+    output = usize,
+    examples = [
+"ugknbfddgicrmopn
+aaa
+jchzalrnumimnmhp
+haegwjzuvuyypxyu
+dvszwmarrgswjxmb",
+"qjhvhtzxzqqjkmpb
+xxyxx
+uurcxstgmygtbstg
+ieodomkazucvgmuy"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 2),
+            (Self::INPUT, 255),
+        ],
+        test_cases![
+            (Self::EXAMPLES[1], 2),
+            (Self::INPUT, 55),
+        ]
+    ],
+    solve = |input, part| {
         let lines = input.lines();
         match part {
             Part::One => {
@@ -19,32 +36,10 @@ impl Day<5> for Day5 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"ugknbfddgicrmopn
-aaa
-jchzalrnumimnmhp
-haegwjzuvuyypxyu
-dvszwmarrgswjxmb",
-"qjhvhtzxzqqjkmpb
-xxyxx
-uurcxstgmygtbstg
-ieodomkazucvgmuy",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 2),
-                (Self::INPUT, 255),
-            ],
-            test_cases![
-                (Self::EXAMPLES[1], 2),
-                (Self::INPUT, 55),
-            ]
-        ]
-    }
-}
+);
 
 impl Day5 {
+    const FORBIDDEN: [(char, char); 4] = [('a','b'), ('c','d'), ('p','q'), ('x','y')];
     fn is_nice_p1(line: &&str) -> bool {
         let is_vowel = |c| "aeiou".contains(c);
         
@@ -53,7 +48,7 @@ impl Day5 {
         let mut has_double = false;
         
         for (last, c) in line.chars().tuple_windows() {
-            if FORBIDDEN.contains(&(last, c)) { return false; }
+            if Self::FORBIDDEN.contains(&(last, c)) { return false; }
             if last == c { has_double = true; }
             if is_vowel(c) { vowels += 1; }
         }

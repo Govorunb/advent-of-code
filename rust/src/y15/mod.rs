@@ -14,7 +14,7 @@ pub mod test {
         Day1.test(None);
         Day2.test(None);
         Day3.test(None);
-        // Day4.test(None); // very slow
+        // Day4.test(None); // slow
         Day5.test(None);
         Day6.test(None);
         Day7.test(None);

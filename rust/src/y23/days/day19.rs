@@ -1,8 +1,93 @@
+use std::ops::Range;
 use crate::*;
 
-use std::ops::Range;
+aoc_day!(
+    day = 19,
+    output = usize,
+    examples = [
+"px{a<2006:qkq,m>2090:A,rfg}
+pv{a>1716:R,A}
+lnx{m>1548:A,A}
+rfg{s<537:gd,x>2440:R,A}
+qs{s>3448:A,lnx}
+qkq{x<1416:A,crn}
+crn{x>2662:A,R}
+in{s<1351:px,qqz}
+qqz{s>2770:qs,m<1801:hdj,R}
+gd{a>3333:R,R}
+hdj{m>838:A,pv}
 
-pub struct Day19;
+{x=787,m=2655,a=1222,s=2876}
+{x=1679,m=44,a=2067,s=496}
+{x=2036,m=264,a=79,s=2244}
+{x=2461,m=1339,a=466,s=291}
+{x=2127,m=1623,a=2188,s=1013}"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 19114),
+            (Self::INPUT, 487623),
+        ],
+        test_cases![
+            // simplest possible case
+            ("in{x<20:A,R}\n\n{x=0,m=0,a=0,s=0}", 19*4000*4000*4000),
+            // same as above, flipping accept/reject
+            ("in{x>20:R,A}\n\n{x=0,m=0,a=0,s=0}", 20*4000*4000*4000),
+            // a second category
+            ("in{x<20:b,R}\nb{m>1999:R,A}\n\n{x=0,m=0,a=0,s=0}", 19*1999*4000*4000),
+            // further indirection + redundant rules
+            ("in{x<20:b,x>500:c,d}
+              b{m>1999:R,A}
+              c{m>500:A,R}
+              d{x>1000:A,b}
+
+            {x=0,m=0,a=0,s=0}", (
+                19*1999              // in (x<20) * b (m<=1999)
+              +(4000-500)*(4000-500) // in (x>500) * c (m>500)
+              +(500-19)*1999         // in (20<=x<=500) * d (->b) * b (m<=1999)
+            )*4000*4000),
+            (Self::EXAMPLES[0], 167409079868000),
+            (Self::INPUT, 113550238315130),
+        ]
+    ],
+    solve = |input, part| {
+        let (workflows_str, parts_str) = input
+            .split_once("\n\n").unwrap();
+        let workflows: FxIndexMap<String, Workflow> = workflows_str.lines()
+            .map(str::trim)
+            .map_into::<Workflow>()
+            .map(|wf| (wf.name.clone(), wf))
+            .collect();
+        let parts = parts_str.lines()
+            .map(str::trim)
+            .map_into::<MetalPart>()
+            .collect_vec();
+        let start = &workflows["in"];
+        match part {
+            Part::One => {
+                let (accepted, _rejected): (Vec<MetalPart>, Vec<MetalPart>) = parts.iter()
+                    .partition(|&&part| {
+                        let mut curr = &Send::Workflow(start.name.to_owned());
+                        while let Send::Workflow(wf_name) = curr {
+                            let wf = &workflows[wf_name];
+                            curr = wf.process(part);
+                        }
+                        matches!(curr, Send::Accept)
+                    });
+                accepted.into_iter()
+                    .map(MetalPart::score)
+                    .sum()
+            },
+            Part::Two => {
+                let ranges = AcceptableRanges {
+                    ranges: [1..4001, 1..4001, 1..4001, 1..4001],
+                };
+
+                start.count_combinations(ranges, &workflows)
+            }
+        }
+    }
+);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[allow(non_camel_case_types)]
@@ -257,96 +342,3 @@ impl AcceptableRanges {
             .unwrap()
     }
 }
-
-impl Day<19> for Day19 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day19.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let (workflows_str, parts_str) = input
-            .split_once("\n\n").unwrap();
-        let workflows: FxIndexMap<String, Workflow> = workflows_str.lines()
-            .map(str::trim)
-            .map_into::<Workflow>()
-            .map(|wf| (wf.name.clone(), wf))
-            .collect();
-        let parts = parts_str.lines()
-            .map(str::trim)
-            .map_into::<MetalPart>()
-            .collect_vec();
-        let start = &workflows["in"];
-        match part {
-            Part::One => {
-                let (accepted, _rejected): (Vec<MetalPart>, Vec<MetalPart>) = parts.iter()
-                    .partition(|&&part| {
-                        let mut curr = &Send::Workflow(start.name.to_owned());
-                        while let Send::Workflow(wf_name) = curr {
-                            let wf = &workflows[wf_name];
-                            curr = wf.process(part);
-                        }
-                        matches!(curr, Send::Accept)
-                    });
-                accepted.into_iter()
-                    .map(MetalPart::score)
-                    .sum()
-            },
-            Part::Two => {
-                let ranges = AcceptableRanges {
-                    ranges: [1..4001, 1..4001, 1..4001, 1..4001], // no copy...
-                };
-
-                start.count_combinations(ranges, &workflows)
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"px{a<2006:qkq,m>2090:A,rfg}
-pv{a>1716:R,A}
-lnx{m>1548:A,A}
-rfg{s<537:gd,x>2440:R,A}
-qs{s>3448:A,lnx}
-qkq{x<1416:A,crn}
-crn{x>2662:A,R}
-in{s<1351:px,qqz}
-qqz{s>2770:qs,m<1801:hdj,R}
-gd{a>3333:R,R}
-hdj{m>838:A,pv}
-
-{x=787,m=2655,a=1222,s=2876}
-{x=1679,m=44,a=2067,s=496}
-{x=2036,m=264,a=79,s=2244}
-{x=2461,m=1339,a=466,s=291}
-{x=2127,m=1623,a=2188,s=1013}"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 19114),
-                (Self::INPUT, 487623),
-            ],
-            test_cases![
-                // simplest possible case
-                ("in{x<20:A,R}\n\n{x=0,m=0,a=0,s=0}", 19*4000*4000*4000),
-                // same as above, flipping accept/reject
-                ("in{x>20:R,A}\n\n{x=0,m=0,a=0,s=0}", 20*4000*4000*4000),
-                // a second category
-                ("in{x<20:b,R}\nb{m>1999:R,A}\n\n{x=0,m=0,a=0,s=0}", 19*1999*4000*4000),
-                // further indirection + redundant rules
-                ("in{x<20:b,x>500:c,d}
-                  b{m>1999:R,A}
-                  c{m>500:A,R}
-                  d{x>1000:A,b}
-
-                {x=0,m=0,a=0,s=0}", (
-                    19*1999              // in (x<20) * b (m<=1999)
-                  +(4000-500)*(4000-500) // in (x>500) * c (m>500)
-                  +(500-19)*1999         // in (20<=x<=500) * d (->b) * b (m<=1999)
-                )*4000*4000),
-                (Self::EXAMPLES[0], 167409079868000),
-                (Self::INPUT, 113550238315130),
-            ]
-        ]
-    }
-}
-
-

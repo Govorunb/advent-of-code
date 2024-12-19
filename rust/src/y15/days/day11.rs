@@ -1,11 +1,20 @@
 use crate::*;
 
-pub struct Day11;
-
-impl Day<11> for Day11 {
-    type Output = String;
-    const INPUT: &'static str = include_str!("../Input/day11.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 11,
+    output = String,
+    examples = [""],
+    tests = [
+        test_cases![
+            ("abcdefgh", "abcdffaa".to_string()),
+            ("ghijklmn", "ghjaabcc".to_string()),
+            // (Self::INPUT, 0),
+        ],
+        test_cases![
+            // (Self::INPUT, 0),
+        ]
+    ],
+    solve = |input, part| {
         let starting_pass: &[u8;8] = input.as_bytes().try_into().unwrap();
         
         let mut pass = Vec::from(starting_pass);
@@ -27,20 +36,7 @@ impl Day<11> for Day11 {
             }
         }
     }
-
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                ("abcdefgh", "abcdffaa".to_string()),
-                ("ghijklmn", "ghjaabcc".to_string()),
-                // (Self::INPUT, 0),
-            ],
-            test_cases![
-                // (Self::INPUT, 0),
-            ]
-        ]
-    }
-}
+);
 
 
 impl Day11 {

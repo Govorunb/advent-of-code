@@ -1,29 +1,9 @@
 use crate::*;
 
-pub struct Day18;
-
-struct Instruction {
-    dir: Direction,
-    length: usize,
-    color: usize,
-}
-
-impl Day<18> for Day18 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day18.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let lines = input.lines();
-        match part {
-            Part::One => {
-                lines.count()
-            },
-            Part::Two => {
-                0
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
+aoc_day!(
+    day = 18,
+    output = usize,
+    examples = [
 "R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
@@ -38,19 +18,33 @@ R 2 (#7807d2)
 U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 62),
-                // (Self::INPUT, 0),
-            ],
-            test_cases![
-                // (Self::EXAMPLES[0], 0),
-                // (Self::INPUT, 0),
-            ]
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 62),
+            // (Self::INPUT, 0),
+        ],
+        test_cases![
+            // (Self::EXAMPLES[0], 0),
+            // (Self::INPUT, 0),
         ]
+    ],
+    solve = |input, part| {
+        let lines = input.lines();
+        match part {
+            Part::One => {
+                lines.count()
+            },
+            Part::Two => {
+                0
+            }
+        }
     }
+);
+
+
+struct Instruction {
+    dir: Direction,
+    length: usize,
+    color: usize,
 }
-
-

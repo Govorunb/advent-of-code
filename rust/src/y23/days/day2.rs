@@ -1,23 +1,28 @@
 use crate::*;
 
-
-pub struct Day2;
-
-#[derive(Default, Clone, PartialEq, Eq, Hash)]
-struct Game {
-    id: usize,
-    rounds: Vec<Cubes>,
-}
-
-#[derive(Default, Copy, Clone, PartialEq, Eq, Hash)]
-struct Cubes(usize, usize, usize); // (r, g, b)
-
-impl Day<2> for Day2 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day2.txt");
-    fn solve_part(&self, input: &str, part: Part) -> usize {
+aoc_day!(
+    day = 2,
+    output = usize,
+    examples = [
+"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 8),
+            (Self::INPUT, 1931),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 2286),
+            (Self::INPUT, 83105),
+        ]
+    ],
+    solve = |input, part| {
         let games = input.lines()
-            .map(|l| self.parse_line(l))
+            .map(|l| Self::parse_line(l))
             .collect_vec();
         match part {
             Part::One => {
@@ -43,29 +48,20 @@ impl Day<2> for Day2 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
-Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
-Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
-Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
-Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 8),
-                (Self::INPUT, 1931),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 2286),
-                (Self::INPUT, 83105),
-            ]
-        ]
-    }
+);
+
+
+#[derive(Default, Clone, PartialEq, Eq, Hash)]
+struct Game {
+    id: usize,
+    rounds: Vec<Cubes>,
 }
 
+#[derive(Default, Copy, Clone, PartialEq, Eq, Hash)]
+struct Cubes(usize, usize, usize); // (r, g, b)
+
 impl Day2 {
-    fn parse_line(&self, line: &str) -> Game {
+    fn parse_line(line: &str) -> Game {
         let (game_text, rounds_text) = line.trim().split_once(':').unwrap();
         let id_text = game_text.trim().split_once(' ').unwrap().1;
 

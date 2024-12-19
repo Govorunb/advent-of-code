@@ -1,7 +1,45 @@
-use crate::*;
 use std::fmt::Display;
+use crate::*;
 
-pub struct Day14;
+aoc_day!(
+    day = 14,
+    output = usize,
+    examples = [
+"O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#...."
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 136),
+            (Self::INPUT, 109424),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 64),
+            (Self::INPUT, 102509),
+        ]
+    ],
+    solve = |input, part| {
+        let mut grid = Platform::parse(input);
+        match part {
+            Part::One => {
+                grid.roll_north();
+            },
+            Part::Two => {
+                grid.spin(1_000_000_000);
+            },
+        }
+        grid.load()
+    }
+);
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Platform {
     grid: Grid<Cell>, 
@@ -192,47 +230,3 @@ impl Platform {
         }
     }
 }
-
-impl Day<14> for Day14 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day14.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let mut grid = Platform::parse(input);
-        match part {
-            Part::One => {
-                grid.roll_north();
-            },
-            Part::Two => {
-                grid.spin(1_000_000_000);
-            },
-        }
-        grid.load()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"O....#....
-O.OO#....#
-.....##...
-OO.#O....O
-.O.....O#.
-O.#..O.#.#
-..O..#O..O
-.......O..
-#....###..
-#OO..#...."
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 136),
-                (Self::INPUT, 109424),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 64),
-                (Self::INPUT, 102509),
-            ]
-        ]
-    }
-}
-
-

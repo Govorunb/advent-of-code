@@ -1,4 +1,3 @@
-// replace all 13 with the day number
 #![allow(unused_imports)]
 #![allow(dead_code)]
 use itertools::{Either, Itertools};
@@ -6,7 +5,62 @@ use rustc_hash::FxHashMap;
 use std::{collections::HashSet, hash::Hasher};
 use crate::*;
 
-pub struct Day13;
+aoc_day!(
+    day = 13,
+    output = usize,
+    examples = [
+"#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.",
+"#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 5),
+            (Self::EXAMPLES[1], 400),
+            (Self::INPUT, 35360),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 300),
+            (Self::EXAMPLES[1], 100),
+            (Self::INPUT, 36755),
+        ]
+    ],
+    solve = |input, part| {
+        let valleys = input.split("\n\n")
+            .map(Valley::parse).collect_vec();
+        let hashes = FxHashMap::from_iter(valleys.iter()
+            .map(|v| (v.grid.clone(), v.make_hashes())));
+        let reflections = valleys.iter()
+            .map(|g| g.find_reflection(None, &hashes))
+            .collect_vec();
+        match part {
+            Part::One => {
+                Either::Left(reflections.into_iter())
+            },
+            Part::Two => {
+                Either::Right(
+                    valleys.iter()
+                        .zip_eq(reflections)
+                        .map(|(g, r)| g.find_reflection(Some(r), &hashes))
+                )
+            }
+        }
+        .map(|r| r.score())
+        .sum()
+    }
+);
+
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 enum Cell {
@@ -131,65 +185,3 @@ impl Reflection {
         }
     }
 }
-
-impl Day<13> for Day13 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day13.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let valleys = input.split("\n\n")
-            .map(Valley::parse).collect_vec();
-        let hashes = valleys.iter()
-            .map(|v| (v.grid.clone(), v.make_hashes()))
-            .collect::<FxHashMap<_, _>>();
-        let reflections = valleys.iter()
-            .map(|g| g.find_reflection(None, &hashes))
-            .collect_vec();
-        match part {
-            Part::One => {
-                Either::Left(reflections.into_iter())
-            },
-            Part::Two => {
-                Either::Right(
-                    valleys.iter()
-                        .zip_eq(reflections)
-                        .map(|(g, r)| g.find_reflection(Some(r), &hashes))
-                )
-            }
-        }
-        .map(|r| r.score())
-        .sum()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"#.##..##.
-..#.##.#.
-##......#
-##......#
-..#.##.#.
-..##..##.
-#.#.##.#.",
-"#...##..#
-#....#..#
-..##..###
-#####.##.
-#####.##.
-..##..###
-#....#..#",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 5),
-                (Self::EXAMPLES[1], 400),
-                (Self::INPUT, 35360),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 300),
-                (Self::EXAMPLES[1], 100),
-                (Self::INPUT, 36755),
-            ]
-        ]
-    }
-}
-
-

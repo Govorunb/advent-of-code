@@ -2,69 +2,42 @@ use std::fmt::{Formatter, Write};
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day6;
-
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-enum Symbol {
-    Empty,
-    Prop,
-    Guard(Direction),
-    InsertProp,
-    Visited,
-    CannotInsertProp,
-}
-
-#[derive(Clone, Debug)]
-struct Guard {
-    pos: Vector2,
-    dir: Direction,
-    visited: FxHashSet<Vector2>,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-struct TurnAtProp {
-    pos: Vector2, // position of the prop
-    dir: Direction, // direction facing the prop (before turn)
-}
-
-impl From<char> for Symbol {
-    fn from(c: char) -> Self {
-        match c {
-            '.' => Symbol::Empty,
-            '#' => Symbol::Prop,
-            '^' => Symbol::Guard(Direction::North),
-            '<' => Symbol::Guard(Direction::West),
-            'v' => Symbol::Guard(Direction::South),
-            '>' => Symbol::Guard(Direction::East),
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl Display for Symbol {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_char(match self {
-            Symbol::Empty => '.',
-            Symbol::Prop => '#',
-            Symbol::Guard(dir) => match dir {
-                Direction::North => '^',
-                Direction::West => '<',
-                Direction::South => 'v',
-                Direction::East => '>',
-            }
-            Symbol::InsertProp => 'O',
-            Symbol::CannotInsertProp => '_',
-            Symbol::Visited => 'x',
-        })?;
-        Ok(())
-    }
-}
-
-impl Day<6> for Day6 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day6.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 6,
+    output = usize,
+    examples = [
+"....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...",
+"...##.....
+........#.
+...^......
+.......#..",
+"...#
+#...
+.^..
+.#.."
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 41),
+            (Self::INPUT, 4903),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 6),
+            (Self::EXAMPLES[1], 1),
+            (Self::EXAMPLES[2], 0),
+            (Self::INPUT, 1911),
+        ]
+    ],
+    solve = |input, part| {
         let mut grid: Grid<Symbol> = Grid::from_str(input).unwrap();
         let guard_cell = grid.cells().find(|(_, s)| matches!(s, Symbol::Guard(_))).unwrap();
         let _starting_pos = guard_cell.0;
@@ -133,44 +106,66 @@ impl Day<6> for Day6 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"....#.....
-.........#
-..........
-..#.......
-.......#..
-..........
-.#..^.....
-........#.
-#.........
-......#...",
-"...##.....
-........#.
-...^......
-.......#..",
-"...#
-#...
-.^..
-.#..",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 41),
-                (Self::INPUT, 4903),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 6),
-                (Self::EXAMPLES[1], 1),
-                (Self::EXAMPLES[2], 0),
-                (Self::INPUT, 1911),
-            ]
-        ]
+);
+
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+enum Symbol {
+    Empty,
+    Prop,
+    Guard(Direction),
+    InsertProp,
+    Visited,
+    CannotInsertProp,
+}
+
+#[derive(Clone, Debug)]
+struct Guard {
+    pos: Vector2,
+    dir: Direction,
+    visited: FxHashSet<Vector2>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+struct TurnAtProp {
+    pos: Vector2, // position of the prop
+    dir: Direction, // direction facing the prop (before turn)
+}
+
+impl From<char> for Symbol {
+    fn from(c: char) -> Self {
+        match c {
+            '.' => Symbol::Empty,
+            '#' => Symbol::Prop,
+            '^' => Symbol::Guard(Direction::North),
+            '<' => Symbol::Guard(Direction::West),
+            'v' => Symbol::Guard(Direction::South),
+            '>' => Symbol::Guard(Direction::East),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl Display for Symbol {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_char(match self {
+            Symbol::Empty => '.',
+            Symbol::Prop => '#',
+            Symbol::Guard(dir) => match dir {
+                Direction::North => '^',
+                Direction::West => '<',
+                Direction::South => 'v',
+                Direction::East => '>',
+            }
+            Symbol::InsertProp => 'O',
+            Symbol::CannotInsertProp => '_',
+            Symbol::Visited => 'x',
+        })?;
+        Ok(())
     }
 }
 
 impl Day6 {
-    
     fn step(grid: &Grid<Symbol>, guard: &mut Guard) -> Option<TurnAtProp> {
         // move forward until out of bounds/hit a prop
         // possible (micro?)optimization: precompute a coordinate map of all props (like the sparse galaxies grid from y23d11)

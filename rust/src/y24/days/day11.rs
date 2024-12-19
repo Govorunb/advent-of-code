@@ -2,13 +2,21 @@ use std::collections::HashMap;
 use num::Integer;
 use crate::*;
 
-pub struct Day11;
-
-impl Day<11> for Day11 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day11.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 11,
+    output = usize,
+    examples = ["125 17"],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 55312),
+            (Self::INPUT, 194557),
+        ],
+        test_cases![
+            // (Self::EXAMPLES[0], 0),
+            (Self::INPUT, 231532558973909),
+        ]
+    ],
+    solve = |input, part| {
         let blinks = match part {
             Part::One => 25,
             Part::Two => 75,
@@ -43,21 +51,4 @@ impl Day<11> for Day11 {
         
         stones.values().sum()
     }
-    const EXAMPLES: &'static [&'static str] = &[
-        "125 17"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 55312),
-                (Self::INPUT, 194557),
-            ],
-            test_cases![
-                // (Self::EXAMPLES[0], 0),
-                (Self::INPUT, 231532558973909),
-            ]
-        ]
-    }
-}
-
-
+);

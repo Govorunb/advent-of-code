@@ -1,6 +1,37 @@
 use crate::*;
 
-pub struct Day9;
+aoc_day!(
+    day = 9,
+    output = isize,
+    examples = [
+"0 3 6 9 12 15
+1 3 6 10 15 21
+10 13 16 21 30 45"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 114),
+            (Self::INPUT, 2101499000),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 2),
+            (Self::INPUT, 1089),
+        ]
+    ],
+    solve = |input, part| {
+        input.lines()
+            .map(|l| {
+                let mut hist = History {sequences: vec![l.into()]};
+                hist.fill();
+                match part {
+                    Part::One => hist.predict_next(),
+                    Part::Two => hist.predict_prev(),
+                }
+            })
+            .sum()
+    }
+);
+
 
 struct History {
     sequences: Vec<Sequence>,
@@ -51,39 +82,3 @@ impl History {
         self.sequences.pop();
     }
 }
-
-impl Day<9> for Day9 {
-    type Output = isize;
-    const INPUT: &'static str = include_str!("../Input/day9.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        input.lines()
-            .map(|l| {
-                let mut hist = History {sequences: vec![l.into()]};
-                hist.fill();
-                match part {
-                    Part::One => hist.predict_next(),
-                    Part::Two => hist.predict_prev(),
-                }
-            })
-            .sum()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 114),
-                (Self::INPUT, 2101499000),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 2),
-                (Self::INPUT, 1089),
-            ]
-        ]
-    }
-}
-

@@ -1,12 +1,32 @@
 use std::ascii;
 use crate::*;
 
-pub struct Day12;
-
-impl Day<12> for Day12 {
-    type Output = isize;
-    const INPUT: &'static str = include_str!("../Input/day12.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 12,
+    output = isize,
+    examples = [],
+    tests = [
+        test_cases![
+            (r#"[1,2,3]"#, 6),
+            (r#"{"a":2,"b":4}"#, 6),
+            (r#"[[[3]]]"#, 3),
+            (r#"{"a":{"b":4},"c":-1}"#, 3),
+            (r#"{"a":[-1,1]}"#, 0),
+            (r#"[-1,{"a":1}]"#, 0),
+            (r#"[]"#, 0),
+            (r#"{}"#, 0),
+            (Self::INPUT, 111754),
+        ],
+        test_cases![
+            (r#"[1,2,3]"#, 6),
+            (r#"[1,{"c":"red","b":2},3]"#, 4),
+            (r#"{"d":"red","e":[1,2,3,4],"f":5}"#, 0),
+            (r#"[1,"red",5]"#, 6),
+            (r#"{"z":999, "nest": {"a":1,"b":2},"c":"red",[{"d":3,"e":4}],"f":5}"#, 0),
+            (Self::INPUT, 65402),
+        ]
+    ],
+    solve = |input, part| {
         let regex: Regex = Regex::new(r#"-?\d+"#).unwrap();
         
         match part {
@@ -51,30 +71,4 @@ impl Day<12> for Day12 {
             }
         }
     }
-
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (r#"[1,2,3]"#, 6),
-                (r#"{"a":2,"b":4}"#, 6),
-                (r#"[[[3]]]"#, 3),
-                (r#"{"a":{"b":4},"c":-1}"#, 3),
-                (r#"{"a":[-1,1]}"#, 0),
-                (r#"[-1,{"a":1}]"#, 0),
-                (r#"[]"#, 0),
-                (r#"{}"#, 0),
-                (Self::INPUT, 111754),
-            ],
-            test_cases![
-                (r#"[1,2,3]"#, 6),
-                (r#"[1,{"c":"red","b":2},3]"#, 4),
-                (r#"{"d":"red","e":[1,2,3,4],"f":5}"#, 0),
-                (r#"[1,"red",5]"#, 6),
-                (r#"{"z":999, "nest": {"a":1,"b":2},"c":"red",[{"d":3,"e":4}],"f":5}"#, 0),
-                (Self::INPUT, 65402),
-            ]
-        ]
-    }
-}
-
-
+);

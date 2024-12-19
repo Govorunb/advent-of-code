@@ -2,62 +2,54 @@ use std::fmt::Formatter;
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day15;
+aoc_day!(
+    day = 15,
+    output = usize,
+    examples = [
+"########
+#..O.O.#
+##@.O..#
+#...O..#
+#.#.O..#
+#...O..#
+#......#
+########
 
-#[derive(Default, Debug, Clone, Copy, Eq, PartialEq)]
-enum Symbol {
-    #[default]
-    Empty,
-    Wall,
-    Box,
-    BoxL,
-    BoxR,
-    Robot
-}
+<^^>>>vv<v>>v<<",
+"##########
+#..O..O.O#
+#......O.#
+#.OO..O.O#
+#..O@..O.#
+#O#..O...#
+#O..O..O.#
+#.OO.O.OO#
+#....O...#
+##########
 
-impl From<char> for Symbol {
-    fn from(c: char) -> Self {
-        match c {
-            '.' => Symbol::Empty,
-            '#' => Symbol::Wall,
-            'O' => Symbol::Box,
-            '@' => Symbol::Robot,
-            '[' => Symbol::BoxL,
-            ']' => Symbol::BoxR,
-            _ => unreachable!()
-        }
-    }
-}
-
-impl Display for Symbol {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Symbol::Empty => '.',
-            Symbol::Wall => '#',
-            Symbol::Box => 'O',
-            Symbol::Robot => '@',
-            Symbol::BoxL => '[',
-            Symbol::BoxR => ']',
-        })
-    }
-}
-
-impl From<char> for Direction {
-    fn from(c: char) -> Self {
-        match c {
-            '^' => Direction::North,
-            'v' => Direction::South,
-            '>' => Direction::East,
-            '<' => Direction::West,
-            _ => unreachable!()
-        }
-    }
-}
-
-impl Day<15> for Day15 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day15.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 2028),
+            (Self::EXAMPLES[1], 10092),
+            (Self::INPUT, 1559280),
+        ],
+        test_cases![
+            (Self::EXAMPLES[1], 9021),
+            (Self::INPUT, 1576353),
+        ]
+    ],
+    solve = |input, part| {
         let (grid_s, moves_s) = input.split_once("\n\n").unwrap();
         let moves: Vec<Direction> = moves_s.chars()
             .filter(|&c| c != '\n')
@@ -112,57 +104,48 @@ impl Day<15> for Day15 {
             .map(|(p,_)| Self::gps(p))
             .sum()
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"########
-#..O.O.#
-##@.O..#
-#...O..#
-#.#.O..#
-#...O..#
-#......#
-########
+);
 
-<^^>>>vv<v>>v<<",
-"##########
-#..O..O.O#
-#......O.#
-#.OO..O.O#
-#..O@..O.#
-#O#..O...#
-#O..O..O.#
-#.OO.O.OO#
-#....O...#
-##########
 
-<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
-vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
-><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
-<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
-^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
-^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
->^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
-<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
-^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
-v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 2028),
-                (Self::EXAMPLES[1], 10092),
-                (Self::INPUT, 1559280),
-            ],
-            test_cases![
-                (Self::EXAMPLES[1], 9021),
-                (Self::INPUT, 1576353),
-            ]
-        ]
+#[derive(Default, Debug, Clone, Copy, Eq, PartialEq)]
+enum Symbol {
+    #[default]
+    Empty,
+    Wall,
+    Box,
+    BoxL,
+    BoxR,
+    Robot
+}
+
+impl From<char> for Symbol {
+    fn from(c: char) -> Self {
+        match c {
+            '.' => Symbol::Empty,
+            '#' => Symbol::Wall,
+            'O' => Symbol::Box,
+            '@' => Symbol::Robot,
+            '[' => Symbol::BoxL,
+            ']' => Symbol::BoxR,
+            _ => unreachable!()
+        }
     }
 }
 
+impl Display for Symbol {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            Symbol::Empty => '.',
+            Symbol::Wall => '#',
+            Symbol::Box => 'O',
+            Symbol::Robot => '@',
+            Symbol::BoxL => '[',
+            Symbol::BoxR => ']',
+        })
+    }
+}
 
 impl Day15 {
-    
     fn gps(pos: Vector2) -> usize {
         (pos.x + 100 * pos.y) as usize
     }

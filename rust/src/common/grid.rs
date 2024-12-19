@@ -24,6 +24,12 @@ pub struct Size {
     pub height: usize,
 }
 
+impl Size {
+    pub fn square(side: usize) -> Self {
+        Self {width: side, height: side}
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Error {
     /// Not all rows/columns have the same length

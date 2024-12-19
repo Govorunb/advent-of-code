@@ -1,26 +1,24 @@
 use crate::*;
 
-pub struct Day6;
-
-struct Race {
-    time: usize,
-    distance: usize,
-}
-
-impl Race {
-    fn min_to_beat(&self) -> usize {
-        let start = self.distance / self.time;
-        (start..self.time)
-            .find(|t| t * (self.time - t) > self.distance)
-            .unwrap()
-    }
-}
-
-impl Day<6> for Day6 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day6.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 6,
+    output = usize,
+    examples = [
+"Time:      7  15   30
+Distance:  9  40  200"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 288),
+            (Self::INPUT, 345015),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 71503),
+            (Self::INPUT, 42588603),
+            ("Time: 100\nDistance: 1000", 77),
+        ]
+    ],
+    solve = |input, part| {
         match part {
             Part::One => {
                 let (times, distances) = input.lines()
@@ -56,21 +54,18 @@ impl Day<6> for Day6 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"Time:      7  15   30
-Distance:  9  40  200"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 288),
-                (Self::INPUT, 345015),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 71503),
-                (Self::INPUT, 42588603),
-                ("Time: 100\nDistance: 1000", 77),
-            ]
-        ]
+);
+
+struct Race {
+    time: usize,
+    distance: usize,
+}
+
+impl Race {
+    fn min_to_beat(&self) -> usize {
+        let start = self.distance / self.time;
+        (start..self.time)
+            .find(|t| t * (self.time - t) > self.distance)
+            .unwrap()
     }
 }

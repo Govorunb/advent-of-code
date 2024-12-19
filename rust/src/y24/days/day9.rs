@@ -1,7 +1,35 @@
 use std::fmt::Formatter;
 use crate::*;
 
-pub struct Day9;
+aoc_day!(
+    day = 9,
+    output = usize,
+    examples = [
+"2333133121414131402"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 1928),
+            (Self::INPUT, 6461289671426),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 2858),
+            (Self::INPUT, 6488291456470),
+        ]
+    ],
+    solve = |input, part| {
+        let mut disk = Disk::parse(input);
+        // println!("{disk}");
+        match part {
+            Part::One => disk.compact_p1(),
+            Part::Two => disk.compact_p2(),
+        };
+        // println!("{disk}");
+        
+        disk.checksum()
+    }
+);
+
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum Page {
@@ -32,40 +60,6 @@ impl Display for Disk {
         Ok(())
     }
 }
-
-impl Day<9> for Day9 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day9.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let mut disk = Disk::parse(input);
-        // println!("{disk}");
-        match part {
-            Part::One => disk.compact_p1(),
-            Part::Two => disk.compact_p2(),
-        };
-        // println!("{disk}");
-        
-        disk.checksum()
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-        "2333133121414131402"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 1928),
-                (Self::INPUT, 6461289671426),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 2858),
-                (Self::INPUT, 6488291456470),
-            ]
-        ]
-    }
-}
-
-
 
 impl Disk {
     fn parse(input: &str) -> Self {

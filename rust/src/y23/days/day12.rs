@@ -1,11 +1,76 @@
-// replace all 12 with the day number
 #![allow(unused_imports)]
 #![allow(dead_code)]
 use itertools::Itertools;
 use std::collections::{HashSet, VecDeque};
 use crate::*;
 
-pub struct Day12;
+aoc_day!(
+    day = 12,
+    output = usize,
+    examples = [
+"???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1"
+    ],
+    tests = [
+        test_cases![
+            // goes from least to most ambiguous
+            ("? 1", 1),
+            ("??? 3", 1),
+            
+            ("###? 3", 1),
+            ("###?? 3", 1),
+            ("?#? 3", 1),
+            ("??? 1,1", 1),
+            ("??#?#### 3,4", 1),
+            ("###...?..?... 3,1,1", 1),
+            ("???...?..??...? 3", 1),
+            ("????? 3,1", 1),
+            ("?????. 3,1", 1),
+            ("???..?##?.?. 3,2,1", 1),
+            
+            ("?? 1", 2),
+            ("?#?? 3", 2),
+            ("??#? 3", 2),
+            ("??#?? 3", 3),
+            ("??#?####...?? 3,4,1", 2),
+            ("??#??#### 3,4", 2),
+            ("###...?..?... 3,1", 2),
+            ("?????? 3,1", 3),
+            
+            ("??.?? 1,1", 4),
+            ("???.?? 1,1", 7),
+            (Self::EXAMPLES[0], 21),
+            //(Self::INPUT, 0),
+        ],
+        test_cases![
+            //(Self::EXAMPLES[0], 0),
+            //(Self::INPUT, 0),
+        ]
+    ],
+    solve = |input, part| {
+        let mut record = input.lines()
+            .map(Row::parse)
+            .collect_vec();
+        for row in record.as_mut_slice() {
+            row.reduce();
+        }
+        match part {
+            Part::One => {
+                record.iter()
+                    .map(|row| row.ways())
+                    .sum()
+            },
+            Part::Two => {
+                0
+            }
+        }
+    }
+);
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Row {
@@ -239,77 +304,6 @@ impl Row {
         if have < need {0} else {1 + have - need}
     }
 }
-
-impl Day<12> for Day12 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day12.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let mut record = input.lines()
-            .map(Row::parse)
-            .collect_vec();
-        for row in record.as_mut_slice() {
-            row.reduce();
-        }
-        match part {
-            Part::One => {
-                record.iter()
-                    .map(|row| row.ways())
-                    .sum()
-            },
-            Part::Two => {
-                0
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"???.### 1,1,3
-.??..??...?##. 1,1,3
-?#?#?#?#?#?#?#? 1,3,1,6
-????.#...#... 4,1,1
-????.######..#####. 1,6,5
-?###???????? 3,2,1"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                // goes from least to most ambiguous
-                ("? 1", 1),
-                ("??? 3", 1),
-                
-                ("###? 3", 1),
-                ("###?? 3", 1),
-                ("?#? 3", 1),
-                ("??? 1,1", 1),
-                ("??#?#### 3,4", 1),
-                ("###...?..?... 3,1,1", 1),
-                ("???...?..??...? 3", 1),
-                ("????? 3,1", 1),
-                ("?????. 3,1", 1),
-                ("???..?##?.?. 3,2,1", 1),
-                
-                ("?? 1", 2),
-                ("?#?? 3", 2),
-                ("??#? 3", 2),
-                ("??#?? 3", 3),
-                ("??#?####...?? 3,4,1", 2),
-                ("??#??#### 3,4", 2),
-                ("###...?..?... 3,1", 2),
-                ("?????? 3,1", 3),
-                
-                ("??.?? 1,1", 4),
-                ("???.?? 1,1", 7),
-                (Self::EXAMPLES[0], 21),
-                //(Self::INPUT, 0),
-            ],
-            test_cases![
-                //(Self::EXAMPLES[0], 0),
-                //(Self::INPUT, 0),
-            ]
-        ]
-    }
-}
-
 
 impl Day12 {
     pub fn test_reduce(&self)

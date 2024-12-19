@@ -1,11 +1,27 @@
 use crate::*;
 
-pub struct Day8;
-
-impl Day<8> for Day8 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day8.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 8,
+    output = usize,
+    examples = [
+r#"""
+"abc"
+"aaa\"aaa"
+"\x27"
+"#
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 12), // 23 - 11
+            (r#""\\\x20\"""#, 7), // 10 - 3
+            (Self::INPUT, 1371),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 19), // 42 - 23
+            (Self::INPUT, 2117),
+        ]
+    ],
+    solve = |input, part| {
         let lines = input.lines();
         match part {
             Part::One => {
@@ -20,30 +36,9 @@ impl Day<8> for Day8 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-r#"""
-"abc"
-"aaa\"aaa"
-"\x27"
-"#
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 12), // 23 - 11
-                (r#""\\\x20\"""#, 7), // 10 - 3
-                (Self::INPUT, 1371),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 19), // 42 - 23
-                (Self::INPUT, 2117),
-            ]
-        ]
-    }
-}
+);
 
 impl Day8 {
-    
     fn decode_size_diff(line: &str) -> usize {
         let repr_size = line.len();
         let mut char_size = repr_size-2;

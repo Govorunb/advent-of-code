@@ -1,39 +1,48 @@
 use crate::*;
 
-pub struct Day8;
+aoc_day!(
+    day = 8,
+    output = usize,
+    examples = [
+"RL
 
-#[derive(Clone, Debug, PartialEq, Default)]
-struct Head<'a> {
-    curr: &'a str,
-    first_count: usize,
-    first_finished: bool,
-    cycle_count: usize,
-    cycle_finished: bool,
-}
+AAA = (BBB, CCC)
+BBB = (DDD, EEE)
+CCC = (ZZZ, GGG)
+DDD = (DDD, DDD)
+EEE = (EEE, EEE)
+GGG = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)",
+"LLR
 
-impl Head<'_> {
-    fn next(&mut self, part: Part) {
-        if !self.cycle_finished {
-            self.cycle_count += 1;
-            if self.at_end(part) {
-                self.cycle_count -= 1;
-                self.cycle_finished = true;
-            }
-        }
-    }
-    fn at_end(&self, part: Part) -> bool {
-        match part {
-            Part::One => self.curr == "ZZZ",
-            Part::Two => self.curr.ends_with('Z'),
-        }
-    }
-}
+AAA = (BBB, BBB)
+BBB = (AAA, ZZZ)
+ZZZ = (ZZZ, ZZZ)",
+"LR
 
-impl Day<8> for Day8 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day8.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 2),
+            (Self::EXAMPLES[1], 6),
+            (Self::INPUT, 13301),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 2),
+            (Self::EXAMPLES[1], 6),
+            (Self::EXAMPLES[2], 6),
+            (Self::INPUT, 7309459565207),
+        ]
+    ],
+    solve = |input, part| {
         let instructions = input.lines().next().unwrap();
         let graph: FxHashMap<&str, (&str, &str)> = input.lines().skip(2).map(|l| {
             let (from, to) = l.split_once(" = ").unwrap();
@@ -73,46 +82,32 @@ impl Day<8> for Day8 {
             .reduce(|acc, item| num::Integer::lcm(&acc, &item))
             .unwrap()
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"RL
+);
 
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)",
-"LLR
 
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)",
-"LR
-
-11A = (11B, XXX)
-11B = (XXX, 11Z)
-11Z = (11B, XXX)
-22A = (22B, XXX)
-22B = (22C, 22C)
-22C = (22Z, 22Z)
-22Z = (22B, 22B)
-XXX = (XXX, XXX)",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 2),
-                (Self::EXAMPLES[1], 6),
-                (Self::INPUT, 13301),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 2),
-                (Self::EXAMPLES[1], 6),
-                (Self::EXAMPLES[2], 6),
-                (Self::INPUT, 7309459565207),
-            ]
-        ]
-    }
+#[derive(Clone, Debug, PartialEq, Default)]
+struct Head<'a> {
+    curr: &'a str,
+    first_count: usize,
+    first_finished: bool,
+    cycle_count: usize,
+    cycle_finished: bool,
 }
 
+impl Head<'_> {
+    fn next(&mut self, part: Part) {
+        if !self.cycle_finished {
+            self.cycle_count += 1;
+            if self.at_end(part) {
+                self.cycle_count -= 1;
+                self.cycle_finished = true;
+            }
+        }
+    }
+    fn at_end(&self, part: Part) -> bool {
+        match part {
+            Part::One => self.curr == "ZZZ",
+            Part::Two => self.curr.ends_with('Z'),
+        }
+    }
+}

@@ -1,11 +1,18 @@
 use crate::*;
 
-pub struct Day10;
-
-impl Day<10> for Day10 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day10.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 10,
+    output = usize,
+    examples = [],
+    tests = [
+        test_cases![
+            (Self::INPUT, 360154),
+        ],
+        test_cases![
+            (Self::INPUT, 5103798),
+        ]
+    ],
+    solve = |input, part| {
         match part {
             Part::One => {
                 let mut curr = input.to_string();
@@ -23,18 +30,7 @@ impl Day<10> for Day10 {
             }
         }
     }
-
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::INPUT, 360154),
-            ],
-            test_cases![
-                (Self::INPUT, 5103798),
-            ]
-        ]
-    }
-}
+);
 
 #[derive(Debug, Clone, Copy, Default)]
 struct Run(char, usize);

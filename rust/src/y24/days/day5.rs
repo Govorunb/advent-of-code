@@ -1,17 +1,49 @@
 use crate::*;
 
-pub struct Day5;
+aoc_day!(
+    day = 5,
+    output = usize,
+    examples = [
+"47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
 
-struct Rule {
-    print: usize,
-    before: usize,
-}
-
-impl Day<5> for Day5 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day5.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 143),
+            (Self::INPUT, 4924),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 123),
+            // (Self::INPUT, 0),
+        ]
+    ],
+    solve = |input, part| {
         let (rules_s, updates_s) = input.split_once("\n\n").unwrap();
         let rules = rules_s.lines().map(|rs| {
             let (x,y) = rs.split_once('|').unwrap();
@@ -83,47 +115,9 @@ impl Day<5> for Day5 {
             }
         }
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"47|53
-97|13
-97|61
-97|47
-75|29
-61|13
-75|53
-29|13
-97|29
-53|29
-61|53
-97|53
-61|29
-47|13
-75|47
-97|75
-47|61
-75|61
-47|29
-75|13
-53|13
+);
 
-75,47,61,53,29
-97,61,53,29,13
-75,29,13
-75,97,47,61,53
-61,13,29
-97,13,75,29,47"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 143),
-                (Self::INPUT, 4924),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 123),
-                // (Self::INPUT, 0),
-            ]
-        ]
-    }
+struct Rule {
+    print: usize,
+    before: usize,
 }
-

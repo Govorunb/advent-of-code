@@ -1,6 +1,39 @@
 use crate::*;
 
-pub struct Day3;
+aoc_day!(
+    day = 3,
+    output = usize,
+    examples = [
+"467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598.."
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 4361),
+            (Self::INPUT, 549908),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 467835),
+            (Self::INPUT, 81166799),
+        ]
+    ],
+    solve = |input, part| {
+        let (sum, gear_ratio_sum) = Self::do_it(input);
+        match part {
+            Part::One => sum,
+            Part::Two => gear_ratio_sum,
+        }
+    }
+);
+
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum Cell {
@@ -24,50 +57,12 @@ impl Cell {
         matches!(self, Cell::Digit(_))
     }
 }
-
-impl Day<3> for Day3 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day3.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let (sum, gear_ratio_sum) = self.do_it(input);
-        match part {
-            Part::One => sum,
-            Part::Two => gear_ratio_sum,
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598.."
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 4361),
-                (Self::INPUT, 549908),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 467835),
-                (Self::INPUT, 81166799),
-            ]
-        ]
-    }
-}
-
 impl Day3 {
     fn get_number(grid: &Grid<Cell>, x: usize, y: usize) -> Option<(usize, usize, usize)> {
         grid.row(y)
             // cell at given coords must be inside a number
             .filter(|row| row.get(x).is_some_and(Cell::is_digit))
             .map(|row| {
-                // todo: this is a flood fill
                 // go left until there's no digit
                 let left = (0..x).rev()
                     .find(|i| !row[*i].is_digit())
@@ -87,7 +82,7 @@ impl Day3 {
         })
     }
 
-    fn do_it(&self, input: &str) -> (usize, usize) {
+    fn do_it(input: &str) -> (usize, usize) {
         let grid: Grid<Cell> = input.parse()
             .expect("failed to parse grid");
         let mut touched: FxHashSet<(usize, usize)> = FxHashSet::default();

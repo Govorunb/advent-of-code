@@ -2,12 +2,34 @@ use std::collections::HashSet;
 use rustc_hash::FxBuildHasher;
 use crate::*;
 
-pub struct Day13;
-
-impl Day<13> for Day13 {
-    type Output = isize;
-    const INPUT: &'static str = include_str!("../Input/day13.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
+aoc_day!(
+    day = 13,
+    output = isize,
+    examples = [
+"Alice would gain 54 happiness units by sitting next to Bob.
+Alice would lose 79 happiness units by sitting next to Carol.
+Alice would lose 2 happiness units by sitting next to David.
+Bob would gain 83 happiness units by sitting next to Alice.
+Bob would lose 7 happiness units by sitting next to Carol.
+Bob would lose 63 happiness units by sitting next to David.
+Carol would lose 62 happiness units by sitting next to Alice.
+Carol would gain 60 happiness units by sitting next to Bob.
+Carol would gain 55 happiness units by sitting next to David.
+David would gain 46 happiness units by sitting next to Alice.
+David would lose 7 happiness units by sitting next to Bob.
+David would gain 41 happiness units by sitting next to Carol.",
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 330),
+            (Self::INPUT, 664),
+        ],
+        test_cases![
+            // (Self::EXAMPLES[0], 0),
+            (Self::INPUT, 640),
+        ]
+    ],
+    solve = |input, part| {
         // graph search again... guh
         let regex = Regex::new(r#"(?<name>\w+) would (?<sign>lose|gain) (?<amt>\d+) happiness units by sitting next to (?<other>\w+)."#).unwrap();
         let mut names: FxHashSet<String> = Default::default();
@@ -35,33 +57,7 @@ impl Day<13> for Day13 {
 
         arrangement.cost.unwrap()
     }
-    const EXAMPLES: &'static [&'static str] = &[
-"Alice would gain 54 happiness units by sitting next to Bob.
-Alice would lose 79 happiness units by sitting next to Carol.
-Alice would lose 2 happiness units by sitting next to David.
-Bob would gain 83 happiness units by sitting next to Alice.
-Bob would lose 7 happiness units by sitting next to Carol.
-Bob would lose 63 happiness units by sitting next to David.
-Carol would lose 62 happiness units by sitting next to Alice.
-Carol would gain 60 happiness units by sitting next to Bob.
-Carol would gain 55 happiness units by sitting next to David.
-David would gain 46 happiness units by sitting next to Alice.
-David would lose 7 happiness units by sitting next to Bob.
-David would gain 41 happiness units by sitting next to Carol.",
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 330),
-                (Self::INPUT, 664),
-            ],
-            test_cases![
-                // (Self::EXAMPLES[0], 0),
-                (Self::INPUT, 640),
-            ]
-        ]
-    }
-}
+);
 
 
 struct SeatingArrangement {
@@ -70,7 +66,6 @@ struct SeatingArrangement {
 }
 
 impl Day13 {
-
     fn search(costs: &FxHashMap<(String, String), isize>, items: &FxHashSet<String>, comparer: fn(current_best: isize, cost: isize) -> bool) -> SeatingArrangement {
         let mut best: SeatingArrangement = SeatingArrangement {cost: None, seats: vec![]};
 

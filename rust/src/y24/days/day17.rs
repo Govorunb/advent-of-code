@@ -1,7 +1,67 @@
 use std::sync::atomic::AtomicBool;
 use crate::*;
 
-pub struct Day17;
+aoc_day!(
+    day = 17,
+    output = String,
+    examples = [
+"Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0",
+"Register A: 2024
+Register B: 0
+Register C: 0
+
+Program: 0,3,5,4,3,0"
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], "4,6,3,5,6,3,5,2,1,0".to_string()),
+            (Self::INPUT, "1,7,2,1,4,1,5,4,0".to_string()),
+        ],
+        test_cases![
+            (Self::EXAMPLES[1], "117440".to_string()),
+            (Self::INPUT, "37221261688308".to_string()),
+        ]
+    ],
+    solve = |input, part| {
+        let regex = Regex::new(r#"Register A: (?<A>-?\d+)
+Register B: (?<B>-?\d+)
+Register C: (?<C>-?\d+)
+
+Program: (?<prog>.*)"#).unwrap();
+        let mut cpu = regex.captures_iter(input)
+            .map(|c| {
+                let program = c.str("prog").chars()
+                    .filter_map(|c| c.to_digit(10).map(|d| d as usize))
+                    .collect_vec();
+                Cpu {
+                    registers: ["A","B","C"].map(|name| c.usize(name)),
+                    ip: 0,
+                    program,
+                    debug: false
+                }
+            })
+            .nth(0).unwrap();
+        match part {
+            Part::One => {
+                cpu.run()
+                    .map(|num| num.to_string())
+                    .join(",")
+            },
+            Part::Two => {
+                // cpu.debug = true;
+                let program = cpu.program.clone();
+                Self::p2_reverse(&mut cpu, &program, program.len()-1, 0)
+                    .unwrap()
+                    .to_string()
+            }
+        }
+    }
+);
+
 
 #[derive(Debug, Clone)]
 struct Cpu {
@@ -39,71 +99,6 @@ impl From<usize> for Instruction {
         }
     }
 }
-impl Day<17> for Day17 {
-    type Output = String;
-    const INPUT: &'static str = include_str!("../Input/day17.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let regex = Regex::new(r#"Register A: (?<A>-?\d+)
-Register B: (?<B>-?\d+)
-Register C: (?<C>-?\d+)
-
-Program: (?<prog>.*)"#).unwrap();
-        let mut cpu = regex.captures_iter(input)
-            .map(|c| {
-                let program = c.str("prog").chars()
-                    .filter_map(|c| c.to_digit(10).map(|d| d as usize))
-                    .collect_vec();
-                Cpu {
-                    registers: ["A","B","C"].map(|name| c.usize(name)),
-                    ip: 0,
-                    program,
-                    debug: false
-                }
-            })
-            .nth(0).unwrap();
-        match part {
-            Part::One => {
-                cpu.run()
-                    .map(|num| num.to_string())
-                    .join(",")
-            },
-            Part::Two => {
-                // cpu.debug = true;
-                let program = cpu.program.clone();
-                Self::p2_reverse(&mut cpu, &program, program.len()-1, 0)
-                    .unwrap()
-                    .to_string()
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-"Register A: 729
-Register B: 0
-Register C: 0
-
-Program: 0,1,5,4,3,0",
-"Register A: 2024
-Register B: 0
-Register C: 0
-
-Program: 0,3,5,4,3,0"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], "4,6,3,5,6,3,5,2,1,0".to_string()),
-                (Self::INPUT, "1,7,2,1,4,1,5,4,0".to_string()),
-            ],
-            test_cases![
-                (Self::EXAMPLES[1], "117440".to_string()),
-                (Self::INPUT, "37221261688308".to_string()),
-            ]
-        ]
-    }
-
-}
-
-
 impl Day17 {
     // unique to programs with a single `adv 3` then a single `jmp 0`
     // works on my ~~machine~~ input 👍

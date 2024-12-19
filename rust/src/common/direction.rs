@@ -79,6 +79,18 @@ impl Direction {
     }
 }
 
+impl From<char> for Direction {
+    fn from(c: char) -> Self {
+        match c {
+            '^' => Self::North,
+            'v' => Self::South,
+            '>' => Self::East,
+            '<' => Self::West,
+            _ => panic!("Unmatched char {c} in Direction::from(char)"),
+        }
+    }
+}
+
 impl Direction8 {
     pub const fn opp(&self) -> Direction8 {
         match self {

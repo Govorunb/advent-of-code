@@ -4,26 +4,10 @@ use std::str::FromStr;
 use pathfinding::prelude::{astar_bag, AstarSolution};
 use crate::*;
 
-pub struct Day16;
-
-impl Day<16> for Day16 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day16.txt");
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let grid: Grid<char> = Grid::from_str(input).unwrap();
-        let (paths, cost) = Self::search(&grid);
-        match part {
-            Part::One => cost,
-            Part::Two => {
-                let mut set = FxHashSet::default();
-                for path in paths {
-                    set.extend(path.iter().map(|node| node.0));
-                }
-                set.len()
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
+aoc_day!(
+    day = 16,
+    output = usize,
+    examples = [
 "###############
 #.......#....E#
 #.#.###.#.###.#
@@ -56,23 +40,34 @@ impl Day<16> for Day16 {
 #.#.#.#########.#
 #S#.............#
 #################"
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 7036),
-                (Self::EXAMPLES[1], 11048),
-                (Self::INPUT, 108504),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 45),
-                (Self::EXAMPLES[1], 64),
-                (Self::INPUT, 538),
-            ]
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 7036),
+            (Self::EXAMPLES[1], 11048),
+            (Self::INPUT, 108504),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 45),
+            (Self::EXAMPLES[1], 64),
+            (Self::INPUT, 538),
         ]
+    ],
+    solve = |input, part| {
+        let grid: Grid<char> = Grid::from_str(input).unwrap();
+        let (paths, cost) = Self::search(&grid);
+        match part {
+            Part::One => cost,
+            Part::Two => {
+                let mut set = FxHashSet::default();
+                for path in paths {
+                    set.extend(path.iter().map(|node| node.0));
+                }
+                set.len()
+            }
+        }
     }
-}
-
+);
 
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 struct Node(Vector2, Direction);

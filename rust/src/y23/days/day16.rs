@@ -5,7 +5,106 @@ use rayon::iter::ParallelIterator;
 
 use crate::*;
 
-pub struct Day16;
+aoc_day!(
+    day = 16,
+    output = usize,
+    examples = [
+r#".|...\....
+|.-.\.....
+.....|-...
+........|.
+..........
+.........\
+..../.\\..
+.-.-/..|..
+.|....-|.\
+..//.|...."#,
+r#".|......
+.-\.....
+..../\..
+.|../...
+..\../.."#,
+r#".|.....\
+.-\.....
+..../\..
+.|..\../
+..\../.."#,
+r#"|..........
+...........
+-\........."#
+    ],
+    tests = [
+        test_cases![
+            (Self::EXAMPLES[0], 46),
+            (Self::EXAMPLES[1], 19),
+            (Self::EXAMPLES[2], 25),
+            (Self::EXAMPLES[3], 4),
+            (Self::INPUT, 7517),
+        ],
+        test_cases![
+            (Self::EXAMPLES[0], 51),
+            (Self::INPUT, 7741),
+        ]
+    ],
+    solve = |input, part| {
+        let c: Contraption = input.parse().expect("failed to parse grid");
+        match part {
+            Part::One => {
+                c.count_energized(Vector2::ZERO, Direction::East)
+            },
+            Part::Two => {
+                let width = c.grid.width();
+                let height = c.grid.height();
+                // // functional
+                // (0..height)
+                //     .flat_map(|y| [
+                //         c.count_energized(0, y, Direction::East),
+                //         c.count_energized(width-1, y, Direction::West)
+                //     ])
+                // .max().unwrap()
+                // .max((0..width)
+                //     .flat_map(|x| [
+                //         c.count_energized(x, 0, Direction::South),
+                //         c.count_energized(x, height-1, Direction::North)
+                //     ])
+                //     .max().unwrap())
+
+                // // imperative
+                // let mut max = 0;
+                // for y in 0..height {
+                //     max = max
+                //         .max(c.count_energized(0, y, Direction::East))
+                //         .max(c.count_energized(width-1, y, Direction::West));
+                // }
+                // for x in 0..width {
+                //     max = max
+                //         .max(c.count_energized(x, 0, Direction::South))
+                //         .max(c.count_energized(x, height-1, Direction::North));
+                // }
+                // max
+
+                let vertical = (0..height)
+                    .into_par_iter()
+                    .flat_map_iter(|y| [
+                        c.count_energized((0,y).into(), Direction::East),
+                        c.count_energized((width-1, y).into(), Direction::West)
+                    ]); // if we put .max().unwrap() here, we're forced to wait for vertical before we can start horizontal
+
+                let horizontal = (0..width)
+                    .into_par_iter()
+                    .flat_map_iter(|x| [
+                        c.count_energized((x, 0).into(), Direction::South),
+                        c.count_energized((x, height-1).into(), Direction::North)
+                    ]);
+                // start both running parallel
+                let (max_vert, max_horiz) = rayon::join(|| vertical.max().unwrap(), || horizontal.max().unwrap());
+                
+                max_vert.max(max_horiz)
+            }
+        }
+    }
+);
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Contraption {
@@ -191,109 +290,3 @@ impl Contraption {
             .count()
     }
 }
-
-
-impl Day<16> for Day16 {
-    type Output = usize;
-    const INPUT: &'static str = include_str!("../Input/day16.txt");
-
-    fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let c: Contraption = input.parse().expect("failed to parse grid");
-        match part {
-            Part::One => {
-                c.count_energized(Vector2::ZERO, Direction::East)
-            },
-            Part::Two => {
-                let width = c.grid.width();
-                let height = c.grid.height();
-                // // functional
-                // (0..height)
-                //     .flat_map(|y| [
-                //         c.count_energized(0, y, Direction::East),
-                //         c.count_energized(width-1, y, Direction::West)
-                //     ])
-                // .max().unwrap()
-                // .max((0..width)
-                //     .flat_map(|x| [
-                //         c.count_energized(x, 0, Direction::South),
-                //         c.count_energized(x, height-1, Direction::North)
-                //     ])
-                //     .max().unwrap())
-
-                // // imperative
-                // let mut max = 0;
-                // for y in 0..height {
-                //     max = max
-                //         .max(c.count_energized(0, y, Direction::East))
-                //         .max(c.count_energized(width-1, y, Direction::West));
-                // }
-                // for x in 0..width {
-                //     max = max
-                //         .max(c.count_energized(x, 0, Direction::South))
-                //         .max(c.count_energized(x, height-1, Direction::North));
-                // }
-                // max
-
-                let vertical = (0..height)
-                    .into_par_iter()
-                    .flat_map_iter(|y| [
-                        c.count_energized((0,y).into(), Direction::East),
-                        c.count_energized((width-1, y).into(), Direction::West)
-                    ]); // if we put .max().unwrap() here, we're forced to wait for vertical before we can start horizontal
-
-                let horizontal = (0..width)
-                    .into_par_iter()
-                    .flat_map_iter(|x| [
-                        c.count_energized((x, 0).into(), Direction::South),
-                        c.count_energized((x, height-1).into(), Direction::North)
-                    ]);
-                // start both running parallel
-                let (max_vert, max_horiz) = rayon::join(|| vertical.max().unwrap(), || horizontal.max().unwrap());
-                
-                max_vert.max(max_horiz)
-            }
-        }
-    }
-    const EXAMPLES: &'static [&'static str] = &[
-r#".|...\....
-|.-.\.....
-.....|-...
-........|.
-..........
-.........\
-..../.\\..
-.-.-/..|..
-.|....-|.\
-..//.|...."#,
-r#".|......
-.-\.....
-..../\..
-.|../...
-..\../.."#,
-r#".|.....\
-.-\.....
-..../\..
-.|..\../
-..\../.."#,
-r#"|..........
-...........
--\........."#,
-    ];
-    fn test_cases(&self) -> [Vec<Self::TestCase>; 2] {
-        [
-            test_cases![
-                (Self::EXAMPLES[0], 46),
-                (Self::EXAMPLES[1], 19),
-                (Self::EXAMPLES[2], 25),
-                (Self::EXAMPLES[3], 4),
-                (Self::INPUT, 7517),
-            ],
-            test_cases![
-                (Self::EXAMPLES[0], 51),
-                (Self::INPUT, 7741),
-            ]
-        ]
-    }
-}
-
-
