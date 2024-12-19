@@ -1,9 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day15 {
-    
-}
+pub struct Day15;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 struct Hasher {
@@ -128,15 +125,4 @@ impl Day<15> for Day15 {
     }
 }
 
-impl Default for Day15 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day15 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

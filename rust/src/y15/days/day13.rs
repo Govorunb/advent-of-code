@@ -2,9 +2,7 @@ use std::collections::HashSet;
 use rustc_hash::FxBuildHasher;
 use crate::*;
 
-pub struct Day13 {
-    
-}
+pub struct Day13;
 
 impl Day<13> for Day13 {
     type Output = isize;
@@ -65,11 +63,6 @@ David would gain 41 happiness units by sitting next to Carol.",
     }
 }
 
-impl Default for Day13 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 struct SeatingArrangement {
     cost: Option<isize>,
@@ -77,10 +70,6 @@ struct SeatingArrangement {
 }
 
 impl Day13 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
 
     fn search(costs: &FxHashMap<(String, String), isize>, items: &FxHashSet<String>, comparer: fn(current_best: isize, cost: isize) -> bool) -> SeatingArrangement {
         let mut best: SeatingArrangement = SeatingArrangement {cost: None, seats: vec![]};

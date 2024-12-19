@@ -1,11 +1,8 @@
 // replace all 20 with the day number
 #![allow(dead_code)]
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day20 {
-    
-}
+pub struct Day20;
 
 impl Day<20> for Day20 {
     type Output = usize;
@@ -39,15 +36,4 @@ impl Day<20> for Day20 {
     }
 }
 
-impl Default for Day20 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day20 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

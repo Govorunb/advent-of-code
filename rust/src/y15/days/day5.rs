@@ -1,9 +1,9 @@
-use crate::test_cases;
-use crate::common::*;
+use indexmap::map::Entry;
+use crate::*;
 
-pub struct Day5 {
-    forbidden: Vec<String>
-}
+pub struct Day5;
+
+const FORBIDDEN: [(char, char); 4] = [('a','b'), ('c','d'), ('p','q'), ('x','y')];
 
 impl Day<5> for Day5 {
     type Output = usize;
@@ -13,12 +13,12 @@ impl Day<5> for Day5 {
         match part {
             Part::One => {
                 lines
-                    .filter(|l| self.is_nice_p1(l))
+                    .filter(Self::is_nice_p1)
                     .count()
             },
             Part::Two => {
                 lines
-                    .filter(|l| self.is_nice_p2(l))
+                    .filter(Self::is_nice_p2)
                     .count()
             }
         }
@@ -48,82 +48,57 @@ ieodomkazucvgmuy",
     }
 }
 
-impl Default for Day5 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day5 {
-    pub fn new() -> Self {
-        Self {
-            forbidden: vec!["ab", "cd", "pq", "xy"]
-                .into_iter()
-                .map_into()
-                .collect_vec(),
-        }
-    }
-    
-    fn is_nice_p1(&self, line: &str) -> bool {
+    fn is_nice_p1(line: &&str) -> bool {
+        fn is_vowel(c: char) -> bool {"aeiou".contains(c)}
         let mut vowels = 0;
+        if is_vowel(line.chars().next().unwrap()) { vowels = 1; }
         let mut has_double = false;
-        let mut last: Option<char> = None;
-        for c in line.chars() {
-            if let Some(prev) = last {
-                let mut s: String = prev.into();
-                s.push(c);
-                if self.forbidden.iter().any(|f| f.eq(&s)) {
-                    return false;
-                }
-                if prev == c {
-                    has_double = true;
-                }
-            }
-            if "aeiou".contains(c) {
-                vowels += 1;
-            }
-            last = Some(c);
+        
+        for (last, c) in line.chars().tuple_windows() {
+            if FORBIDDEN.contains(&(last, c)) { return false; }
+            if last == c { has_double = true; }
+            if is_vowel(c) { vowels += 1; }
         }
         
         has_double && vowels >= 3
     }
     
-    fn is_nice_p2(&self, line: &str) -> bool {
+    fn is_nice_p2(line: &&str) -> bool {
         let mut has_wrapped = false;
         let mut has_double = false;
         let mut seeds: FxIndexMap<char, Vec<(usize, char)>> = FxIndexMap::default();
-        let mut last: Option<char> = None;
-        let mut before_last: Option<char> = None;
-        for (i, c) in line.char_indices() {
-            if !has_double {
-                if let Some(prev) = last {
-                    match seeds.get_mut(&prev) {
-                        None => {
-                            seeds.insert(prev, vec![(i,c)]);
-                        }
-                        Some(repeats) => {
-                            has_double |= repeats.iter().any(|&r| {
-                                // excludes e.g. aaa - not a double because it overlaps
-                                r.0 < i-1 && r.1 == c
-                            });
-                            repeats.push((i,c));
-                        }
-                    }
-                }
+        
+        let mut check_double = move |i, prev: char, curr: char| {
+            if has_double || prev != curr {return;}
+            
+            match seeds.entry(prev) {
+                Entry::Occupied(mut repeats) => {
+                    repeats.get_mut().push((i, curr));
+                    has_double = repeats.get().iter().any(|&(ri, rc)| ri < i-1 && rc == curr);
+                },
+                Entry::Vacant(v) => {
+                    v.insert(vec![(i, curr)]);
+                },
             }
+        };
+        
+        // manually check first and second
+        check_double(1, line.chars().nth(0).unwrap(), line.chars().nth(1).unwrap());
+        
+        for (i, (a, b, c)) in line.chars().tuple_windows().enumerate() {
+            check_double(i, b, c);
             // enclosed by the same character on both sides, e.g. aba/aaa/exe
             // essentially line[i-2] == line[i]
-            if matches!(before_last, Some(bl) if bl == c) {
+            if a == c {
                 has_wrapped = true;
             }
+            
             if has_double && has_wrapped {
                 return true;
             }
-            
-            before_last = last;
-            last = Some(c);
         }
         
-        has_wrapped && has_double
+        false
     }
 }

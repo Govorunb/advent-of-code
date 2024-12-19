@@ -1,9 +1,7 @@
 use num::Integer;
 use crate::*;
 
-pub struct Day14 {
-    
-}
+pub struct Day14;
 
 struct Reindeer {
     name: String,
@@ -112,15 +110,4 @@ Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.",
     }
 }
 
-impl Default for Day14 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day14 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

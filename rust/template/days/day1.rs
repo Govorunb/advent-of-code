@@ -1,6 +1,6 @@
 use crate::*;
 
-pub struct Day1 {}
+pub struct Day1;
 
 impl Day<1> for Day1 {
     type Output = usize;
@@ -33,14 +33,3 @@ impl Day<1> for Day1 {
     }
 }
 
-impl Default for Day1 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day1 {
-    pub fn new() -> Self {
-        Self {}
-    }
-}

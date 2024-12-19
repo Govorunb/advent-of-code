@@ -1,9 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day11 {
-    
-}
+pub struct Day11;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct SparseGalaxiesGrid {
@@ -111,15 +108,4 @@ impl Day<11> for Day11 {
     }
 }
 
-impl Default for Day11 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day11 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

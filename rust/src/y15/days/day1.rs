@@ -1,9 +1,7 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Day1 {
-}
+pub struct Day1;
 
 impl Day<1> for Day1 {
     type Output = isize;
@@ -58,17 +56,4 @@ impl Day<1> for Day1 {
             ]
         ]
     }    
-}
-
-impl Default for Day1 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day1 {
-    pub fn new() -> Self {
-        Day1 {
-        }
-    }
 }

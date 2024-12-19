@@ -3,12 +3,9 @@
 #![allow(dead_code)]
 use itertools::Itertools;
 use std::collections::{HashSet, VecDeque};
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day12 {
-    
-}
+pub struct Day12;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Row {
@@ -313,17 +310,8 @@ impl Day<12> for Day12 {
     }
 }
 
-impl Default for Day12 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day12 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     pub fn test_reduce(&self)
     {
         let inputs = vec![

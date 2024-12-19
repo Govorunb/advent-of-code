@@ -1,9 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day18 {
-    
-}
+pub struct Day18;
 
 struct Instruction {
     dir: Direction,
@@ -56,15 +53,4 @@ U 2 (#7a21e3)"
     }
 }
 
-impl Default for Day18 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day18 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

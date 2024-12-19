@@ -1,9 +1,7 @@
 use std::sync::atomic::AtomicBool;
 use crate::*;
 
-pub struct Day17 {
-    
-}
+pub struct Day17;
 
 #[derive(Debug, Clone)]
 struct Cpu {
@@ -105,17 +103,8 @@ Program: 0,3,5,4,3,0"
 
 }
 
-impl Default for Day17 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day17 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     // unique to programs with a single `adv 3` then a single `jmp 0`
     // works on my ~~machine~~ input 👍
     fn p2_reverse(cpu: &mut Cpu, program: &[usize], i: usize, curr: usize) -> Option<usize> {

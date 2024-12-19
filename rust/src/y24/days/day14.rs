@@ -2,9 +2,7 @@ use std::cmp::Ordering;
 use num::Integer;
 use crate::*;
 
-pub struct Day14 {
-    
-}
+pub struct Day14;
 
 #[derive(Debug, Clone, PartialEq)]
 struct Robot {
@@ -120,17 +118,8 @@ p=9,5 v=-3,-3"
     }
 }
 
-impl Default for Day14 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day14 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
 
     fn grid(bounds: Size, moved_robots: &Vec<Robot>) -> Grid<char> {
         let mut grid = Grid::from_origin(bounds).unwrap();

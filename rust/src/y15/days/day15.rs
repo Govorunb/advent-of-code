@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day15 {
-    
-}
+pub struct Day15;
 
 struct Ingredient {
     name: String,
@@ -81,17 +79,8 @@ Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3",
     }
 }
 
-impl Default for Day15 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day15 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn score(ingredients: &[Ingredient], counts: &[isize]) -> usize {
         let mut capacity = 0;

@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day11 {
-    
-}
+pub struct Day11;
 
 impl Day<11> for Day11 {
     type Output = String;
@@ -44,11 +42,6 @@ impl Day<11> for Day11 {
     }
 }
 
-impl Default for Day11 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day11 {
     const A: u8 = 0x61;
@@ -56,8 +49,6 @@ impl Day11 {
     const L: u8 = 0x6C;
     const O: u8 = 0x6F;
     const Z: u8 = 0x7A;
-    
-    pub fn new() -> Self { Self {} }
     
     fn increment(x: &mut [u8]) {
         let mut i = x.len()-1;

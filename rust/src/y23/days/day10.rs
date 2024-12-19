@@ -1,9 +1,7 @@
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day10 {
-    
-}
+pub struct Day10;
 
 struct PipeGrid {
     tiles: Grid<Symbol>,
@@ -308,15 +306,4 @@ L7JLJL-JLJLJL--JLJ.L",
     }
 }
 
-impl Default for Day10 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day10 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

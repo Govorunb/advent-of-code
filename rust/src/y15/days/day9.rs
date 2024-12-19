@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day9 {
-    
-}
+pub struct Day9;
 
 impl Day<9> for Day9 {
     type Output = usize;
@@ -80,21 +78,12 @@ Dublin to Belfast = 141"
     }
 }
 
-impl Default for Day9 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 struct Tour {
     pub distance: Option<usize>,
     pub route: Vec<String>,
 }
 
 impl Day9 {
-    pub fn new() -> Self {
-        Self {}
-    }
     
     fn tsp(costs: &FxHashMap<(String, String), usize>, cities: &FxHashSet<String>, start: &String, end: &String, check: fn(item: usize, cost: usize) -> bool) -> Tour {
         let starting_route = vec![start.clone()];

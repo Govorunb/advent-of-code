@@ -2,9 +2,7 @@ use std::collections::HashMap;
 use num::Integer;
 use crate::*;
 
-pub struct Day11 {
-    
-}
+pub struct Day11;
 
 impl Day<11> for Day11 {
     type Output = usize;
@@ -62,15 +60,4 @@ impl Day<11> for Day11 {
     }
 }
 
-impl Default for Day11 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day11 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

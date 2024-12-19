@@ -11,25 +11,25 @@ pub mod test {
         println!("running {year} tests");
         
         let sw = stopwatch::Stopwatch::start_new();
-        Day1::new().test(None);
-        Day2::new().test(None);
-        Day3::new().test(None);
-        Day4::new().test(None);
-        Day5::new().test(None);
-        Day6::new().test(None);
-        Day7::new().test(None);
-        Day8::new().test(None);
-        Day9::new().test(None);
-        Day10::new().test(None);
-        Day11::new().test(None);
-        // Day12::new().test(None); // i give up
-        Day13::new().test(None);
-        Day14::new().test(None);
-        Day15::new().test(None);
-        Day16::new().test(None);
-        // Day17::new().test(None); // wowie graph problems yippee i love reimplementing search algorithms
-        // Day18::new().test(None); // this one is a grid issue (aka skill issue) on my part
-        Day19::new().test(None);
+        Day1.test(None);
+        Day2.test(None);
+        Day3.test(None);
+        Day4.test(None);
+        Day5.test(None);
+        Day6.test(None);
+        Day7.test(None);
+        Day8.test(None);
+        Day9.test(None);
+        Day10.test(None);
+        Day11.test(None);
+        // Day12.test(None); // i give up
+        Day13.test(None);
+        Day14.test(None);
+        Day15.test(None);
+        Day16.test(None);
+        // Day17.test(None); // wowie graph problems yippee i love reimplementing search algorithms
+        // Day18.test(None); // this one is a grid issue (aka skill issue) on my part
+        Day19.test(None);
 
         println!("{year} tests took {}us", sw.elapsed().as_micros());
     }

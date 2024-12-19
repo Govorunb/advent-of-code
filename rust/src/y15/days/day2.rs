@@ -1,8 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day2 {
-}
+pub struct Day2;
 
 struct Box(usize, usize, usize);
 
@@ -56,18 +54,7 @@ impl Day<2> for Day2 {
     }
 }
 
-impl Default for Day2 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day2 {
-    pub fn new() -> Self {
-        Day2 {
-        }
-    }
-
     fn parse(line: &str) -> Box {
         let parts = line.split('x')
             .map(|s| s.parse().unwrap())

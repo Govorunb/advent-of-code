@@ -65,17 +65,7 @@ MXMXAXMASX"
     }
 }
 
-impl Default for Day4 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day4 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn word_search<'a>(grid: Grid<char>, pat: &str, directions: &[Vector2]) -> usize {
         let mut chars = pat.chars();

@@ -42,16 +42,7 @@ r#"""
     }
 }
 
-impl Default for Day8 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day8 {
-    pub fn new() -> Self {
-        Self { }
-    }
     
     fn decode_size_diff(line: &str) -> usize {
         let repr_size = line.len();

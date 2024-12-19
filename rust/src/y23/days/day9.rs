@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day9 {
-    
-}
+pub struct Day9;
 
 struct History {
     sequences: Vec<Sequence>,
@@ -89,15 +87,3 @@ impl Day<9> for Day9 {
     }
 }
 
-impl Default for Day9 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day9 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

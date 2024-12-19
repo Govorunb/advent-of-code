@@ -1,9 +1,7 @@
 use std::fmt::Formatter;
 use crate::*;
 
-pub struct Day9 {
-    
-}
+pub struct Day9;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum Page {
@@ -67,18 +65,7 @@ impl Day<9> for Day9 {
     }
 }
 
-impl Default for Day9 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day9 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}
 
 impl Disk {
     fn parse(input: &str) -> Self {

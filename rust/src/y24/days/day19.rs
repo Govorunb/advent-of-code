@@ -1,9 +1,6 @@
-// replace all 19 with the day number
 use crate::*;
 
-pub struct Day19 {
-    
-}
+pub struct Day19;
 
 fn p1(avail: &[&str], target: &str) -> bool {
     let res = p1_funcy(avail, target);
@@ -68,19 +65,19 @@ impl Day<19> for Day19 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day19.txt");
     fn solve_part(&self, input: &str, part: Part) -> Self::Output {
-        let (avail_s, pats_s) = input.split_once("\n\n").unwrap();
+        let (avail_s, pats) = input.split_once("\n\n").unwrap();
         let avail = avail_s.split(", ").collect_vec();
         match part {
             Part::One => {
                 // let regex = Regex::new(&format!(r#"^(?:{})+$"#, avail.join("|"))).unwrap();
-                pats_s.lines()
+                pats.lines()
                     // .filter(|l| regex.is_match(l))
                     .filter(|l| p1(&avail, l))
                     .count()
             },
             Part::Two => {
                 // grrrrr i can't regex anymore
-                pats_s.lines()
+                pats.lines()
                     .map(|line| p2(&avail, line))
                     .sum()
             }
@@ -112,15 +109,3 @@ bbrgwb"
     }
 }
 
-impl Default for Day19 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day19 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

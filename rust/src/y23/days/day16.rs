@@ -3,12 +3,9 @@ use std::str::FromStr;
 use rayon::iter::IntoParallelIterator;
 use rayon::iter::ParallelIterator;
 
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day16 {
-    
-}
+pub struct Day16;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Contraption {
@@ -299,15 +296,4 @@ r#"|..........
     }
 }
 
-impl Default for Day16 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day16 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

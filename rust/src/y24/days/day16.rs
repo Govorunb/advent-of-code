@@ -4,9 +4,7 @@ use std::str::FromStr;
 use pathfinding::prelude::{astar_bag, AstarSolution};
 use crate::*;
 
-pub struct Day16 {
-    
-}
+pub struct Day16;
 
 impl Day<16> for Day16 {
     type Output = usize;
@@ -75,17 +73,11 @@ impl Day<16> for Day16 {
     }
 }
 
-impl Default for Day16 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 struct Node(Vector2, Direction);
 
 impl Day16 {
-    pub fn new() -> Self {Self{}}
     const TURN_COST: usize = 1000;
     
     fn search(grid: &Grid<char>) -> (AstarSolution<Node>, usize) {

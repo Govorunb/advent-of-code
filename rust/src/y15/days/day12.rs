@@ -1,9 +1,7 @@
 use std::ascii;
 use crate::*;
 
-pub struct Day12 {
-    
-}
+pub struct Day12;
 
 impl Day<12> for Day12 {
     type Output = isize;
@@ -13,8 +11,8 @@ impl Day<12> for Day12 {
         
         match part {
             Part::One => {
-                regex.captures_iter(input)
-                    .map(|c| c.get(0).unwrap().as_str().parse::<isize>().unwrap())
+                regex.find_iter(input)
+                    .map(|m| m.isize())
                     .sum()
             },
             Part::Two => {
@@ -47,8 +45,8 @@ impl Day<12> for Day12 {
                     s.replace_range((open+1)..close, ""); // keep the {}
                 }
 
-                regex.captures_iter(s.as_str())
-                    .map(|c| c.get(0).unwrap().as_str().parse::<isize>().unwrap())
+                regex.find_iter(s.as_str())
+                    .map(|m| m.isize())
                     .sum()
             }
         }
@@ -79,15 +77,4 @@ impl Day<12> for Day12 {
     }
 }
 
-impl Default for Day12 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day12 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

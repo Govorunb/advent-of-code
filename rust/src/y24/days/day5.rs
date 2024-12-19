@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day5 {
-    
-}
+pub struct Day5;
 
 struct Rule {
     print: usize,
@@ -129,15 +127,3 @@ impl Day<5> for Day5 {
     }
 }
 
-impl Default for Day5 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day5 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

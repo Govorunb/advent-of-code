@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day8 {
-    
-}
+pub struct Day8;
 
 #[derive(Clone, Debug, PartialEq, Default)]
 struct Head<'a> {
@@ -118,15 +116,3 @@ XXX = (XXX, XXX)",
     }
 }
 
-impl Default for Day8 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day8 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

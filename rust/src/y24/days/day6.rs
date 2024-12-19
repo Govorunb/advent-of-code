@@ -2,9 +2,7 @@ use std::fmt::{Formatter, Write};
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day6 {
-    
-}
+pub struct Day6;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 enum Symbol {
@@ -171,17 +169,7 @@ impl Day<6> for Day6 {
     }
 }
 
-impl Default for Day6 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day6 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn step(grid: &Grid<Symbol>, guard: &mut Guard) -> Option<TurnAtProp> {
         // move forward until out of bounds/hit a prop

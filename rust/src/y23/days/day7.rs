@@ -2,9 +2,7 @@ use crate::*;
 
 use std::{cmp::Ordering, sync::atomic::{AtomicBool, Ordering as AOrdering}};
 
-pub struct Day7 {
-    
-}
+pub struct Day7;
 
 struct Hand {
     cards: Vec<usize>,
@@ -197,15 +195,3 @@ QQQJA 483",
     }
 }
 
-impl Default for Day7 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day7 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

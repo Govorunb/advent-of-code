@@ -1,10 +1,8 @@
 #![allow(dead_code)]
 use crate::*;
-
 use std::ops::Range;
 
-pub struct Day5 {
-}
+pub struct Day5;
 
 struct Almanac {
     seeds: Vec<Range<usize>>,
@@ -421,18 +419,5 @@ humidity-to-location map:
                 // (Self::INPUT, 59370572), // bruteforce takes too long
             ]
         ]
-    }
-}
-
-impl Default for Day5 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day5 {
-    pub fn new() -> Self {
-        Self {
-        }
     }
 }

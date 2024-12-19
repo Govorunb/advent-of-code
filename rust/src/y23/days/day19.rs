@@ -1,11 +1,8 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 use std::ops::Range;
 
-pub struct Day19 {
-    
-}
+pub struct Day19;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[allow(non_camel_case_types)]
@@ -352,15 +349,4 @@ hdj{m>838:A,pv}
     }
 }
 
-impl Default for Day19 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day19 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

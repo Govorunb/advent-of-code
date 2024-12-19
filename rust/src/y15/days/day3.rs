@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day3 {
-}
+pub struct Day3;
 
 struct Walkers {
     heads: Vec<Vector2>,
@@ -66,18 +64,5 @@ fn parse_direction(c: char) -> Direction {
         '^' => Direction::North,
         'v' => Direction::South,
         _ => unreachable!()
-    }
-}
-
-impl Default for Day3 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day3 {
-    pub fn new() -> Self {
-        Self {
-        }
     }
 }

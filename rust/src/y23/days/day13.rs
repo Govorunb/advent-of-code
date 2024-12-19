@@ -4,12 +4,9 @@
 use itertools::{Either, Itertools};
 use rustc_hash::FxHashMap;
 use std::{collections::HashSet, hash::Hasher};
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day13 {
-    
-}
+pub struct Day13;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 enum Cell {
@@ -195,15 +192,4 @@ impl Day<13> for Day13 {
     }
 }
 
-impl Default for Day13 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day13 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

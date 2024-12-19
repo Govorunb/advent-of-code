@@ -1,10 +1,7 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 use std::fmt::Display;
 
-pub struct Day14 {
-    
-}
+pub struct Day14;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Platform {
     grid: Grid<Cell>, 
@@ -238,15 +235,4 @@ O.#..O.#.#
     }
 }
 
-impl Default for Day14 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day14 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

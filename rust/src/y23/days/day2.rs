@@ -1,9 +1,7 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
 
-pub struct Day2 {
-}
+pub struct Day2;
 
 #[derive(Default, Clone, PartialEq, Eq, Hash)]
 struct Game {
@@ -67,8 +65,6 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
 }
 
 impl Day2 {
-    pub fn new() -> Self { Day2 {} }
-
     fn parse_line(&self, line: &str) -> Game {
         let (game_text, rounds_text) = line.trim().split_once(':').unwrap();
         let id_text = game_text.trim().split_once(' ').unwrap().1;
@@ -97,11 +93,5 @@ impl Day2 {
             };
         }
         cubes
-    }
-}
-
-impl Default for Day2 {
-    fn default() -> Self {
-        Self::new()
     }
 }

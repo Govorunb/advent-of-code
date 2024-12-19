@@ -1,8 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day3 {
-}
+pub struct Day3;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum Cell {
@@ -63,18 +61,7 @@ impl Day<3> for Day3 {
     }
 }
 
-impl Default for Day3 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day3 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-
     fn get_number(grid: &Grid<Cell>, x: usize, y: usize) -> Option<(usize, usize, usize)> {
         grid.row(y)
             // cell at given coords must be inside a number

@@ -1,9 +1,7 @@
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day12 {
-    
-}
+pub struct Day12;
 #[derive(Debug, Clone)]
 struct Region {
     plant: char,
@@ -92,10 +90,6 @@ AAAAAA"
         ]
     }
 }
-
-impl Default for Day12 {fn default() -> Self {Self::new()}}
-impl Day12 {pub fn new() -> Self {Self {}}}
-
 
 impl Garden {
     fn new(input: &str) -> Self {

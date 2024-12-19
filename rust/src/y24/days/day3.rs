@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use crate::*;
 
-pub struct Day3 {}
+pub struct Day3;
 
 impl Day<3> for Day3 {
     type Output = usize;
@@ -49,16 +49,7 @@ impl Day<3> for Day3 {
     }
 }
 
-impl Default for Day3 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day3 {
-    pub fn new() -> Self {
-        Self {}
-    }
 
     fn mul(c: Captures) -> usize {
         c.usize("num1") * c.usize("num2")

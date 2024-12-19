@@ -3,9 +3,7 @@ use std::fmt::Formatter;
 use pathfinding::prelude::astar;
 use crate::*;
 
-pub struct Day18 {
-    
-}
+pub struct Day18;
 
 impl Day<18> for Day18 {
     type Output = String;
@@ -113,17 +111,8 @@ impl Day<18> for Day18 {
     }
 }
 
-impl Default for Day18 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day18 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
 
     fn search(grid: &Grid<char>) -> Option<(Vec<Vector2>, usize)> {
         let start = grid.bounds().bottom_right();

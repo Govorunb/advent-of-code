@@ -1,10 +1,25 @@
-use crate::test_cases;
-use crate::common::*;
+use std::cmp::Ordering;
+use std::sync::LazyLock;
+use crate::*;
 
-pub struct Day1 {
-    digit_strings: FxIndexMap<&'static str, usize>,
-}
+pub struct Day1;
 
+static DIGIT_STRINGS: LazyLock<FxIndexMap<&'static str, usize>>
+= LazyLock::new(|| {
+    // bruh moment
+    // From<[(K, V); N]> is only implemented for <K,V, RandomState>
+    FxIndexMap::from_iter([
+        ("one", 1),
+        ("two", 2),
+        ("three", 3),
+        ("four", 4),
+        ("five", 5),
+        ("six", 6),
+        ("seven", 7),
+        ("eight", 8),
+        ("nine", 9),
+    ])
+});
 impl Day<1> for Day1 {
     type Output = usize;
     const INPUT: &'static str = include_str!("../Input/day1.txt");
@@ -53,85 +68,57 @@ zoneight234
 }
 
 impl Day1 {
-    pub fn new() -> Self {
-        // bruh moment
-        // From<[(K, V); N]> is only implemented for <K,V, RandomState>
-        Day1 {
-            digit_strings: FxIndexMap::from_iter([
-                ("one", 1),
-                ("two", 2),
-                ("three", 3),
-                ("four", 4),
-                ("five", 5),
-                ("six", 6),
-                ("seven", 7),
-                ("eight", 8),
-                ("nine", 9),
-            ]),
-        }
-    }
-
     fn parse_line(&self, line: &str, part: Part) -> usize {
         if line.is_empty() {
             return 0;
         }
         match part {
             Part::One => {
-                let digits = line.chars().filter(char::is_ascii_digit);
-                let first = digits.clone().next().unwrap_or('0');
-                let last = digits.clone().nth_back(0).unwrap_or('0');
-                let mut num = String::new();
-                num.push(first);
-                num.push(last);
-
-                num.parse().unwrap()
+                let mut digits = line.chars().filter_map(|c| c.to_digit(10));
+                let first = digits.next().unwrap();
+                let last = digits.next_back().unwrap_or(first);
+                
+                (10 * first + last) as usize
             }
             Part::Two => {
-                let real_digits = line
-                    .char_indices()
-                    .filter(|(_i, c)| c.is_ascii_digit())
-                    .map(|(i, c)| (i, c.to_digit(10).unwrap() as usize))
-                    .collect_vec();
+                fn find_digit(mut iter: impl Iterator<Item = (usize, char)>) -> Option<(usize, usize)> {
+                    iter.find_map(|(i, c)| c.to_digit(10).map(|d| (i, d as usize)))
+                }
+                fn choose(num: (usize, usize), word: Option<(usize, &usize)>, cmp: Ordering) -> usize {
+                    let (num_i, num_digit) = num;
+                    let Some((word_i, &word_digit)) = word else {
+                        return num_digit;
+                    };
+                    if cmp == num_i.cmp(&word_i) { num_digit } else { word_digit }
+                }
+                fn get_digit(line: &str, last: bool) -> usize {
+                    let chars = line.char_indices();
+                    
+                    let num = if !last {
+                        // some examples lack a numeric digit; input is guaranteed to contain at least one (as per p1)
+                        find_digit(chars).unwrap_or((usize::MAX, 0))
+                    } else {
+                        find_digit(chars.rev()).unwrap_or((usize::MIN, 0))
+                    };
+                    
+                    let words = DIGIT_STRINGS.iter();
+                    let word = if !last {
+                        words.filter_map(|(key, digit)| line.match_indices(key).next().map(|(pos, _)| (pos, digit)))
+                            .min_by_key(|&(pos, _digit)| pos)
+                    } else {
+                        words.filter_map(|(key, digit)| line.rmatch_indices(key).next().map(|(pos, _)| (pos, digit)))
+                            .max_by_key(|&(pos, _digit)| pos)
+                    };
+                    
+                    choose(num, word, if !last {Ordering::Less} else {Ordering::Greater})
+                }
+                
+                let [first, last] = [false, true].map(|last| get_digit(line, last));
 
-                let words = self.digit_strings.iter()
-                    .map(|(&k, &d)| (k,d))
-                    .collect_vec();
-
-                let first_word = words.iter()
-                    .filter_map(|(key, digit)| line.match_indices(key).next().map(|(pos, _)| (pos, digit)))
-                    .min_by_key(|(pos, _digit)| *pos);
-                let last_word = words.iter()
-                    .filter_map(|(key, digit)| line.rmatch_indices(key).next().map(|(pos, _)| (pos, digit)))
-                    .max_by_key(|(pos, _digit)| *pos);
-
-                let first = match real_digits.first() {
-                    None => first_word.unwrap().1,
-                    Some((pos, digit)) => match first_word {
-                        None => digit,
-                        Some((pos2, _)) if pos < &pos2 => digit,
-                        Some((_, digit2)) => digit2,
-                    },
-                };
-
-                let last = match real_digits.last() {
-                    None => last_word.unwrap().1,
-                    Some((pos, digit)) => match last_word {
-                        None => digit,
-                        Some((pos2, _)) if *pos > pos2 => digit,
-                        Some((_, digit2)) => digit2,
-                    },
-                };
                 // println!("{}: {}{} ", line, first, last);
-                // println!("\t{:?} {:?} {:?}", first_word, last_word, real_digits);
 
                 10 * first + last
             }
         }
-    }
-}
-
-impl Default for Day1 {
-    fn default() -> Self {
-        Self::new()
     }
 }

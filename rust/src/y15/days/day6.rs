@@ -2,8 +2,7 @@ use crate::*;
 use std::ops::Add;
 use std::sync::LazyLock;
 
-pub struct Day6 {
-}
+pub struct Day6;
 
 struct Instruction {
     itype: InstructionType,
@@ -61,17 +60,6 @@ turn off 499,499 through 500,500"
     }
 }
 
-impl Default for Day6 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day6 {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
 
 static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<type>turn on|turn off|toggle) (?<c1x>\\d+),(?<c1y>\\d+) through (?<c2x>\\d+),(?<c2y>\\d+)").unwrap());
 impl Instruction {

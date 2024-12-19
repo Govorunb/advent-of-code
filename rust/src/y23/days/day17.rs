@@ -1,9 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day17 {
-    
-}
+pub struct Day17;
 #[derive(Debug, Clone)]
 struct Cave {
     grid: Grid<u8>,
@@ -63,15 +60,4 @@ impl Day<17> for Day17 {
     }
 }
 
-impl Default for Day17 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
-impl Day17 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

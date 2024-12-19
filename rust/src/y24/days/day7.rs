@@ -1,9 +1,7 @@
 use num::Integer;
 use crate::*;
 
-pub struct Day7 {
-    
-}
+pub struct Day7;
 
 #[derive(Debug, Clone)]
 struct Equation {
@@ -56,17 +54,7 @@ impl Day<7> for Day7 {
     }
 }
 
-impl Default for Day7 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day7 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn search(total: usize, elements: &[usize], part: Part) -> bool {
         if elements.len() == 1 {return elements[0] == total}

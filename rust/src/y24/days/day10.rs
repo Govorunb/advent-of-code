@@ -3,9 +3,7 @@ use itertools::Either;
 use num::Integer;
 use crate::*;
 
-pub struct Day10 {
-    
-}
+pub struct Day10;
 
 impl Day<10> for Day10 {
     type Output = usize;
@@ -61,17 +59,8 @@ impl Day<10> for Day10 {
     }
 }
 
-impl Default for Day10 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day10 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn trailhead_score(grid: &Grid<usize>, start: Vector2) -> usize {
         let mut seen_nines = FxHashSet::default();

@@ -3,9 +3,7 @@ use std::str::FromStr;
 use itertools::Either;
 use crate::*;
 
-pub struct Day8 {
-    
-}
+pub struct Day8;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum Symbol {
@@ -70,17 +68,7 @@ impl Day<8> for Day8 {
     }
 }
 
-impl Default for Day8 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Day8 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn find_antennas(grid: &Grid<Symbol>) -> HashMap<char, Vec<Antenna>> {
         grid.cells()

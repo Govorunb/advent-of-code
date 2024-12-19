@@ -2,9 +2,7 @@ use std::fmt::Formatter;
 use std::str::FromStr;
 use crate::*;
 
-pub struct Day15 {
-    
-}
+pub struct Day15;
 
 #[derive(Default, Debug, Clone, Copy, Eq, PartialEq)]
 enum Symbol {
@@ -162,17 +160,8 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^"
     }
 }
 
-impl Default for Day15 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl Day15 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
     
     fn gps(pos: Vector2) -> usize {
         (pos.x + 100 * pos.y) as usize

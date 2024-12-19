@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use regex::Captures;
+use regex::{Captures, Match};
 use crate::Vector2;
 // todo: macro wizardry (if possible)
 // accept regex and type
@@ -16,17 +16,21 @@ pub trait NamedCaptureGroupsHelpers {
     fn vec2(&self, x_name: &str, y_name: &str) -> Vector2;
 }
 
+pub trait RegexMatchHelpers {
+    fn parse<T: FromStr>(&self) -> T;
+    
+    fn string(&self) -> String;
+    fn usize(&self) -> usize;
+    fn isize(&self) -> isize;
+}
+
 impl NamedCaptureGroupsHelpers for Captures<'_> {
     fn str(&self, name: &str) -> &str {
         self.name(name).unwrap().as_str()
     }
 
     fn parse<T: FromStr>(&self, name: &str) -> T {
-        let parsed = self.str(name).parse();
-        match parsed {
-            Ok(parsed) => parsed,
-            Err(_) => panic!("Unable to parse {}", name),
-        }
+        self.str(name).parse().unwrap_or_else(|_| panic!("Unable to parse capture {}", name))
     }
     fn string(&self, name: &str) -> String {self.parse(name)}
     fn usize(&self, name: &str) -> usize {self.parse(name)}
@@ -34,4 +38,12 @@ impl NamedCaptureGroupsHelpers for Captures<'_> {
     fn vec2(&self, x_name: &str, y_name: &str) -> Vector2 {
         Vector2 {x: self.parse(x_name), y: self.parse(y_name) }
     }
+}
+
+impl RegexMatchHelpers for Match<'_> {
+    fn parse<T: FromStr>(&self) -> T {self.as_str().parse().unwrap_or_else(|_| panic!("Unable to parse match {}", self.as_str()))}
+
+    fn string(&self) -> String {self.parse()}
+    fn usize(&self) -> usize {self.parse()}
+    fn isize(&self) -> isize {self.parse()}
 }

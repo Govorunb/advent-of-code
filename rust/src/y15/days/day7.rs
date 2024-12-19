@@ -1,7 +1,7 @@
 use std::sync::LazyLock;
 use crate::*;
 
-pub struct Day7 {}
+pub struct Day7;
 
 #[derive(Clone, Eq, Ord, PartialOrd, PartialEq)]
 #[allow(clippy::upper_case_acronyms)]
@@ -113,17 +113,6 @@ NOT y -> a", // replaced 'i' with 'a' to be able to test
     }
 }
 
-impl Default for Day7 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day7 {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
 
 static REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new("(?<lhs>(?<store>\\w+)|NOT (?<not>\\w+)|(?<op1>\\w+) (?<op>AND|OR|[LR]SHIFT) (?<op2>\\w+)) -> (?<rhs>\\w+)").unwrap());
 impl From<&str> for Instruction {

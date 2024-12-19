@@ -1,8 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day6 {
-}
+pub struct Day6;
 
 struct Race {
     time: usize,
@@ -74,18 +72,5 @@ Distance:  9  40  200"
                 ("Time: 100\nDistance: 1000", 77),
             ]
         ]
-    }
-}
-
-impl Default for Day6 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day6 {
-    pub fn new() -> Self {
-        Self {
-        }
     }
 }

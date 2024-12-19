@@ -1,9 +1,7 @@
 use num::Integer;
 use crate::*;
 
-pub struct Day13 {
-    
-}
+pub struct Day13;
 #[derive(Debug, Clone)]
 struct Machine {
     a: Vector2,
@@ -74,18 +72,6 @@ Prize: X=18641, Y=10279"
     }
 }
 
-impl Default for Day13 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day13 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}
 
 impl Machine {
     const A_COST: isize = 3;

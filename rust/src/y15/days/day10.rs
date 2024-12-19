@@ -1,8 +1,6 @@
 use crate::*;
 
-pub struct Day10 {
-    
-}
+pub struct Day10;
 
 impl Day<10> for Day10 {
     type Output = usize;
@@ -38,21 +36,10 @@ impl Day<10> for Day10 {
     }
 }
 
-impl Default for Day10 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 #[derive(Debug, Clone, Copy, Default)]
 struct Run(char, usize);
 
 impl Day10 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-    
     fn rle(s: String) -> String {
         String::from_iter(
             s.chars()

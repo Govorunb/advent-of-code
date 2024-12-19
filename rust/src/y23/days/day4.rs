@@ -1,7 +1,6 @@
 use crate::*;
 
-pub struct Day4 {
-}
+pub struct Day4;
 
 struct Card {
     winning: Vec<usize>,
@@ -105,18 +104,5 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"
                 (Self::INPUT, 6189740),
             ]
         ]
-    }
-}
-
-impl Default for Day4 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day4 {
-    pub fn new() -> Self {
-        Self {
-        }
     }
 }

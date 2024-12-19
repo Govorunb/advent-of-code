@@ -1,8 +1,6 @@
-use crate::test_cases;
-use crate::common::*;
+use crate::*;
 
-pub struct Day4 {
-}
+pub struct Day4;
 
 impl Day<4> for Day4 {
     type Output = u32;
@@ -47,15 +45,3 @@ impl Day<4> for Day4 {
     }
 }
 
-impl Default for Day4 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day4 {
-    pub fn new() -> Self {
-        Self {
-        }
-    }
-}

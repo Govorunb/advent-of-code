@@ -1,6 +1,5 @@
-use crate::test_cases;
-use crate::common::*;
-pub struct Day2 {}
+use crate::*;
+pub struct Day2;
 
 #[derive(Debug, Clone)]
 struct Report {
@@ -50,17 +49,6 @@ impl Day<2> for Day2 {
     }
 }
 
-impl Default for Day2 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Day2 {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
 
 impl Report {
     pub fn parse(line: &str) -> Self {
