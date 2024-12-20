@@ -61,17 +61,17 @@ impl Vector2 {
         out
     }
 
-    pub fn manhattan_distance(self, other: Vector2) -> usize {
-        ((other.x - self.x).abs() + (other.y - self.y).abs()) as usize
+    pub const fn manhattan_distance(self, to: Vector2) -> usize {
+        ((to.x - self.x).abs() + (to.y - self.y).abs()) as usize
         // slower (sadly)
         // other.x.abs_diff(self.x) + other.y.abs_diff(self.y)
     }
-    pub const fn distance_square(self, other: Vector2) -> usize {
-        ((other.x - self.x).pow(2) + (other.y - self.y).pow(2)) as usize
+    pub const fn distance_square(self, to: Vector2) -> usize {
+        ((to.x - self.x).pow(2) + (to.y - self.y).pow(2)) as usize
     }
     
-    pub fn distance(self, other: Vector2) -> f64 {
-        (self.distance_square(other) as f64).sqrt() // sqrt not const
+    pub fn distance(self, to: Vector2) -> f64 {
+        (self.distance_square(to) as f64).sqrt()
     }
 }
 

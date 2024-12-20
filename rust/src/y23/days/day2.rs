@@ -22,7 +22,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
     ],
     solve = |input, part| {
         let games = input.lines()
-            .map(|l| Self::parse_line(l))
+            .map(Self::parse_line)
             .collect_vec();
         match part {
             Part::One => {
