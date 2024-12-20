@@ -40,17 +40,11 @@ aoc_day!(
 
 
 impl Day11 {
-    const A: u8 = 0x61;
-    const I: u8 = 0x69;
-    const L: u8 = 0x6C;
-    const O: u8 = 0x6F;
-    const Z: u8 = 0x7A;
-    
     fn increment(x: &mut [u8]) {
         let mut i = x.len()-1;
         x[i] += 1;
-        while x[i] > Self::Z {
-            x[i] = Self::A;
+        while x[i] > b'z' {
+            x[i] = b'a';
             i -= 1;
             x[i] += 1;
         }
@@ -65,7 +59,7 @@ impl Day11 {
     }
     
     fn rule2(x: &[u8]) -> bool {
-        x.iter().all(|&c| c != Self::I && c != Self::L && c != Self::O)
+        x.iter().all(|&c| c != b'i' && c != b'l' && c != b'o')
     }
     fn rule3(x: &[u8]) -> bool {
         let mut doubles = 0;

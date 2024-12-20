@@ -50,80 +50,55 @@ aoc_day!(
         };
         let base_path = dfs_reach(start, succ_path).collect_vec();
         
-        let over_thresh = count_only_threshold(&base_path, allowed_cheat_dist, threshold);
-        debug_assert_eq!(over_thresh, count_total(&base_path, allowed_cheat_dist, threshold));
-        over_thresh
+        count_only_threshold(grid.size(), &base_path, allowed_cheat_dist, threshold)
     }
 );
 
-fn count_total(path: &[Vector2], allowed_cheat_dist: usize, threshold: usize) -> usize {
-    let mut target = 0;
-    let mut counts: FxHashMap<usize, usize> = FxHashMap::default();
-    for (i, &from) in path.iter().enumerate()
-    {
-        for (j, &to) in path.iter().enumerate()
-            // 4 is the minimum distance that makes sense
-            // (you have to skip at least 1 wall, which takes min 2 picoseconds)
-            .skip(i+3)
-        {
-            let dist = from.manhattan_distance(to);
-            // manhattan dist is minimum so if we're over that there can't possibly be a path
-            if dist > allowed_cheat_dist { continue }
-
-            let regular_cost = j - i;
-            if regular_cost <= dist { continue }
-            let saves = regular_cost - dist;
-
-            *counts.entry(saves).or_default() += 1;
-            if saves >= threshold { target += 1; }
-        }
+fn count_only_threshold(grid_size: Size, path: &[Vector2], allowed_cheat_dist: isize, threshold: usize) -> usize {
+    // let distances = FxHashMap::from_iter(path.iter().enumerate().map(|(i, &p)| (p,i)));
+    // faster than a hashmap of path points, uses a bit more memory though
+    let mut distances = Grid::from_origin(grid_size).unwrap();
+    for (i, &p) in path.iter().enumerate() {
+        distances[p] = Some(i);
     }
-    let total: usize = counts.values().sum();
-    println!("total: {total}");
-
-    target
-}
-
-fn count_only_threshold(path: &[Vector2], allowed_cheat_dist: usize, threshold: usize) -> usize {
     path.par_iter().enumerate().rev()
         // if we're 9ps away from end, we can't possibly save 10ps
         .take(path.len()-threshold)
         .map(|(j, &to)| {
+            // O(n^2)
             // [---->i....|___________j<----]
             //  ^checking^ ^threshold^
-            path.iter().enumerate()
-                .take(j-threshold)
-                .filter(move |&(i, &from)| {
-                    let dist = from.manhattan_distance(to);
-                    if dist > allowed_cheat_dist {return false}
-                    
+            // path.iter().enumerate()
+            //     .take(j-threshold)
+            //     .filter(move |&(i, &from)| {
+            //         let dist = from.manhattan_distance(to);
+            //         // manhattan dist is minimum so if we're over, there can't possibly be a path
+            //         if dist > allowed_cheat_dist {return false}
+            //         
+            //         let regular_cost = j - i;
+            //         regular_cost.checked_sub(dist)
+            //             .is_some_and(|saves| saves >= threshold)
+            //     })
+            //     .count()
+            
+            // O(n*d^2)
+            (-allowed_cheat_dist..=allowed_cheat_dist)
+                .filter(|dy| distances.bounds().y_range().contains(&(to.y + dy)))
+                .flat_map(|dy| {
+                    let max_dx = allowed_cheat_dist - dy.abs();
+                    (-max_dx..=max_dx).map(move |dx| (dx,dy))
+                }).filter(|&(dx, dy)| {
+                    let pt = to + Vector2::from((dx, dy));
+                    let Some(i) = distances.get(&pt).and_then(|&d| d)
+                        else {return false};
+            
+                    if i + threshold >= j {return false} // not enough distance to save
+            
+                    let dist = (dx.abs() + dy.abs()) as usize;
+            
                     let regular_cost = j - i;
-                    regular_cost.checked_sub(dist)
-                        .is_some_and(|saves| saves >= threshold)
-                })
-                .count()
+                    let saves = regular_cost - dist;
+                    saves >= threshold
+                }).count()
         }).sum()
-    
-    // let mut target = 0;
-    // for (i, &from) in path.iter().enumerate()
-    //     .take(path.len() - threshold)
-    // {
-    //     for (j, &to) in path.iter().enumerate().rev()
-    //         // .take_while(|&(j, _)| j > i) // not needed for example/input
-    //     {
-    //         let regular_cost = j - i;
-    //         if regular_cost < threshold { break } // can't possibly save over threshold
-    //         
-    //         let dist = from.manhattan_distance(to);
-    //         // manhattan dist is minimum so if we're over that there can't possibly be a path
-    //         if dist > allowed_cheat_dist { continue }
-    //         
-    //         if regular_cost <= dist { continue }
-    //         let saves = regular_cost - dist;
-    // 
-    //         if saves >= threshold { target += 1; }
-    //     }
-    // }
-    // 
-    // target
 }
