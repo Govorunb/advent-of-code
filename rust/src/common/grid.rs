@@ -236,6 +236,12 @@ impl<T> Grid<T> {
     }
 }
 
+impl<T: PartialEq> Grid<T> {
+    pub fn find(&self, item: &T) -> Option<Vector2> {
+        self.cells().find_map(|(p, c)| (c == item).then_some(p))
+    }
+}
+
 impl<T: Default + Clone> Grid<T> {
     pub fn new(rect: Rect) -> Self {
         Self {

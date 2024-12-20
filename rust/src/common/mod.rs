@@ -1,4 +1,7 @@
-mod grid; pub use grid::*;
+mod grid;
+
+use std::fmt::Debug;
+pub use grid::*;
 mod direction; pub use direction::*;
 mod rect_iter; pub use rect_iter::*;
 mod vector2; pub use vector2::*;
@@ -7,6 +10,7 @@ mod iter; pub use iter::*;
 mod parsing; pub use parsing::*;
 mod flood_fill; pub use flood_fill::*;
 mod algebra; pub use algebra::*;
+mod print_vec; pub use print_vec::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};
@@ -40,22 +44,22 @@ trait TestCase<TOutput> {
     fn input(&self) -> &str;
     fn expected(&self) -> TOutput;
 }
-pub struct TestCaseImpl<T: Display>(pub &'static str, pub T);
+pub struct TestCaseImpl<T: Debug>(pub &'static str, pub T);
 
-impl<T: Display + Clone> From<(&'static str, T)> for TestCaseImpl<T> {
+impl<T: Debug + Clone> From<(&'static str, T)> for TestCaseImpl<T> {
     fn from(t: (&'static str, T)) -> Self {
         Self(t.0, t.1)
     }
 }
 
-impl<T: Display + std::fmt::Debug + Clone> TestCase<T> for TestCaseImpl<T> {
+impl<T: Debug + Clone> TestCase<T> for TestCaseImpl<T> {
     fn input(&self) -> &str { self.0 }
     fn expected(&self) -> T { self.1.clone() }
 }
 
 pub trait Day<const DAY: u8>
 {
-    type Output: Display + PartialEq + std::fmt::Debug + Clone;
+    type Output: Debug + PartialEq + Clone;
     const INPUT: &'static str;
     #[expect(private_bounds)] // the whole point is sealing it
     type TestCase: TestCase<Self::Output> = TestCaseImpl<Self::Output>;
@@ -69,7 +73,7 @@ pub trait Day<const DAY: u8>
             sw.restart();
             let result = self.solve_part(input, part);
             let time = sw.elapsed().as_micros();
-            print!("\tpart {part:?}: {result}");
+            print!("\tpart {part:?}: {result:?}");
             println!(" (took {time}us)");
         }
     }
@@ -93,7 +97,7 @@ pub trait Day<const DAY: u8>
         for (i, case) in test_cases.into_iter().enumerate() {
             let (input, expected) = (&case.input().replace("\r\n", "\n"), case.expected());
             let got = self.solve_part(input, part);
-            assert_eq!(expected, got, "d{DAY} p{part} case {} - expected {expected}, got {got}", i+1);
+            assert_eq!(expected, got, "d{DAY} p{part} case {} - expected {expected:?}, got {got:?}", i+1);
         }
     }
 }

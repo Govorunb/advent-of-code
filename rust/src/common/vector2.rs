@@ -61,8 +61,17 @@ impl Vector2 {
         out
     }
 
-    pub const fn cartesian_distance(self, other: Vector2) -> usize {
-        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    pub fn manhattan_distance(self, other: Vector2) -> usize {
+        ((other.x - self.x).abs() + (other.y - self.y).abs()) as usize
+        // slower (sadly)
+        // other.x.abs_diff(self.x) + other.y.abs_diff(self.y)
+    }
+    pub const fn distance_square(self, other: Vector2) -> usize {
+        ((other.x - self.x).pow(2) + (other.y - self.y).pow(2)) as usize
+    }
+    
+    pub fn distance(self, other: Vector2) -> f64 {
+        (self.distance_square(other) as f64).sqrt() // sqrt not const
     }
 }
 

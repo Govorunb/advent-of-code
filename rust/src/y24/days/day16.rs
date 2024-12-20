@@ -76,8 +76,8 @@ impl Day16 {
     const TURN_COST: usize = 1000;
     
     fn search(grid: &Grid<char>) -> (AstarSolution<Node>, usize) {
-        let start_pos = grid.cells().find_map(|(p, &c)| (c == 'S').then_some(p)).unwrap();
-        let goal_pos = grid.cells().find_map(|(p, &c)| (c == 'E').then_some(p)).unwrap();
+        let start_pos = grid.find(&'S').unwrap();
+        let goal_pos = grid.find(&'E').unwrap();
         
         let start = Node(start_pos, Direction::East);
         // println!("{grid}");
@@ -109,7 +109,7 @@ impl Day16 {
         let cost = |a: Node, b: Node| -> usize {
             let Node(pt_a, dir_a) = a;
             let Node(pt_b, dir_b) = b;
-            let dist = pt_a.cartesian_distance(pt_b);
+            let dist = pt_a.manhattan_distance(pt_b);
             debug_assert!(dist <= 1);
             
             let turns = match Turn::from_corner(dir_a, dir_b) {

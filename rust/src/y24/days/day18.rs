@@ -119,7 +119,7 @@ impl Day18 {
                         .map(|_| (p, 1))
                 )
         };
-        let heuristic = |pt: &Vector2| pt.cartesian_distance(goal);
+        let heuristic = |pt: &Vector2| pt.manhattan_distance(goal);
 
         astar(&start, neighbours, heuristic, |&p| p == goal)
     }

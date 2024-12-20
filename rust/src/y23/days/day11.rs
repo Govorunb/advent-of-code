@@ -34,7 +34,7 @@ aoc_day!(
         grid.expand(expansion);
         grid.galaxies.iter().enumerate().fold(0, |acc1, (i, gal1)| {
             grid.galaxies.iter().enumerate().skip(i+1).fold(acc1, |acc2, (_, gal2)| {
-                acc2 + gal1.cartesian_distance(*gal2)
+                acc2 + gal1.manhattan_distance(*gal2)
             })
         })
     }
