@@ -9,6 +9,7 @@
 #![feature(const_trait_impl)]
 #![feature(coroutines)]
 #![feature(iter_from_coroutine)]
+#![feature(lazy_get)]
 #![allow(dead_code)]
 #![cfg(target_pointer_width = "64")]
 pub mod common; pub use common::*;

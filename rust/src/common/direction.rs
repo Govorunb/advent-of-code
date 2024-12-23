@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use std::ops::Neg;
 use itertools::Either;
 use crate::Vector2;
@@ -77,17 +78,32 @@ impl Direction {
     pub const fn all_counterclockwise() -> [Direction;4] {
         [Direction::North, Direction::West, Direction::South, Direction::East]
     }
+
+    pub const fn parse(c: char) -> Option<Direction> {
+        match c {
+            '^' => Some(Self::North),
+            'v' => Some(Self::South),
+            '>' => Some(Self::East),
+            '<' => Some(Self::West),
+            _ => None,
+        }
+    }
 }
 
 impl From<char> for Direction {
     fn from(c: char) -> Self {
-        match c {
-            '^' => Self::North,
-            'v' => Self::South,
-            '>' => Self::East,
-            '<' => Self::West,
-            _ => panic!("Unmatched char {c} in Direction::from(char)"),
-        }
+        Self::parse(c).expect("Unmatched char {c} in Direction::from(char)")
+    }
+}
+
+impl Display for Direction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match self {
+            Self::North => '^',
+            Self::East => '>',
+            Self::South => 'v',
+            Self::West => '<'
+        })
     }
 }
 
