@@ -49,10 +49,47 @@ aoc_day!(
                 .filter(|n| grid.get(n).is_some_and(|&c| c != '#'))
         };
         let base_path = dfs_reach(start, succ_path).collect_vec();
-        
+
+        // let x = count_total(&base_path, allowed_cheat_dist as usize, threshold);
         count_only_threshold(grid.size(), &base_path, allowed_cheat_dist, threshold)
     }
 );
+
+fn count_total(path: &[Vector2], allowed_cheat_dist: usize, threshold: usize) -> usize {
+    let mut target = 0;
+    let mut counts: FxHashMap<usize, usize> = FxHashMap::default();
+    // let mut cheats76: Vec<(Vector2, Vector2)> = vec![];
+    for (i, &p) in path.iter().enumerate()
+    {
+        for (j, &cheatable) in path.iter().enumerate()
+            // 4 is the minimum distance that makes sense
+            // (you have to skip at least 1 wall, which takes min 2 picoseconds)
+            .skip(i+3)
+        {
+            let dist = cheatable.manhattan_distance(p);
+            // manhattan dist is minimum so if we're over that there can't possibly be a path
+            if dist > allowed_cheat_dist { continue }
+
+            let regular_cost = j - i;
+            if regular_cost <= dist { continue }
+            let saves = regular_cost - dist;
+            // if saves == 76 {
+            //     cheats76.push((p, cheatable));
+            // }
+
+            *counts.entry(saves).or_default() += 1;
+            if saves >= threshold { target += 1; }
+        }
+    }
+    // println!("counts: {counts:?}");
+    let total: usize = counts.values().sum();
+    println!("total: {total}");
+    // if cheats76.len() == 3 {
+    //     println!("76: {cheats76:?}");
+    // }
+
+    target
+}
 
 fn count_only_threshold(grid_size: Size, path: &[Vector2], allowed_cheat_dist: isize, threshold: usize) -> usize {
     // let distances = FxHashMap::from_iter(path.iter().enumerate().map(|(i, &p)| (p,i)));
