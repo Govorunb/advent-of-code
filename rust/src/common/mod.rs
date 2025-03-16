@@ -24,7 +24,7 @@ pub type FxIndexSet<T> = IndexSet<T, BuildHasherDefault<FxHasher>>;
 use std::hash::BuildHasherDefault;
 use rustc_hash::FxHasher;
 use indexmap::{IndexMap, IndexSet};
-use stopwatch::Stopwatch;
+use simple_stopwatch::Stopwatch;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum Part
@@ -72,7 +72,7 @@ pub trait Day<const DAY: u8>
         for part in [Part::One, Part::Two] {
             sw.restart();
             let result = self.solve_part(input, part);
-            let time = sw.elapsed().as_micros();
+            let time = sw.us();
             print!("\tpart {part:?}: {result:?}");
             println!(" (took {time}us)");
         }
@@ -86,11 +86,11 @@ pub trait Day<const DAY: u8>
         let sw = Stopwatch::start_new();
         if let Some(part) = part {
             self.test_part(part, match part { Part::One => p1, Part::Two => p2 });
-            println!("day {DAY} part {part} tests passed (took {}us)", sw.elapsed().as_micros());
+            println!("day {DAY} part {part} tests passed (took {}us)", sw.us());
         } else {
             self.test_part(Part::One, p1);
             self.test_part(Part::Two, p2);
-            println!("day {DAY} tests passed (took {}us)", sw.elapsed().as_micros());
+            println!("day {DAY} tests passed (took {}us)", sw.us());
         }
     }
     fn test_part(&self, part: Part, test_cases: Vec<Self::TestCase>) {

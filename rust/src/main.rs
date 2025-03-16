@@ -1,17 +1,20 @@
-#![feature(trait_alias)]
-#![feature(associated_type_defaults)]
+#![cfg(target_pointer_width = "64")]
+#![allow(dead_code)]
+
 #![feature(ascii_char)]
 #![feature(ascii_char_variants)]
-#![feature(let_chains)]
-#![feature(iter_array_chunks)]
-#![feature(generic_arg_infer)]
-#![feature(int_roundings)]
+#![feature(associated_type_defaults)]
+#![feature(const_ops)]
 #![feature(const_trait_impl)]
 #![feature(coroutines)]
+#![feature(generic_arg_infer)]
+#![feature(int_roundings)]
+#![feature(iter_array_chunks)]
 #![feature(iter_from_coroutine)]
 #![feature(lazy_get)]
-#![allow(dead_code)]
-#![cfg(target_pointer_width = "64")]
+#![feature(let_chains)]
+#![feature(trait_alias)]
+
 pub mod common; pub use common::*;
 mod y15; mod y23; mod y24;
 
@@ -23,9 +26,9 @@ fn main() {
 
 #[test]
 fn test_all_years() {
-    let sw = stopwatch::Stopwatch::start_new();
+    let sw = simple_stopwatch::Stopwatch::start_new();
     y15::test::test_all_days();
     y23::test::test_all_days();
     y24::test::test_all_days();
-    println!("all tests took {}us", sw.elapsed().as_micros());
+    println!("all tests took {}us", sw.us());
 }

@@ -10,7 +10,7 @@ pub mod test {
         let year = aoc_year!();
         println!("running {year} tests");
         
-        let sw = stopwatch::Stopwatch::start_new();
+        let sw = simple_stopwatch::Stopwatch::start_new();
         Day1.test(None);
         Day2.test(None);
         Day3.test(None);
@@ -31,6 +31,6 @@ pub mod test {
         // Day18.test(None); // this one is a grid issue (aka skill issue) on my part
         Day19.test(None);
 
-        println!("{year} tests took {}us", sw.elapsed().as_micros());
+        println!("{year} tests took {}us", sw.us());
     }
 }
