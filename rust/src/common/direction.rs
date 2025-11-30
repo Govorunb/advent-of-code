@@ -88,6 +88,10 @@ impl Direction {
             _ => None,
         }
     }
+
+    pub const fn to_vec2(self) -> Vector2 {
+        Vector2::from(self)
+    }
 }
 
 impl From<char> for Direction {
@@ -168,6 +172,21 @@ impl Turn {
             (Direction::North, Direction::West) => Self::Right,
             (Direction::West, Direction::North) => Self::Left,
         }
+    }
+
+    pub const fn parse(c: char) -> Option<Turn> {
+        match c {
+            'r' | 'R' | '>' => Some(Self::Right),
+            'l' | 'L' | '<' => Some(Self::Left),
+            // 'a' | 'A' | 'o' | 'O' => Some(Self::Opposite),
+            _ => None,
+        }
+    }
+}
+
+impl From<char> for Turn {
+    fn from(c: char) -> Self {
+        Self::parse(c).expect("Unmatched char {c} in Direction::from(char)")
     }
 }
 

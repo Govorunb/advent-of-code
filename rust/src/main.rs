@@ -7,6 +7,7 @@
 #![feature(associated_type_defaults)]
 #![feature(const_ops)]
 #![feature(const_trait_impl)]
+#![feature(const_convert)]
 #![feature(coroutines)]
 #![feature(int_roundings)]
 #![feature(iter_array_chunks)]
@@ -15,10 +16,11 @@
 #![feature(trait_alias)]
 
 pub mod common; pub use common::*;
-mod y15; mod y23; mod y24; mod y25;
+mod y15; mod y16;
+mod y23; mod y24; mod y25;
 
 fn main() {
-    let day = y25::days::Day1;
+    let day = y16::days::Day2;
     day.test(None);
     day.solve(day.input());
 }
@@ -27,6 +29,7 @@ fn main() {
 fn test_all_years() {
     let sw = simple_stopwatch::Stopwatch::start_new();
     y15::test::test_all_days();
+    y16::test::test_all_days();
     y23::test::test_all_days();
     y24::test::test_all_days();
     y25::test::test_all_days();

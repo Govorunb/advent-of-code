@@ -75,18 +75,30 @@ impl Vector2 {
     }
 }
 
-impl From<Size> for Vector2 {
+impl const From<Size> for Vector2 {
     fn from(size: Size) -> Self {
         Self::from((size.width, size.height))
     }
 }
 
-impl From<(usize, usize)> for Vector2 {
-    fn from((x,y): (usize, usize)) -> Self {
-        Self { x: x as isize, y: y as isize }
+macro_rules! vec2_from {
+    ($t:ty) => {
+        impl const From<($t, $t)> for Vector2 {
+            fn from((x, y): ($t, $t)) -> Self {
+                Self { x: x as isize, y: y as isize }
+            }
+        }
+    };
+    ($($t:ty),+ $(,)?) => {
+        $( vec2_from!($t); )*
     }
 }
-impl From<Direction> for Vector2 {
+
+vec2_from!(isize, usize);
+vec2_from!(i32, u32);
+vec2_from!(i64, u64);
+
+impl const From<Direction> for Vector2 {
     fn from(dir: Direction) -> Self {
         match dir {
             Direction::North => Vector2::UP,
@@ -97,7 +109,7 @@ impl From<Direction> for Vector2 {
     }
 }
 
-impl From<Direction8> for Vector2 {
+impl const From<Direction8> for Vector2 {
     fn from(dir: Direction8) -> Self {
         match dir {
             Direction8::North => Vector2::UP,
@@ -112,19 +124,13 @@ impl From<Direction8> for Vector2 {
     }
 }
 
-impl From<(isize, isize)> for Vector2 {
-    fn from((x, y): (isize, isize)) -> Self {
-        Self { x, y }
-    }
-}
-
-impl From<Vector2> for (isize, isize) {
+impl const From<Vector2> for (isize, isize) {
     fn from(pt: Vector2) -> Self {
         (pt.x, pt.y)
     }
 }
 
-impl TryFrom<Vector2> for Size {
+impl const TryFrom<Vector2> for Size {
     type Error = ();
     fn try_from(pt: Vector2) -> Result<Self, Self::Error> {
         if pt.x < 0 || pt.y < 0 {
@@ -144,26 +150,25 @@ impl const Add for Vector2 {
         Self { x: self.x + rhs.x, y: self.y + rhs.y }
     }
 }
-// ????? Sub/Neg aren't const traits
-// did they just... forget?
-impl Sub for Vector2 {
+
+impl const Sub for Vector2 {
     type Output = Vector2;
     fn sub(self, rhs: Self) -> Self::Output {
         Self { x: self.x - rhs.x, y: self.y - rhs.y }
     }
 }
-impl Neg for Vector2 {
+impl const Neg for Vector2 {
     type Output = Self;
     fn neg(self) -> Self {
         Self { x: -self.x, y: -self.y }
     }
 }
-impl AddAssign for Vector2 { fn add_assign(&mut self, rhs: Self) { self.x += rhs.x; self.y += rhs.y; } }
-impl SubAssign for Vector2 { fn sub_assign(&mut self, rhs: Self) { self.x -= rhs.x; self.y -= rhs.y; } }
+impl const AddAssign for Vector2 { fn add_assign(&mut self, rhs: Self) { self.x += rhs.x; self.y += rhs.y; } }
+impl const SubAssign for Vector2 { fn sub_assign(&mut self, rhs: Self) { self.x -= rhs.x; self.y -= rhs.y; } }
 
 impl const Add for &Vector2 { type Output = Vector2; fn add(self, rhs: Self) -> Self::Output { *self + *rhs } }
-impl Sub for &Vector2 { type Output = Vector2; fn sub(self, rhs: Self) -> Self::Output { *self - *rhs } }
-impl Neg for &Vector2 { type Output = Vector2; fn neg(self) -> Self::Output { -*self } }
+impl const Sub for &Vector2 { type Output = Vector2; fn sub(self, rhs: Self) -> Self::Output { *self - *rhs } }
+impl const Neg for &Vector2 { type Output = Vector2; fn neg(self) -> Self::Output { -*self } }
 
 impl const Add<Size> for Vector2 {
     type Output = Vector2;
@@ -176,31 +181,31 @@ impl const Add<Size> for Vector2 {
     }
 }
 
-impl Add<Direction> for Vector2 { type Output = Self; fn add(self, rhs: Direction) -> Self::Output { self + Self::from(rhs) } }
-impl Sub<Direction> for Vector2 { type Output = Self; fn sub(self, rhs: Direction) -> Self::Output { self - Self::from(rhs) } }
-impl Add<Direction8> for Vector2 { type Output = Self; fn add(self, rhs: Direction8) -> Self::Output { self + Self::from(rhs) } }
-impl Sub<Direction8> for Vector2 { type Output = Self; fn sub(self, rhs: Direction8) -> Self::Output { self - Self::from(rhs) } }
-impl AddAssign<Direction> for Vector2 { fn add_assign(&mut self, rhs: Direction) { *self += Self::from(rhs) } }
-impl SubAssign<Direction> for Vector2 { fn sub_assign(&mut self, rhs: Direction) { *self -= Self::from(rhs) } }
-impl AddAssign<Direction8> for Vector2 { fn add_assign(&mut self, rhs: Direction8) { *self += Self::from(rhs) } }
-impl SubAssign<Direction8> for Vector2 { fn sub_assign(&mut self, rhs: Direction8) { *self -= Self::from(rhs) } }
+impl const Add<Direction> for Vector2 { type Output = Self; fn add(self, rhs: Direction) -> Self::Output { self + Self::from(rhs) } }
+impl const Sub<Direction> for Vector2 { type Output = Self; fn sub(self, rhs: Direction) -> Self::Output { self - Self::from(rhs) } }
+impl const Add<Direction8> for Vector2 { type Output = Self; fn add(self, rhs: Direction8) -> Self::Output { self + Self::from(rhs) } }
+impl const Sub<Direction8> for Vector2 { type Output = Self; fn sub(self, rhs: Direction8) -> Self::Output { self - Self::from(rhs) } }
+impl const AddAssign<Direction> for Vector2 { fn add_assign(&mut self, rhs: Direction) { *self += Self::from(rhs) } }
+impl const SubAssign<Direction> for Vector2 { fn sub_assign(&mut self, rhs: Direction) { *self -= Self::from(rhs) } }
+impl const AddAssign<Direction8> for Vector2 { fn add_assign(&mut self, rhs: Direction8) { *self += Self::from(rhs) } }
+impl const SubAssign<Direction8> for Vector2 { fn sub_assign(&mut self, rhs: Direction8) { *self -= Self::from(rhs) } }
 
-impl Mul<isize> for Vector2 {
+impl const Mul<isize> for Vector2 {
     type Output = Vector2;
     fn mul(self, rhs: isize) -> Self::Output {
         Self { x: self.x * rhs, y: self.y * rhs }
     }
 }
-impl MulAssign<isize> for Vector2 {
+impl const MulAssign<isize> for Vector2 {
     fn mul_assign(&mut self, rhs: isize) {
         self.x *= rhs;
         self.y *= rhs;
     }
 }
-impl Mul<usize> for Vector2 { type Output = Vector2; fn mul(self, rhs: usize) -> Self::Output { self.mul(rhs as isize) } }
-impl MulAssign<usize> for Vector2 { fn mul_assign(&mut self, rhs: usize) { self.mul_assign(rhs as isize) } }
-impl Mul<Vector2> for isize { type Output = Vector2; fn mul(self, rhs: Vector2) -> Self::Output { rhs*self } }
-impl Mul<Vector2> for usize { type Output = Vector2; fn mul(self, rhs: Vector2) -> Self::Output { rhs*self } }
+impl const Mul<usize> for Vector2 { type Output = Vector2; fn mul(self, rhs: usize) -> Self::Output { self.mul(rhs as isize) } }
+impl const MulAssign<usize> for Vector2 { fn mul_assign(&mut self, rhs: usize) { self.mul_assign(rhs as isize) } }
+impl const Mul<Vector2> for isize { type Output = Vector2; fn mul(self, rhs: Vector2) -> Self::Output { rhs*self } }
+impl const Mul<Vector2> for usize { type Output = Vector2; fn mul(self, rhs: Vector2) -> Self::Output { rhs*self } }
 
 impl Display for Vector2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
