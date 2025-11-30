@@ -7,19 +7,17 @@
 #![feature(const_ops)]
 #![feature(const_trait_impl)]
 #![feature(coroutines)]
-#![feature(generic_arg_infer)]
 #![feature(int_roundings)]
 #![feature(iter_array_chunks)]
 #![feature(iter_from_coroutine)]
 #![feature(lazy_get)]
-#![feature(let_chains)]
 #![feature(trait_alias)]
 
 pub mod common; pub use common::*;
-mod y15; mod y23; mod y24;
+mod y15; mod y23; mod y24; mod y25;
 
 fn main() {
-    let day = y24::days::Day20;
+    let day = y25::days::Day1;
     day.test(None);
     day.solve(day.input());
 }
@@ -30,5 +28,6 @@ fn test_all_years() {
     y15::test::test_all_days();
     y23::test::test_all_days();
     y24::test::test_all_days();
+    y25::test::test_all_days();
     println!("all tests took {}us", sw.us());
 }

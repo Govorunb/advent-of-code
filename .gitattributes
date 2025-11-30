@@ -1,0 +1,6 @@
+* text=auto
+
+* eol=crlf
+*.py diff=python
+*.cs diff=csharp
+*.rs diff=rust
