@@ -91,7 +91,7 @@ p=9,5 v=-3,-3"
                     .map(|n| target_y + bounds.height * n)
                     .find(|t| t % bounds.width == target_x)
                     .unwrap();
-                if cfg!(debug_assertions) {
+                if cfg!(debug_assertions) && !cfg!(test) {
                     let moved_robots = robots.iter()
                         .map(|r| {
                             Robot {

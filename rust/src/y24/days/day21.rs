@@ -35,7 +35,7 @@ aoc_day!(
         codes.iter()
             .map(|code| {
                 let seq = key_sequence(&NUMPAD, code.clone(), layers);
-                println!("{code} | {seq}");
+                // println!("{code} | {seq}");
                 seq
             })
             .map(|seq| expand_layers(seq, layers-1))
@@ -43,7 +43,7 @@ aoc_day!(
             .map(|(seq, code)| {
                 let code_i = code[..code.len()-1].parse::<usize>().unwrap();
                 let i = seq.len() * code_i;
-                println!("{code}: ({}*{code_i}={i}) {seq:?}", seq.len());
+                // println!("{code}: ({}*{code_i}={i}) {seq:?}", seq.len());
                 i
             }).sum()
     }
@@ -131,10 +131,10 @@ fn best_keypad_move(pad: &Grid<char>, from: char, to: char, curr_dir: Option<Dir
         .collect_vec();
     let i_best = expanded.iter().position_min_by_key(|s| s.len()).unwrap();
     let best_path = presses[i_best].clone();
-    let cost = best_path.len();
-    if layers >= 15 {
-        println!("\nfrom {from} to {to} at {curr_dir:?} ({layers}) -> ({cost}) {best_path}");
-    }
+    // let _cost = best_path.len();
+    // if layers >= 15 {
+    //     println!("\nfrom {from} to {to} at {curr_dir:?} ({layers}) -> ({_cost}) {best_path}");
+    // }
     best_path
 }
 
@@ -213,10 +213,10 @@ fn buh(code: &str, layers: usize) -> Vec<String> {
         cost
     };
     let goal = |state: &State| state.numpad_presses() == code;
-    let (solns, cost) = astar_bag(&state, succ, heur, goal).unwrap();
+    let (solns, _cost) = astar_bag(&state, succ, heur, goal).unwrap();
 
     let all = solns.map(|soln| soln.last().unwrap().your_presses.clone()).collect_vec();
-    println!("{cost}: {all:?}");
+    // println!("{_cost}: {all:?}");
     all
 }
 
