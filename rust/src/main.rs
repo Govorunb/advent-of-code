@@ -1,5 +1,6 @@
 #![cfg(target_pointer_width = "64")]
 #![allow(dead_code)]
+#![allow(mismatched_lifetime_syntaxes)] // i shouldn't need to google the error text to find out the linter code
 
 #![feature(ascii_char)]
 #![feature(ascii_char_variants)]
