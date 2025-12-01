@@ -21,7 +21,7 @@ mod y15; mod y16;
 mod y23; mod y24; mod y25;
 
 fn main() {
-    let day = y24::days::Day1;
+    let day = y25::days::Day1;
     day.test(None);
     day.solve(day.input());
 }
