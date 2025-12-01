@@ -18,7 +18,7 @@ aoc_day!(
         ],
         test_cases![
             (Self::EXAMPLES[0], 31),
-            // (Self::INPUT, 0),
+            (Self::INPUT, 23082277),
         ]
     ],
     solve = |input, part| {
