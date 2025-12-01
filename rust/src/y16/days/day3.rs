@@ -23,36 +23,33 @@ aoc_day!(
     ],
     solve = |input, part| {
         let lines = input.lines();
-        let parsed: Vec<Vec<usize>> = lines.map(|s| s.trim().split_ascii_whitespace().map(|s| s.parse::<usize>().unwrap()).collect_vec()).collect_vec();
+        let parsed: Vec<(usize, usize, usize)> = lines.map(|s|
+            s.trim()
+                .split_ascii_whitespace()
+                .map(|s| s.parse::<usize>().unwrap())
+                .tuples::<(_,_,_)>()
+                .next().unwrap()
+        ).collect_vec();
         match part {
             Part::One => {
-                parsed.into_iter().filter(|t| test_triangle(t)).count()
+                parsed.into_iter().filter(|&(a,b,c)| test_triangle(&[a,b,c])).count()
             },
             Part::Two => {
-                let cols = (0..3).map(|i| parsed.iter()
-                    .map(move |l| l[i])
-                    .collect_vec()
-                ).flatten().collect_vec();
-                // println!("{cols:?}");
-                cols.into_iter()
+                // transpose/multiunzip/whatever you wanna call it
+                let (a,b,c): (Vec<_>, Vec<_>, Vec<_>) = parsed.into_iter().collect();
+                [a,b,c].into_iter()
+                    .flatten()
                     .array_chunks::<3>()
-                    .filter(|t| test_triangle(t))
+                    .filter(test_triangle)
                     .count()
             }
         }
     }
 );
 
-fn test_triangle(t: &[usize]) -> bool {
-    // println!("Triangle {t:?}");
-    let mut repeat = t.into_iter().cycle();
-    for _ in 0..3 {
-        let (a, b, c) = (repeat.next().unwrap(), repeat.next().unwrap(), repeat.next().unwrap());
-        // println!("Examining ({a},{b},{c}); {a} {} {}", if *a >= b+c {">="} else {"<"}, b+c);
-        if *a >= b+c {
-            return false;
-        }
-        repeat.next();
-    }
-    true
+fn test_triangle(t: &[usize; 3]) -> bool {
+    let [a,b,c] = *t;
+    a < b+c
+    && b < a+c
+    && c < a+b
 }

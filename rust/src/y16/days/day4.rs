@@ -22,17 +22,16 @@ totally-real-room-200[decoy]"
         ]
     ],
     solve = |input, part| {
-        let lines = input.lines();
-        let regex: Regex = Regex::new(r#"(?<n>[a-z\-]+)-(?<id>\d+)\[(?<c>[a-z]+)]"#).unwrap();
+        let r: Regex = Regex::new(r#"(?<n>[a-z\-]+)-(?<id>\d+)\[(?<c>[a-z]+)]"#).unwrap();
 
-        let rooms = lines.map(|l| regex.captures(l).unwrap())
+        let rooms = r.captures_iter(input)
             .map(|m| Room {
                 id: m.usize("id"),
                 checksum: m.string("c"),
                 name: m.string("n")
             })
             .collect_vec();
-        let valid_rooms = rooms.iter().filter(|r| r.check());
+        let valid_rooms = rooms.par_iter().filter(|r| r.check());
         match part {
             Part::One => {
                 valid_rooms
@@ -41,7 +40,7 @@ totally-real-room-200[decoy]"
             },
             Part::Two => {
                 valid_rooms.map(|r| (r.id, r.dec_name()))
-                    .find(|(_, n)| n.contains("north"))
+                    .find_any(|(_, n)| n.contains("north"))
                     .unwrap().0
             }
         }
