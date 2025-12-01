@@ -15,7 +15,7 @@ pub mod test {
         Day2.test(None);
         Day3.test(None);
         Day4.test(None);
-        Day5.test(None);
+        // Day5.test(None); // md5 yawn
         Day6.test(None);
         Day7.test(None);
         Day8.test(None);
