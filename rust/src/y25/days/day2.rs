@@ -44,6 +44,7 @@ aoc_day!(
     ],
     solve = |input, part| {
         let pow10_table = (0..=24).map(|i| 10usize.pow(i)).collect_vec();
+        let factors_table = (0..24).map(|i| primes::factors(i)).collect_vec();
         let r = Regex::new(r#"(?<a>\d+)-(?<b>\d+)"#).unwrap();
         let ids = input.par_split(',')
             .map(|pair| {
@@ -116,8 +117,8 @@ aoc_day!(
                     (start..=end).into_par_iter()
                         .map(|i| {
                             let i_digits = digits_maybe.unwrap_or_else(|| digits(i));
-                            for div in (2..=i_digits).filter(|d| i_digits % d == 0) {
-                                let cut = pow10_table[i_digits / div];
+                            for &div in &factors_table[i_digits] {
+                                let cut = pow10_table[i_digits / div as usize];
                                 if check(i, cut) {
                                     return i;
                                 }
