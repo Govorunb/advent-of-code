@@ -1,3 +1,5 @@
+use std::iter;
+
 use num::{Float, Integer};
 
 use crate::*;
@@ -30,8 +32,9 @@ aoc_day!(
             ("2121212118-2121212124", 0),
             (Self::EXAMPLES[0], 1227775554),
             (Self::INPUT, 22062284697),
-            (Self::EXAMPLES[1], 21327161532716),
+            (Self::EXAMPLES[1], 21327161532716), // actually lower due to overlapping ranges
             (Self::EXAMPLES[2], 121412594604227157),
+            ("30-400,30-4000,30-40000, 3-4000000", 496111476),
         ],
         test_cases![
             ("11-22", [11,22].iter().sum()),
@@ -48,7 +51,7 @@ aoc_day!(
             (Self::EXAMPLES[0], 4174379265),
             (Self::INPUT, 46666175279),
             // too long
-            // (Self::EXAMPLES[1], 21346784611163),
+            // (Self::EXAMPLES[1], 21346784611163), // lower (overlap)
             // (Self::EXAMPLES[2], 0),
         ]
     ],
@@ -64,77 +67,88 @@ aoc_day!(
             });
         // tried fancy-regex for backtracking
         // /^(\d+)\1$/ and /^(\d+)\1+$/ are way slower (thank god)
+
+        let buh = |(start, end, divisor): (_, _, usize)| {
+            // it's time to get "clever"
+            let digits_start = digits(start);
+            let digits_end = digits(end);
+            let mut total = 0;
+            for digit in (digits_start..=digits_end).filter(|d| d % divisor == 0) {
+                // i = 12345678
+                // digits = 8; digits/2 = 4 --> cut = 10^4 = 10000
+                // 1234.... / 1_0000
+                // ....5678 % 1_0000
+                let half_cut: usize = pow10_table[digit/divisor];
+                let [even_min, even_max] = pow10_table[(digit-1)..=digit] else {unreachable!()};
+                
+                // there can be a max of 1 invalid ID for each distinct top half (for each A there is only one AA/AAA/...)
+                // also something interesting: e.g. 12341234 is always divisible by 10001
+                let start_top = start.max(even_min) / half_cut;
+                let end_top = end.min(even_max-1) / half_cut;
+                let invalid_ids = (start_top..=end_top)
+                    .map(|top| top * half_cut + top) // 12340000 + 1234; also known as 10001 * 1234 ;)
+                // let start_n = start.next_multiple_of(repeat_multiple) / repeat_multiple;
+                // let end_n = end.prev_multiple_of(&(repeat_multiple)) / repeat_multiple;
+                // let invalid_ids = (start_n..=end_n)
+                //     .map(|n| n * repeat_multiple) // 12340000 + 1234; also known as 10001 * 1234 ;)
+                //     // this increments by 1, making the multiplied product increment by 10001
+                    .skip_while(|&id| id < start)
+                    .take_while(|&id| id <= end);
+                total += invalid_ids.sum::<usize>();
+            }
+            total
+        };
+
         match part {
             Part::One => {
                 ids.map(|(start, end)| {
-                    // it's time to get "clever"
-                    let digits_start = digits(start);
-                    let digits_end = digits(end);
-                    let mut total = 0;
-
-                    let even_digits = if digits_start % 2 == 0 {
-                        digits_start
-                    } else if digits_end % 2 == 0 {
-                        digits_end
-                    } else {
-                        return 0
-                    };
-                    
-                    // i = 1234567890
-                    // digits = 10; digits/2 = 5 --> cut = 10^5 = 100000
-                    // 12345..... / 1_00000
-                    // .....67890 % 1_00000
-                    let half_cut = pow10_table[even_digits/2];
-                    // let [even_min, even_max] = pow10_table[(even_digits-1)..=even_digits] else {unreachable!()};
-                    
-                    // there can be a max of 1 invalid ID for each distinct top half (for each A there is only one AA)
-                    // let mut count = 0;
-                    let start_top = start / half_cut;
-                    let end_top = end / half_cut;
-                    for top in start_top..=end_top {
-                        let id = top * half_cut + top;
-                        // top half may have odd # digits
-                        if digits(id) % 2 != 0 {continue}
-                        // if id > even_max || id < even_min {continue} // no difference
-                        if id >= start && id <= end {
-                            total += id;
-                            // count += 1;
-                        }
-                    }
-                    // FIXME: very very lucky that the input was kind
-                    // e.g. 30-40000
-                    // picks even_digits from start (2)
-                    // half_cut is 10 -> start_top..=end_top is 3..=4000
-                    // then, top * half_cut + top = 1234 * 10 + 1234 (which is obviously absurd and not a double)
-                    
-                    // let digits_maybe = (digits_start == digits_end).then_some(digits_start);
-                    // let results = (start..=end).into_iter()
-                    //     .map(|i| {
-                    //         let i_digits = digits_maybe.unwrap_or_else(|| digits(i));
-                    //         if i_digits % 2 == 0 && check(i, pow10_table[i_digits/2]) {
-                    //             return i;
-                    //         }
-                    //         0
-                    //     }).filter(|&e| e > 0).collect_vec();
-                    // let sum = results.iter().sum();
-                    // println!("verify {start}..{end}:\n\tsum: {sum}|{total}\n\tcount: {}|{count}", results.len());
-                    // assert!(results.len() == count);
-                    // assert!(sum == total);
-                    total
+                    buh((start, end, 2))
                 }).sum()
             },
             Part::Two => {
                 ids.map(|(start, end)| {
-                    // small trick - all numbers between start/end MAY have the same digit count
                     let digits_start = digits(start);
                     let digits_end = digits(end);
+                    
+                    // let mut total = 0;
+                    // for digit in digits_start..=digits_end  {
+                    //     for &divisor in &factors_table[digit] {
+                    //         let part_size = digit / divisor as usize;
+                    //         let cut = pow10_table[part_size];
+                    //         let [digit_min, digit_max] = pow10_table[(digit-1)..=digit] else {unreachable!()};
+
+                    //         let start_top = start.max(digit_min) / cut;
+                    //         let end_top = end.min(digit_max) / cut;
+                    //     }
+                    // }
+                    
                     let digits_maybe = (digits_start == digits_end).then_some(digits_start);
                     (start..=end).into_par_iter()
                         .map(|i| {
                             let i_digits = digits_maybe.unwrap_or_else(|| digits(i));
-                            for &div in &factors_table[i_digits] {
-                                let cut = pow10_table[i_digits / div as usize];
-                                if check(i, cut) {
+                            for &rep in factors_table[i_digits].iter() {
+                                let rep = rep as usize;
+                                let p_size = i_digits / rep;
+                                let cut = pow10_table[p_size];
+                                let is_invalid = {
+                                    // 1001 -> 1001001001001 (rep 3)
+                                    // 123123123 = 123 * 001001001
+                                    if i_digits % rep != 0 {
+                                        false
+                                    } else {
+                                        let mut repeat_multi = 1;
+                                        for _ in 0..(rep-1) {
+                                            repeat_multi *= cut;
+                                            repeat_multi += 1;
+                                        }
+    
+                                        let (div, rem) = i.div_rem(&repeat_multi);
+                                        div < cut && rem == 0
+                                    }
+                                };
+                                // let is_invalid = check_orig(i, cut);
+                                // assert!(is_invalid == check_orig(i, cut));
+                                if is_invalid {
                                     return i;
                                 }
                             }
@@ -150,8 +164,7 @@ fn digits(num: usize) -> usize {
     num.checked_ilog10().unwrap_or(0) as usize + 1
 }
 
-#[inline]
-fn check(i: usize, cut: usize) -> bool {
+fn check_orig(i: usize, cut: usize) -> bool {
     let mut curr = i;
     let mut comp = curr % cut;
     while curr > 0 {
