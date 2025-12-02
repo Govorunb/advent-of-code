@@ -34,7 +34,7 @@ aoc_day!(
             (Self::INPUT, 22062284697),
             // (Self::EXAMPLES[1], 21327161532716), // actually lower due to overlapping ranges
             // (Self::EXAMPLES[2], 121412594604227157),
-            ("30-400,30-4000,30-40000, 3-4000000", 496111476),
+            ("30-400,30-4000,30-40000,3-4000000", 496111476),
         ],
         test_cases![
             ("11-22", [11,22].iter().sum()),
@@ -57,57 +57,60 @@ aoc_day!(
     ],
     solve = |input, part| {
         let pow10_table = (0..=15).map(|i| 10usize.pow(i)).collect_vec();
-        let factors_table = (0..15).map(|i| primes::factors_uniq(i)).collect_vec();
-        let r = Regex::new(r#"(?<a>\d+)-(?<b>\d+)"#).unwrap();
-        // tried fancy-regex for backtracking
-        // /^(\d+)\1$/ and /^(\d+)\1+$/ are way slower (thank god)
+        let factors_table = (0..15).map(|i| primes::factors_uniq(i)).collect_vec(); // luck? all the digits had only prime factors
 
-        let buh = |(start, end, reps): (_, _, usize)| {
-            // it's time to get "clever"
+        let find_invalid = |(start, end, parts): (_, _, usize)| {
             let digits_start = digits(start);
             let digits_end = digits(end);
             (digits_start..=digits_end)
-                .filter(|d| d % reps == 0)
+                .filter(|d| d % parts == 0)
                 .flat_map(|digit| {
-
-                    // i = 12345678
-                    // digits = 8; digits/2 = 4 --> cut = 10^4 = 10000
+                    // example:
+                    // i = 12345678; digits = 8; reps = 2 (like part 1)
+                    // part_size = 8/2 = 4
+                    //  --> cut = 10^4 = 10000
                     // 1234.... / 1_0000
                     // ....5678 % 1_0000
-                    let part_size = digit/reps;
+                    let part_size = digit/parts;
                     let cut: usize = pow10_table[part_size];
                     let [digit_min, digit_max] = pow10_table[(digit-1)..=digit] else {unreachable!()};
+
+                    // since the number is just (top part)(top part again), we only really need to iterate over the top parts
+                    // i think that's like O(sqrt(N)) or something
     
                     // there can be a max of 1 invalid ID for each distinct top part (for each A there is only one AA/AAA/...)
                     // also something interesting: e.g. 12341234 is always divisible by 10001
-                    let start_top = start.max(digit_min) / cut.pow(reps as u32 - 1);
-                    let end_top = end.min(digit_max-1) / cut.pow(reps as u32 - 1);
+                    let start_top = start.max(digit_min) / cut.pow(parts as u32 - 1); // e.g.: reps = 4; part_size = 2; cut = 100
+                    let end_top = end.min(digit_max-1) / cut.pow(parts as u32 - 1);   // 12_xx_xx_xx / (100^3) = 12
                     // println!("{start}..={end} -> {digit_min}..{digit_max}: {start_top}..={end_top} {reps}");
                     (start_top..=end_top)
-                        .map(move |top| (0..reps).fold(0, move |acc, _| acc * cut + top)) // 12340000 + 1234; also known as 1234 * 10001 ;)
+                        // 12340000 + 1234; also known as 1234 * 10001 ;)
+                        // 12121212 is 12 * 01010101... TODO
+                        .map(move |top| (0..parts).fold(0, move |acc, _| acc * cut + top))
                         .skip_while(|&id| id < start)
                         .take_while(|&id| id <= end)
                 }).collect_vec()
         };
         
-        let ids = input.split(',')
+        let ranges = input.trim().split(',')
             .map(|pair| {
-                let c = r.captures(pair).unwrap();
-                (c.usize("a"), c.usize("b"))
+                let (start, end) = pair.split_once('-').unwrap();
+                let [start, end] = [start, end].map(|s| s.parse().expect(s));
+                (start, end)
             });
         match part {
             Part::One => {
-                ids.flat_map(|(start, end)| buh((start, end, 2)))
+                ranges.flat_map(|(start, end)| find_invalid((start, end, 2)))
                     .sum::<usize>()
             },
             Part::Two => {
-                ids.map(|(start, end)| {
+                ranges.map(|(start, end)| {
                     let digits_start = digits(start);
                     let digits_end = digits(end);
 
                     let results2 = (digits_start..=digits_end)
                         .flat_map(|d| factors_table[d].iter()
-                            .map(|&rep| buh((start, end, rep as usize)))
+                            .map(|&rep| find_invalid((start, end, rep as usize)))
                     ).flatten();
 
                     results2.unique().sum::<usize>()
