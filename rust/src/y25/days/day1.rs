@@ -36,49 +36,38 @@ L82
                 }
                 amt
             });
+        let mut pos = 50;
+        let mut clicks = 0;
         match part {
             Part::One => {
-                instructions.fold((50, 0), |(pos, clicks), amt| {
-                    let mut new_pos = pos + amt;
-                    if new_pos < 0 {
-                        new_pos += 100;
-                    }
-                    new_pos = new_pos % 100;
-                    // println!("from {pos} {el} to {new_pos}");
+                for amt in instructions {
+                    let new_pos = (pos + amt) % 100; // pos is (-100..100)
+                    // println!("from {pos} {amt} to {new_pos}");
                     if new_pos == 0 {
-                        (0, clicks+1)
-                    } else {
-                        (new_pos, clicks)
+                        clicks += 1;
                     }
-                }).1
+                    pos = new_pos;
+                }
             },
             Part::Two => {
-                instructions.fold((50, 0), |(pos, clicks), amt| {
-                    let mut new_pos = pos;
-                    let mut new_clicks = clicks;
-
-                    new_clicks += amt.abs() as usize / 100; // there are some outliers >100 (like L900)
-                    new_pos += amt % 100;
-                    while new_pos < 0 {
-                        new_clicks += 1;
-                        new_pos += 100;
+                for amt in instructions {
+                    clicks += amt.abs() as usize / 100; // there are some outliers >100 (like L900)
+                    let new_pos = (pos + amt).rem_euclid(100); // [0..100)
+                    if pos != 0 && new_pos != 0 {
+                        if amt > 0 && new_pos <= pos { // wrapped over
+                            clicks += 1;
+                        } else if amt < 0 && new_pos >= pos { // wrapped under
+                            clicks += 1;
+                        }
                     }
-                    while new_pos >= 100 {
-                        new_clicks += 1;
-                        new_pos -= 100;
+                    if new_pos == 0 {
+                        clicks += 1;
                     }
-                    // 5 -> 0 (click!)
-                    if new_pos == 0 && amt < 0 {
-                        new_clicks += 1;
-                    }
-                    // 0 -> -5 (95) (no click!)
-                    if pos == 0 && amt < 0 {
-                        new_clicks -= 1;
-                    }
-                    // println!("from {pos} {amt} to {} ({new_pos}) {} clicks", pos+amt, new_clicks - clicks);
-                    (new_pos, new_clicks)
-                }).1
+                    // println!("from {pos} {amt} to {} ({new_pos})", pos+amt);
+                    pos = new_pos;
+                }
             }
         }
+        clicks
     }
 );
