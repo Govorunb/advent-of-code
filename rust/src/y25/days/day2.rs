@@ -43,7 +43,7 @@ aoc_day!(
         ]
     ],
     solve = |input, part| {
-        let pow10_table = (0..=16).map(|i| 10usize.pow(i)).collect_vec();
+        let pow10_table = (0..=24).map(|i| 10usize.pow(i)).collect_vec();
         let r = Regex::new(r#"(?<a>\d+)-(?<b>\d+)"#).unwrap();
         let ids = input.par_split(',')
             .map(|pair| {
@@ -55,22 +55,61 @@ aoc_day!(
         match part {
             Part::One => {
                 ids.map(|(start, end)| {
-                    // small trick - all numbers between start/end MAY have the same digit count
+                    // it's time to get "clever"
                     let digits_start = digits(start);
                     let digits_end = digits(end);
-                    let digits_maybe = (digits_start == digits_end).then_some(digits_start);
-                    (start..=end).into_par_iter()
-                        .map(|i| {
-                            let i_digits = digits_maybe.unwrap_or_else(|| digits(i));
-                            if i_digits % 2 == 0 && check(i, pow10_table[i_digits/2]) {
-                                return i;
-                            }
-                            0
-                        }).sum::<usize>()
+                    let mut total = 0;
+                    
+                    // TODO: 20-2000? (luckily wasn't in input?)
+                    let even_digits = if digits_start % 2 == 0 {
+                        digits_start
+                    } else if digits_end % 2 == 0 {
+                        digits_end
+                    } else {
+                        return 0
+                    };
+                    
+                    // i = 1234567890
+                    // digits = 10; digits/2 = 5 --> cut = 10^5 = 100000
+                    // 12345..... / 1_00000
+                    // .....67890 % 1_00000
+                    let half_cut = pow10_table[even_digits/2];
+                    // let [even_min, even_max] = pow10_table[(even_digits-1)..=even_digits] else {unreachable!()};
+                    
+                    // there can be a max of 1 invalid ID for each distinct top half (for each A there is only one AA)
+                    // let mut count = 0;
+                    let start_top = start / half_cut;
+                    let end_top = end / half_cut;
+                    for top in start_top..=end_top {
+                        let id = top * half_cut + top;
+                        // top half may have odd # digits
+                        if digits(id) % 2 != 0 {continue}
+                        // if id > even_max || id < even_min {continue} // no difference
+                        if id >= start && id <= end {
+                            total += id;
+                            // count += 1;
+                        }
+                    }
+                    
+                    // let digits_maybe = (digits_start == digits_end).then_some(digits_start);
+                    // let results = (start..=end).into_iter()
+                    //     .map(|i| {
+                    //         let i_digits = digits_maybe.unwrap_or_else(|| digits(i));
+                    //         if i_digits % 2 == 0 && check(i, pow10_table[i_digits/2]) {
+                    //             return i;
+                    //         }
+                    //         0
+                    //     }).filter(|&e| e > 0).collect_vec();
+                    // let sum = results.iter().sum();
+                    // println!("{start}..{end}:\n\tres: {sum}|{total}\n\tcount: {}|{count}", results.len());
+                    // assert!(results.len() == count);
+                    // assert!(sum == total);
+                    total
                 }).sum()
             },
             Part::Two => {
                 ids.map(|(start, end)| {
+                    // small trick - all numbers between start/end MAY have the same digit count
                     let digits_start = digits(start);
                     let digits_end = digits(end);
                     let digits_maybe = (digits_start == digits_end).then_some(digits_start);
@@ -97,10 +136,6 @@ fn digits(num: usize) -> usize {
 
 #[inline]
 fn check(i: usize, cut: usize) -> bool {
-    // i = 1234567890
-    // digits = 10; digits/2 = 5 --> cut = 10^5 = 100000
-    // 12345..... / 1_00000
-    // .....67890 % 1_00000
     let mut curr = i;
     let mut comp = curr % cut;
     while curr > 0 {
