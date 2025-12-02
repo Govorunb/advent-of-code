@@ -75,9 +75,7 @@ L82
                     if pos == 0 && amt < 0 {
                         new_clicks -= 1;
                     }
-                    if !cfg!(test) {
-                        println!("from {pos} {amt} to {} ({new_pos}) {} clicks", pos+amt, new_clicks - clicks);
-                    }
+                    // println!("from {pos} {amt} to {} ({new_pos}) {} clicks", pos+amt, new_clicks - clicks);
                     (new_pos, new_clicks)
                 }).1
             }

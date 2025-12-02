@@ -295,6 +295,36 @@ impl<T: Clone> Grid<T> {
             .map(|c| Vec::from_iter(c.iter().cloned()))
             .collect_vec()
     }
+
+    /// Slide the given column down (wrapping to the other side).
+    pub fn slide_col(&mut self, col: usize, amt: isize) {
+        let h = self.height();
+        let amt = amt.rem_euclid(h as isize) as usize;
+
+        let saved_col = self.col(col).unwrap().iter().cloned().collect_vec();
+        let rotated = saved_col.into_iter()
+            .cycle()
+            .skip(h-amt);
+        
+        for (a, b) in self.col_mut(col).unwrap().into_iter().zip(rotated) {
+            *a = b;
+        }
+    }
+
+    /// Slide the given row right (wrapping to the other side).
+    pub fn slide_row(&mut self, row: usize, amt: isize) {
+        let w = self.width();
+        let amt = amt.rem_euclid(w as isize) as usize;
+
+        let saved_row = self.row(row).unwrap().iter().cloned().collect_vec();
+        let rotated = saved_row.into_iter()
+            .cycle()
+            .skip(w-amt);
+        
+        for (a, b) in self.row_mut(row).unwrap().into_iter().zip(rotated) {
+            *a = b;
+        }
+    }
 }
 
 impl<'a, T: 'a> IntoIterator for &'a Grid<T> {
