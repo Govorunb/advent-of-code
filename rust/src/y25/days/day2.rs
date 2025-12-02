@@ -35,6 +35,7 @@ aoc_day!(
             // (Self::EXAMPLES[1], 21327161532716), // actually lower due to overlapping ranges
             // (Self::EXAMPLES[2], 121412594604227157),
             ("30-400,30-4000,30-40000,3-4000000", 496111476),
+            // ("1-4294967296", 87729849870725),
         ],
         test_cases![
             ("11-22", [11,22].iter().sum()),
@@ -53,12 +54,12 @@ aoc_day!(
             // too long
             // (Self::EXAMPLES[1], 21346784611163), // lower (overlap)
             // (Self::EXAMPLES[2], 0),
+            // ("1-4294967296", 88304989965662), // uh oh
         ]
     ],
     solve = |input, part| {
-        let pow10_table = (0..=15).map(|i| 10usize.pow(i)).collect_vec();
-        let factors_table = (0..15).map(|i| primes::factors_uniq(i)).collect_vec(); // luck? all the digits had only prime factors
-
+        let pow10_table = (0..=12).map(|i| 10usize.pow(i)).collect_vec();
+        let factors_table = (0..=12).map(|i| primes::factors_uniq(i)).collect_vec(); // luck? all the digits had only prime factors
         let find_invalid = |(start, end, parts): (_, _, usize)| {
             let digits_start = digits(start);
             let digits_end = digits(end);
@@ -73,7 +74,7 @@ aoc_day!(
                     // ....5678 % 1_0000
                     let part_size = digit/parts;
                     let cut: usize = pow10_table[part_size];
-                    let [digit_min, digit_max] = pow10_table[(digit-1)..=digit] else {unreachable!()};
+                    let [digit_min, digit_max] = [digit-1, digit].map(|d| pow10_table[d]);
 
                     // since the number is just (top part)(top part again), we only really need to iterate over the top parts
                     // i think that's like O(sqrt(N)) or something
@@ -109,11 +110,14 @@ aoc_day!(
                     let digits_end = digits(end);
 
                     let results2 = (digits_start..=digits_end)
-                        .flat_map(|d| factors_table[d].iter()
+                        .map(|d| factors_table[d].iter()
                             .map(|&rep| find_invalid((start, end, rep as usize)))
-                    ).flatten();
+                            .flatten()
+                            .unique()
+                        )
+                        .flatten();
 
-                    results2.unique().sum::<usize>()
+                    results2.sum::<usize>()
                 }).sum::<usize>()
             }
         }
@@ -121,5 +125,5 @@ aoc_day!(
 );
 
 fn digits(num: usize) -> usize {
-    num.checked_ilog10().unwrap_or(0) as usize + 1
+    (num.ilog10() + 1) as usize
 }
