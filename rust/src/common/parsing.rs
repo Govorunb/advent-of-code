@@ -51,3 +51,13 @@ impl RegexMatchHelpers for Match<'_> {
     fn usize(&self) -> usize {self.parse()}
     fn isize(&self) -> isize {self.parse()}
 }
+
+pub trait IAssureYouItIsMostCertainlyValidASCIIAndAlsoUTF8 {
+    fn as_str(&self) -> &str;
+}
+
+impl IAssureYouItIsMostCertainlyValidASCIIAndAlsoUTF8 for &[u8] {
+    fn as_str(&self) -> &str {
+        self.as_ascii().unwrap().as_str()
+    }
+}
