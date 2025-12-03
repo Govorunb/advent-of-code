@@ -24,7 +24,7 @@ aoc_day!(
             ("234234234234278", 434234234278),
             ("818181911112111", 888911112111),
             (Self::EXAMPLES[0], 3121910778619),
-            // (Self::INPUT, 0),
+            (Self::INPUT, 176582889354075),
         ]
     ],
     solve = |input, part| {
@@ -35,23 +35,24 @@ aoc_day!(
         };
         grid.rows()
             .map(|row| {
-                let mut total = 0;
-                let mut left_pos = 0;
+                let mut num = 0;
+                let mut start = 0;
                 for i in 0..batteries {
-                    let curr = &row[left_pos..=row.len()-batteries+i];
-                    let max_pos = max_left_pos(curr);
-                    left_pos += max_pos+1;
-                    total = total * 10 + curr[max_pos];
+                    // can't have a 10 digit number that starts at the 5th from end
+                    let curr = &row[start..=row.len()-batteries+i];
+                    let max_pos = position_max_earliest(curr);
+                    start += max_pos+1;
+                    num = num * 10 + curr[max_pos];
                 }
-                total
+                num
             })
             .sum::<usize>()
     }
 );
 
-fn max_left_pos(row: &[usize]) -> usize {
-    row.iter().enumerate()
-        .fold(0, |acc, (i, &e)| {
-        if e > row[acc] { i } else {acc}
+// position_max returns *latest* max element (e.g 90000009<---, presumably they check >= instead of just >)
+fn position_max_earliest(source: &[usize]) -> usize {
+    source.iter().enumerate().fold(0, |max_i, (i, &n)| {
+        if n > source[max_i] { i } else { max_i }
     })
 }
