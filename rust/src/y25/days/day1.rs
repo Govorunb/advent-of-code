@@ -27,15 +27,14 @@ L82
         ]
     ],
     solve = |input, part| {
-        let r = Regex::new(r#"(?<d>[LR])(?<m>\d+)"#).unwrap();
-        let instructions = r.captures_iter(input)
-            .map(|c| {
-                let mut amt = c.isize("m");
-                if c.str("d") == "L" {
-                    amt = -amt;
-                }
-                amt
-            });
+        let instructions = input.lines().map(|l| {
+            let (dir, amt) = l.split_at(1);
+            let mut amt: isize = amt.parse().unwrap();
+            if dir == "L" {
+                amt = -amt;
+            }
+            amt
+        });
         let mut pos = 50;
         let mut clicks = 0;
         match part {
