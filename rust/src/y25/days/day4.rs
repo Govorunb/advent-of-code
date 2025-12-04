@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::*;
 
 aoc_day!(
@@ -26,54 +28,43 @@ aoc_day!(
         ]
     ],
     solve = |input, part| {
-        let mut grid: Grid<_> = input.parse().unwrap();
+        let grid: Grid<_> = input.parse().unwrap();
+        // insert 3 paragraph rant about how "adjacent" actually means the 4 cells in cardinal directions
+        // and "around" should instead be used for the 8 with diagonals
+        let mut adjacency_grid = grid.map_clone_cells(|(pos, &c)| {
+            (c == '@').then(|| pos.around()
+                .filter(|p| matches!(grid.get(p), Some('@')))
+                .count() as u8
+            )
+        });
         match part {
             Part::One => {
-                grid.cells()
-                    .filter(|&(pos, c)| c == &'@' && accessible(&pos, &grid))
+                adjacency_grid.elements()
+                    .filter(|adj| matches!(adj, Some(..4)))
                     .count()
             },
             Part::Two => {
+                // removing a roll only affects other rolls nearby
                 let mut removed = 0;
-                let mut removable = vec![];
-                let mut next_check = FxHashSet::default();
-                loop {
-                    debug_assert!(removable.is_empty());
-                    // removing a roll only affects rolls that were around
-                    // therefore, we don't have to check the full grid
-                    if next_check.len() == 0 {
-                        removable.extend(grid.bounds().into_iter()
-                            .filter(|pos| grid[pos] == '@' && accessible(&pos, &grid))
-                        );
-                    } else {
-                        removable.extend(next_check.drain()
-                            .filter(|pos| accessible(&pos, &grid))
-                        );
-                    }
-                    if removable.len() == 0 {
-                        break;
-                    }
-                    removed += removable.len();
-                    for p in &removable {
-                        grid[p] = '.';
-                    }
+                let mut next_check = VecDeque::from_iter(
+                    adjacency_grid.cells()
+                        .filter_map(|(p, c)| (matches!(c, Some(..4))).then_some(p))
+                );
+                while let Some(p) = next_check.pop_back() {
+                    if adjacency_grid[p].take().is_none() { continue }
+                    removed += 1;
                     
-                    debug_assert!(next_check.is_empty());
-                    next_check.extend(removable.drain(..)
-                        .flat_map(|p| p.around())
-                        .filter(|p| matches!(grid.get(&p), Some('@')))
-                    );
+                    for a in p.around() {
+                        let Some(Some(adj)) = adjacency_grid.get_mut(&a)
+                            else {continue};
+                        *adj -= 1;
+                        if *adj < 4 {
+                            next_check.push_back(a);
+                        }
+                    }
                 }
                 removed
             }
         }
     }
 );
-
-fn accessible(pos: &Vector2, grid: &Grid<char>) -> bool {
-    pos.around()
-        .filter(|p| matches!(grid.get(p), Some('@')))
-        // you might think: count() will iterate up to all 8, we only care about 4
-        // but that case seems to already be optimized (at the very least, .nth(3).is_none() and .skip(3).next().is_none() are much slower)
-        .count() < 4
-}

@@ -234,6 +234,16 @@ impl<T> Grid<T> {
             elements: self.elements.iter().map(map).collect_vec(),
         }
     }
+
+    pub fn map_clone_cells<U, F>(&self, map: F) -> Grid<U>
+    where
+        F: Fn((Vector2, &T)) -> U,
+    {
+        Grid {
+            rect: self.rect,
+            elements: self.cells().map(map).collect_vec(),
+        }
+    }
 }
 
 impl<T: PartialEq> Grid<T> {
