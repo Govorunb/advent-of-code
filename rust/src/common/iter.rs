@@ -1,16 +1,16 @@
 use itertools::{Either, Itertools};
 
-pub trait Pick<T> {
-    fn pick(self, indices: &[usize]) -> impl Iterator<Item = T>;
+pub trait Pick: Iterator {
+    fn pick(self, indices: &[usize]) -> impl Iterator<Item = Self::Item>;
 }
 
-impl<T, I: Iterator<Item = T>> Pick<T> for &mut I {
+impl<I: Iterator> Pick for &mut I {
     /// Picks out items at the specified `indices` from the underlying `iterator`.
     /// 
     /// Elements are returned in `iterator` order regardless of the `indices` order; larger `indices` will perform better if sorted.
     /// 
     /// Do not include duplicates in `indices` - sorted will break and unsorted will only return one.
-    fn pick(self, indices: &[usize]) -> impl Iterator<Item = T> {
+    fn pick(self, indices: &[usize]) -> impl Iterator<Item = Self::Item> {
         if indices.is_empty() {
             return Either::Left(std::iter::empty());
         }
@@ -48,20 +48,24 @@ fn test_pick() {
     assert!(picked.eq([1,4,6]));
 }
 
-pub trait Rle<T> {
+pub trait Rle: Iterator {
     /// Consumes the given iterator and returns [run-length](https://en.wikipedia.org/wiki/Run-length_encoding) tuples.
-    fn rle(self) -> impl Iterator<Item = (T, usize)>;
+    fn rle(self) -> impl Iterator<Item = (Self::Item, usize)>;
 }
 
-pub trait RleBy<T> {
-    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item = (T, usize)>
+pub trait RleBy: Iterator {
+    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item = (Self::Item, usize)>
         where
-            F: Fn(&T) -> K,
+            F: Fn(&Self::Item) -> K,
             K: PartialEq;
 }
 
-impl<T: PartialEq + Clone, I: Iterator<Item = T> + Clone> Rle<T> for I {
-    fn rle(self) -> impl Iterator<Item=(T, usize)> {
+impl<I> Rle for I
+where
+    I: Iterator + Clone,
+    Self::Item: PartialEq + Clone,
+{
+    fn rle(self) -> impl Iterator<Item=(Self::Item, usize)> {
         // adapted from https://stackoverflow.com/a/55676567 (which is absolute magic)
         self.peekable()
             .batching(|it| {
@@ -72,10 +76,10 @@ impl<T: PartialEq + Clone, I: Iterator<Item = T> + Clone> Rle<T> for I {
     }
 }
 
-impl<T, I: Iterator<Item = T>> RleBy<T> for I {
-    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item=(T, usize)>
+impl<I: Iterator> RleBy for I {
+    fn rle_by<K, F>(self, key_selector: F) -> impl Iterator<Item=(Self::Item, usize)>
     where
-        F: Fn(&T) -> K,
+        F: Fn(&Self::Item) -> K,
         K: PartialEq
     {
         self.peekable()
@@ -85,6 +89,29 @@ impl<T, I: Iterator<Item = T>> RleBy<T> for I {
                         let key = key_selector(&v);
                         (v, 1 + it.peeking_take_while(|v2| key_selector(v2) == key).count())
                     })
+            })
+    }
+}
+
+pub trait TriangleProduct: Iterator + Clone {
+    /// Used on a sorted iterator, this produces pairs where the second item is at least as large (in the iterator's sort order) than the first.
+    /// This sort of "triangle product" runs in about half as much time as a normal cartesian product (specifically, `(n(n+1))/2` rather than `n^2`).
+    /// Not very useful if called on an unsorted iterator, but you do you.
+    fn triangle_product(self) -> impl Iterator<Item = (Self::Item, Self::Item)>;
+}
+
+impl<I> TriangleProduct for I
+where
+    I: Iterator + Clone,
+    I::Item: Clone,
+{
+    fn triangle_product(self) -> impl Iterator<Item = (Self::Item, Self::Item)> {
+        let copy = self.clone();
+        self.enumerate()
+            .flat_map(move |(i, e)| {
+                copy.clone()
+                    .skip(i)
+                    .map(move |c| (e.clone(), c))
             })
     }
 }

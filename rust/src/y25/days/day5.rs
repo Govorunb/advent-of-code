@@ -33,7 +33,7 @@ aoc_day!(
                 .map(|s| s.parse::<usize>().unwrap());
             s..=e
         }).collect_vec();
-        ranges.sort_by(|a, b| a.start().cmp(b.start()));
+        ranges.sort_by_key(|r| *r.start());
         match part {
             Part::One => {
                 available.lines()
@@ -46,21 +46,16 @@ aoc_day!(
                     .count()
             },
             Part::Two => {
+                // because the ranges are sorted, (r1.start<=r2.start) always holds true
+                // if we can get rid of the set (we can), merging can be done much faster
                 let mut merge = vec![];
                 let mut set = FxHashSet::from_iter(ranges);
                 loop {
-                    // funny borrow checker
-                    for (r1, r2) in set.iter().cloned().cartesian_product(set.iter().cloned()) {
+                    for (r1, r2) in set.iter().sorted_by_key(|r| *r.start()).triangle_product() {
                         if r1 == r2 {continue}
-
-                        let (r1, r2) = if r1.start() <= r2.start() {
-                            (r1, r2)
-                        } else {
-                            (r2, r1)
-                        };
                         
                         if r1.end() >= r2.start() {
-                            merge.push((r1, r2));
+                            merge.push((r1.clone(), r2.clone()));
                         }
                     }
                     if merge.is_empty() {break}
