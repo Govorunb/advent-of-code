@@ -10,6 +10,7 @@ mod iter; pub use iter::*;
 mod parsing; pub use parsing::*;
 mod flood_fill; pub use flood_fill::*;
 mod math; pub use math::*;
+mod tuple; pub use tuple::*;
 mod print_vec; pub use print_vec::*;
 
 pub use itertools::Itertools;

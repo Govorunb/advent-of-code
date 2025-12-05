@@ -28,15 +28,21 @@ aoc_day!(
     ],
     solve = |input, part| {
         let (ranges, available) = input.split_once("\n\n").unwrap();
-        let ranges = ranges.lines().map(|l| {
-            let (s, e) = l.split_once('-').unwrap();
-            (s.parse::<usize>().unwrap())..=(e.parse::<usize>().unwrap())
+        let mut ranges = ranges.lines().map(|l| {
+            let (s, e) = l.split_once('-').unwrap()
+                .map(|s| s.parse::<usize>().unwrap());
+            s..=e
         }).collect_vec();
+        ranges.sort_by(|a, b| a.start().cmp(b.start()));
         match part {
             Part::One => {
-                let available = available.lines().map(|l| l.parse::<usize>().unwrap()).collect_vec();
-                available.iter()
-                    .filter(|i| ranges.iter().any(|r| r.contains(&i)))
+                available.lines()
+                    .map(|l| l.parse::<usize>().unwrap())
+                    .filter(|i| {
+                        ranges.iter()
+                            .take_while(|r| r.start() <= i)
+                            .any(|r| r.end() >= i)
+                    })
                     .count()
             },
             Part::Two => {
@@ -46,11 +52,13 @@ aoc_day!(
                     // funny borrow checker
                     for (r1, r2) in set.iter().cloned().cartesian_product(set.iter().cloned()) {
                         if r1 == r2 {continue}
+
                         let (r1, r2) = if r1.start() <= r2.start() {
                             (r1, r2)
                         } else {
                             (r2, r1)
                         };
+                        
                         if r1.end() >= r2.start() {
                             merge.push((r1, r2));
                         }

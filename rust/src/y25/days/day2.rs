@@ -95,8 +95,8 @@ aoc_day!(
         
         let ranges = input.trim().split(',')
             .map(|pair| {
-                let (start, end) = pair.split_once('-').unwrap();
-                let [start, end] = [start, end].map(|s| s.parse().expect(s));
+                let (start, end) = pair.split_once('-').unwrap()
+                    .map(|s| s.parse().expect(s));
                 (start, end)
             });
         match part {
