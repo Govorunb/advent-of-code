@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use crate::*;
 
 aoc_day!(
@@ -52,25 +54,19 @@ aoc_day!(
 
         match part {
             Part::One => {
-                // if both are sorted, we're able to walk through both collections only once* (excluding the walk for sorting)
-                let ids = available.lines()
+                available.lines()
                     .map(|l| l.parse::<usize>().unwrap())
-                    .sorted()
-                    .collect_vec(); // free to collect after sorting
-                let mut count = 0;
-                let mut i = 0;
-                for range in &merged {
-                    while ids[i] < *range.start() {
-                        i += 1;
-                        if i >= ids.len() {return count};
-                    }
-                    while ids[i] <= *range.end() {
-                        count += 1;
-                        i += 1;
-                        if i >= ids.len() {return count};
-                    }
-                }
-                count
+                    .filter(|i| {
+                        merged.binary_search_by(|r| {
+                            if i < r.start() {
+                                Ordering::Greater
+                            } else if i <= r.end() {
+                                Ordering::Equal
+                            } else {
+                                Ordering::Less
+                            }
+                        }).is_ok()
+                    }).count()
             },
             Part::Two => {
                 merged.into_iter()
