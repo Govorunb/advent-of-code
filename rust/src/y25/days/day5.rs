@@ -34,41 +34,46 @@ aoc_day!(
             s..=e
         }).collect_vec();
         ranges.sort_by_key(|r| *r.start());
+        
+        // putting p2 before p1 to make p1 faster teehee
+        let mut merged: Vec<std::ops::RangeInclusive<usize>> = vec![];
+        for r in ranges {
+            if let Some(prev) = merged.last_mut() {
+                // because ranges are sorted, prev.start <= r.start already always holds
+                // now we immediately know whether to merge (and can also immediately merge)
+                if prev.end() >= r.start() {
+                    *prev = merge_ranges(prev, &r).unwrap();
+                    continue;
+                }
+            }
+            merged.push(r);
+        }
+        // now all ranges are non-overlapping
+
         match part {
             Part::One => {
-                available.lines()
+                // if both are sorted, we're able to walk through both collections only once* (excluding the walk for sorting)
+                let ids = available.lines()
                     .map(|l| l.parse::<usize>().unwrap())
-                    .filter(|i| {
-                        ranges.iter()
-                            .take_while(|r| r.start() <= i)
-                            .any(|r| r.end() >= i)
-                    })
-                    .count()
-            },
-            Part::Two => {
-                // because the ranges are sorted, (r1.start<=r2.start) always holds true
-                // if we can get rid of the set (we can), merging can be done much faster
-                let mut merge = vec![];
-                let mut set = FxHashSet::from_iter(ranges);
-                loop {
-                    for (r1, r2) in set.iter().sorted_by_key(|r| *r.start()).triangle_product() {
-                        if r1 == r2 {continue}
-                        
-                        if r1.end() >= r2.start() {
-                            merge.push((r1.clone(), r2.clone()));
-                        }
+                    .sorted()
+                    .collect_vec(); // free to collect after sorting
+                let mut count = 0;
+                let mut i = 0;
+                for range in &merged {
+                    while ids[i] < *range.start() {
+                        i += 1;
+                        if i >= ids.len() {return count};
                     }
-                    if merge.is_empty() {break}
-                    
-                    for (r1, r2) in merge.drain(..) {
-                        set.remove(&r1);
-                        set.remove(&r2);
-                        
-                        set.insert(merge_ranges(r1, r2).unwrap());
+                    while ids[i] <= *range.end() {
+                        count += 1;
+                        i += 1;
+                        if i >= ids.len() {return count};
                     }
                 }
-                // now all ranges are non-overlapping
-                set.into_iter()
+                count
+            },
+            Part::Two => {
+                merged.into_iter()
                     .map(|r| r.size_hint().0)
                     .sum()
             }

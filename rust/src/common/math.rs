@@ -47,7 +47,7 @@ pub fn solve_system_2var(equations: &[LinearEquation; 2]) -> Option<(isize, isiz
 }
 
 #[inline]
-pub fn merge_ranges<T>(r1: RangeInclusive<T>, r2: RangeInclusive<T>) -> Option<RangeInclusive<T>>
+pub fn merge_ranges<T>(r1: &RangeInclusive<T>, r2: &RangeInclusive<T>) -> Option<RangeInclusive<T>>
 where
     T : PartialOrd + Clone
 {
