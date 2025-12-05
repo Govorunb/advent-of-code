@@ -1,4 +1,5 @@
-use num::Integer;
+use num::{Integer};
+use std::ops::RangeInclusive;
 
 pub struct LinearEquation {
     pub a: isize,
@@ -43,4 +44,28 @@ pub fn solve_system_2var(equations: &[LinearEquation; 2]) -> Option<(isize, isiz
     if xrem != 0 {return None}
     
     Some((x,y))
+}
+
+#[inline]
+pub fn merge_ranges<T>(r1: RangeInclusive<T>, r2: RangeInclusive<T>) -> Option<RangeInclusive<T>>
+where
+    T : PartialOrd + Clone
+{
+    // sorting halves the number of cases we need to deal with
+    // when r2's start is less, it's still the exact same situations
+    let (r1, r2) = if r1.start() <= r2.start() {
+        (r1, r2)
+    } else {
+        (r2, r1)
+    };
+    
+    if r1.end() >= r2.end() {
+        // 1..2__2..1
+        Some(r1.clone())
+    } else if r1.end() >= r2.start() {
+        //  1..2_1__2
+        Some(RangeInclusive::new(r1.start().clone(), r2.end().clone()))
+    } else {
+        None
+    }
 }

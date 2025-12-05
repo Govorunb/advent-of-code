@@ -41,12 +41,17 @@ aoc_day!(
             },
             Part::Two => {
                 let mut merge = vec![];
-                let mut set: FxHashSet<std::ops::RangeInclusive<usize>> = FxHashSet::from_iter(ranges);
+                let mut set = FxHashSet::from_iter(ranges);
                 loop {
                     // funny borrow checker
                     for (r1, r2) in set.iter().cloned().cartesian_product(set.iter().cloned()) {
                         if r1 == r2 {continue}
-                        if r1.contains(r2.start()) | r1.contains(r2.end()) {
+                        let (r1, r2) = if r1.start() <= r2.start() {
+                            (r1, r2)
+                        } else {
+                            (r2, r1)
+                        };
+                        if r1.end() >= r2.start() {
                             merge.push((r1, r2));
                         }
                     }
@@ -56,30 +61,7 @@ aoc_day!(
                         set.remove(&r1);
                         set.remove(&r2);
                         
-                        let (r1, r2) = if r1.start() <= r2.start() {
-                            (r1, r2)
-                        } else {
-                            (r2, r1)
-                        };
-                        
-                        // TODO: write a thing for merging ranges already
-                        if r1.start() <= r2.start() {
-                            // 1.....2______
-                            if r1.end() >= r2.end() {
-                                // r1 contains r2
-                                // 1..2__2..1
-                                set.insert(r1);
-                            } else if r1.end() >= r2.start() {
-                                //  1..2_1__2
-                                set.insert(*r1.start() ..= *r2.end());
-                            } else {
-                                panic!("huh? {r1:?} - {r2:?}");
-                                // set.insert(r1);
-                                // set.insert(r2);
-                            }
-                        } else {
-                            unreachable!();
-                        }
+                        set.insert(merge_ranges(r1, r2).unwrap());
                     }
                 }
                 // now all ranges are non-overlapping
