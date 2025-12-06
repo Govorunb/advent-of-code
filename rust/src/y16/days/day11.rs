@@ -48,6 +48,14 @@ The fourth floor contains nothing relevant."
         };
         let mut total_states = 0;
         let mut expanded_states = 0;
+        // TODO
+        // gen-chip pair can be brought up 3 floors in 12 steps
+        // let's say 1F has items Aa Bb
+        //   Aa up 3 floors, a down 3
+        //   ab up 3, b down 3
+        // kind of backwards "proven" by p2 adding 24 steps
+        // just need to get to a state where everything is paired at 1F (or higher)
+        // then it's easy :)
         let res = astar(&state,
             |s: &State| {
                 expanded_states += 1;
@@ -81,12 +89,14 @@ impl State {
             if new_floor < 0 || new_floor > 3 {
                 return vec![];
             }
+            let new_floor = new_floor as usize;
             let movable = self.items.iter()
                 .enumerate()
                 .filter(|&(_, &(_, f))| f == self.elevator)
                 .map(|(i, _)| i);
-            let new_floor = new_floor as usize;
-            [2usize, 1].iter().flat_map(|&move_num_items| {
+            // going down should prefer moving 1 item, going up should prefer moving 2 items
+            let moves = if dir < 0 {[1, 2usize]} else {[2usize, 1]};
+            moves.iter().flat_map(|&move_num_items| {
                 movable.clone()
                     .combinations(move_num_items)
                     .filter_map(move |v| {
