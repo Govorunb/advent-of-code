@@ -360,6 +360,39 @@ impl<T: Clone> Grid<T> {
 
         Some(Self { rect: bounds, elements })
     }
+
+    pub fn from_iter_2d_cringe<I>(source: I, origin: Option<Vector2>) -> Option<Self>
+    where
+        I: Iterator,
+        I::Item: Iterator<Item = T>,
+    {
+        let origin = origin.unwrap_or_default();
+        let mut elements: Vec<T> = vec![];
+
+        let mut width = None;
+        for iter in source {
+            let prev_len = elements.len();
+            // elements.reserve(iter.size_hint().0); // ideally if there's a size hint extend will already use it
+            elements.extend(iter);
+            // first "row" dictates width (sucks to be you if not all iters are the same length)
+            if let Some(w) = width {
+                if elements.len() - prev_len != w {
+                    return None
+                }
+            } else {
+                width = Some(elements.len());
+            }
+        }
+
+        let width = width?;
+        let (height, rem) = elements.len().div_rem(&width);
+        if rem > 0 { return None };
+
+        let size = Size { width, height };
+        let rect = Rect::new(origin, size)?;
+
+        Some(Self { rect, elements })
+    }
 }
 
 impl<'a, T: 'a> IntoIterator for &'a Grid<T> {
@@ -368,20 +401,6 @@ impl<'a, T: 'a> IntoIterator for &'a Grid<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.rows()
-    }
-}
-
-impl<T> Index<usize> for Grid<T> {
-    type Output = T;
-
-    fn index(&self, i: usize) -> &Self::Output {
-        &self.elements[i]
-    }
-}
-
-impl<T> IndexMut<usize> for Grid<T> {
-    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        &mut self.elements[i]
     }
 }
 

@@ -24,13 +24,14 @@ aoc_day!(
     solve = |input, part| {
         match part {
             Part::One => {
-                let lines = input.lines().map(|l| l.split_ascii_whitespace()).collect_vec();
-                let mut buf = Vec::with_capacity(lines.len());
-                let cols = transpose(lines.into_iter());
-                cols.map(|col| {
-                    buf.extend(col);
-                    let op = buf.pop().unwrap();
-                    let nums = buf.drain(..).map(|n| n.parse::<usize>().unwrap());
+                let grid = Grid::from_iter_2d_cringe(
+                    input.lines().map(|l| l.split_ascii_whitespace()),
+                    None
+                ).unwrap();
+                grid.cols().map(|col| {
+                    let (nums, op) = col.split_at(col.len()-1);
+                    let op = op[0];
+                    let nums = nums.iter().map(|n| n.parse::<usize>().unwrap());
                     match op {
                         "+" => nums.sum::<usize>(),
                         "*" => nums.product(),
@@ -40,19 +41,21 @@ aoc_day!(
             },
             Part::Two => {
                 let mut total = 0;
-                
-                let cols = transpose(input.lines().map(|l| l.chars()))
-                    .map(|c| c.collect_vec())
-                    .collect_vec();
+
+                let grid = Grid::from_iter_2d_cringe(input.lines().map(|l| l.chars()), None).unwrap();
                 
                 let mut nums: Vec<usize> = vec![];
-                let mut num = String::with_capacity(cols[0].len());
-                for col in cols.iter().rev() {
+                let mut num = String::with_capacity(grid.height());
+                for x in (0..grid.width()).rev() {
                     num.clear();
-                    num.extend(col.iter().filter(|c| c.is_ascii_digit()));
+                    num.extend(
+                        (0..grid.height())
+                        .filter_map(|y| grid.get(&(x, y).into()))
+                        .filter(|c| c.is_ascii_digit())
+                    );
                     if !num.is_empty() {
                         nums.push(num.parse().unwrap());
-                        let op = col.last().unwrap();
+                        let op = grid.get(&(x, grid.height()-1).into()).unwrap();
                         total += match op {
                             '+' => nums.drain(..).sum::<usize>(),
                             '*' => nums.drain(..).product(),
