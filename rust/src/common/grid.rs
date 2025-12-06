@@ -349,9 +349,7 @@ impl<T: Clone> Grid<T> {
 
         for iter in source {
             let prev_len = elements.len();
-            for item in iter {
-                elements.push(item);
-            }
+            elements.extend(iter);
             if elements.len() - prev_len != bounds.width() {
                 return None
             }
