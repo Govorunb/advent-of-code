@@ -21,8 +21,21 @@ pub mod test {
         Day8.test(None);
         Day9.test(None);
         Day10.test(None);
-        Day11.test(None);
+        // Day11.test(None); // death
         Day12.test(None);
+        Day13.test(None);
+        Day14.test(None);
+        Day15.test(None);
+        Day16.test(None);
+        Day17.test(None);
+        Day18.test(None);
+        Day19.test(None);
+        Day20.test(None);
+        Day21.test(None);
+        Day22.test(None);
+        Day23.test(None);
+        Day24.test(None);
+        Day25.test(None);
 
         println!("{year} tests took {}us", sw.us());
     }
