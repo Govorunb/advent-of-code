@@ -335,6 +335,33 @@ impl<T: Clone> Grid<T> {
             *a = b;
         }
     }
+
+    pub fn from_elements(elements: Vec<T>, bounds: Rect) -> Option<Self> {
+        (elements.len() == bounds.area())
+            .then(|| Self { rect: bounds, elements })
+    }
+    pub fn from_iter_2d<I>(source: I, bounds: Rect) -> Option<Self>
+    where
+        I: Iterator,
+        I::Item: Iterator<Item = T>,
+    {
+        let mut elements: Vec<T> = Vec::with_capacity(bounds.area());
+
+        for iter in source {
+            let prev_len = elements.len();
+            for item in iter {
+                elements.push(item);
+            }
+            if elements.len() - prev_len != bounds.width() {
+                return None
+            }
+        }
+        if elements.len() != bounds.area() {
+            return None
+        }
+
+        Some(Self { rect: bounds, elements })
+    }
 }
 
 impl<'a, T: 'a> IntoIterator for &'a Grid<T> {
