@@ -25,14 +25,17 @@ aoc_day!(
         match part {
             Part::One => {
                 let grid = Grid::from_iter_2d_cringe(
-                    input.lines().map(|l| l.split_ascii_whitespace()),
+                    input.lines()
+                        .rev()
+                        .map(|l| l.split_ascii_whitespace()
+                    ),
                     None
                 ).unwrap();
                 grid.cols().map(|col| {
-                    let (nums, op) = col.split_at(col.len()-1);
-                    let op = op[0];
-                    let nums = nums.iter().map(|&n| n.bytes().usize());
-                    match op {
+                    let mut col = col.iter();
+                    let op = col.next().unwrap();
+                    let nums = col.map(|&n| n.bytes().usize());
+                    match *op {
                         "+" => nums.sum::<usize>(),
                         "*" => nums.product(),
                         _ => panic!("{op} instead of op"),
@@ -61,6 +64,7 @@ fn p2_ltr(input: &str) -> usize {
                 op = Some(c);
             }
         }
+        // FIXME: grid.col() dog slow here for some reason
         let num = (0..grid.height()-1)
             .map(|y| grid[&(x, y).into()])
             .usize_filter();
