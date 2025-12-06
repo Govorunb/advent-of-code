@@ -18,84 +18,51 @@ aoc_day!(
         ],
         test_cases![
             (Self::EXAMPLES[0], 3263827),
-            // (Self::INPUT, 0),
+            (Self::INPUT, 13215665360076),
         ]
     ],
     solve = |input, part| {
-        let lines = input.lines().map(|l| l.split_ascii_whitespace().collect_vec()).collect_vec();
         match part {
             Part::One => {
-                let nums = lines.iter().take(lines.len()-1).map(|l| l.into_iter().map(|n| n.parse::<usize>().expect(n)).collect_vec()).collect_vec();
-                let ops = lines.iter().last().unwrap().into_iter().map(|c| c.parse::<Op>().expect(c)).collect_vec();
-                let width = nums[0].len();
-                let mut total = 0;
-                for y in 0..width {
-                    let operands = nums.iter().map(|x| x[y]).collect_vec();
-                    let op = ops[y];
-                    total += match op {
-                        Op::Add => operands.iter().sum::<usize>(),
-                        Op::Mult => operands.iter().product(),
-                    };
-                }
-                total
+                let lines = input.lines().map(|l| l.split_ascii_whitespace()).collect_vec();
+                let mut buf = Vec::with_capacity(lines.len());
+                let cols = transpose(lines.into_iter());
+                cols.map(|col| {
+                    buf.extend(col);
+                    let op = buf.pop().unwrap();
+                    let nums = buf.drain(..).map(|n| n.parse::<usize>().unwrap());
+                    match op {
+                        "+" => nums.sum::<usize>(),
+                        "*" => nums.product(),
+                        _ => panic!("{op} instead of op"),
+                    }
+                }).sum::<usize>()
             },
             Part::Two => {
                 let mut total = 0;
                 
-                let lines = input.lines().map(|l| l.chars().collect_vec()).collect_vec();
-                let width = lines[0].len();
+                let cols = transpose(input.lines().map(|l| l.chars()))
+                    .map(|c| c.collect_vec())
+                    .collect_vec();
                 
                 let mut nums: Vec<usize> = vec![];
-                let mut col = String::with_capacity(lines.len());
-                let mut op = Op::Add;
-                for y in (0..width).rev() {
-                    col.clear();
-                    col.extend(lines.iter().map(|l| l[y]));
-                    let mut s = col.as_str();
-                    if matches!(s.chars().last().unwrap(), '*' | '+') {
-                        op = s.chars().last().unwrap().into();
-                        s = &s[..(s.len()-1)];
-                    }
-                    s = s.trim_ascii();
-                    if s.is_empty() {
+                let mut num = String::with_capacity(cols[0].len());
+                for col in cols.iter().rev() {
+                    num.clear();
+                    num.extend(col.iter().filter(|c| c.is_ascii_digit()));
+                    if !num.is_empty() {
+                        nums.push(num.parse().unwrap());
+                        let op = col.last().unwrap();
                         total += match op {
-                            Op::Add => nums.drain(..).sum::<usize>(),
-                            Op::Mult => nums.drain(..).product(),
+                            '+' => nums.drain(..).sum::<usize>(),
+                            '*' => nums.drain(..).product(),
+                            ' ' => 0,
+                            _ => unreachable!(),
                         };
-                    } else {
-                        nums.push(s.parse().expect(s));
                     }
                 }
-                total += match op {
-                    Op::Add => nums.drain(..).sum::<usize>(),
-                    Op::Mult => nums.drain(..).product(),
-                };
                 total
             }
         }
     }
 );
-
-#[derive(Clone, Copy, Debug)]
-enum Op { Add, Mult }
-
-impl FromStr for Op {
-    type Err = ();
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "+" => Ok(Op::Add),
-            "*" => Ok(Op::Mult),
-            _ => Err(())
-        }
-    }
-}
-
-impl From<char> for Op {
-    fn from(value: char) -> Self {
-        match value {
-            '+' => Op::Add,
-            '*' => Op::Mult,
-            _ => unreachable!(),
-        }
-    }
-}

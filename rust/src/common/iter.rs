@@ -115,3 +115,20 @@ where
             })
     }
 }
+
+pub fn transpose<I, U>(source: I) -> impl Iterator<Item = impl Iterator<Item = U::Item>>
+where
+    I: Iterator<Item = U>,
+    U: Iterator
+{
+    let mut iters = source.collect_vec();
+    std::iter::from_fn(move || {
+        let mut v = vec![];
+        for u in &mut iters {
+            let Some(item) = u.next()
+                else {return None};
+            v.push(item);
+        }
+        Some(v.into_iter())
+    })
+}
