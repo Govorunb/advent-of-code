@@ -61,3 +61,20 @@ impl IAssureYouItIsMostCertainlyValidASCIIAndAlsoUTF8 for &[u8] {
         self.as_ascii().unwrap().as_str()
     }
 }
+
+// convenience extension methods for infallible digit parsing
+pub trait UnsafeParseUsize {
+    fn usize(self) -> usize;
+    fn usize_filter(self) -> usize;
+}
+
+impl<I: Iterator<Item = u8>> UnsafeParseUsize for I {
+    fn usize(self) -> usize {
+        self.fold(0, |acc, b| acc * 10 + (b - b'0') as usize)
+    }
+
+    fn usize_filter(self) -> usize {
+        self.filter(|b| b.is_ascii_digit())
+            .fold(0, |acc, b| acc * 10 + (b - b'0') as usize)
+    }
+}
