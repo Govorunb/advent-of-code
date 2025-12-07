@@ -198,8 +198,7 @@ impl Display for CellEnergy {
         write!(f, "{}", match self {
             CellEnergy::Empty => '.',
             CellEnergy::Energized => '#',
-        })?;
-        Ok(())
+        })
     }
 }
 
