@@ -93,24 +93,24 @@ impl<I: Iterator> RleBy for I {
     }
 }
 
-pub trait TriangleProduct: Iterator + Clone {
+pub trait Pairwise: Iterator + Clone {
+    /// Produces pairs of elements. Equivalent to [`itertools::combinations`]\(2).map(|pair| (pair.0, pair.1))
     /// Used on a sorted iterator, this produces pairs where the second item is at least as large (in the iterator's sort order) than the first.
     /// This sort of "triangle product" runs in about half as much time as a normal cartesian product (specifically, `(n(n+1))/2` rather than `n^2`).
-    /// Not very useful if called on an unsorted iterator, but you do you.
-    fn triangle_product(self) -> impl Iterator<Item = (Self::Item, Self::Item)>;
+    fn pairwise(self) -> impl Iterator<Item = (Self::Item, Self::Item)>;
 }
 
-impl<I> TriangleProduct for I
+impl<I> Pairwise for I
 where
     I: Iterator + Clone,
     I::Item: Clone,
 {
-    fn triangle_product(self) -> impl Iterator<Item = (Self::Item, Self::Item)> {
+    fn pairwise(self) -> impl Iterator<Item = (Self::Item, Self::Item)> {
         let copy = self.clone();
         self.enumerate()
             .flat_map(move |(i, e)| {
                 copy.clone()
-                    .skip(i)
+                    .skip(i+1)
                     .map(move |c| (e.clone(), c))
             })
     }
