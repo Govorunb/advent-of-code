@@ -39,14 +39,15 @@ aoc_day!(
     solve = |input, part| {
         let lines = input.lines();
         let pts: Vec<Vector3> = lines.map(|l| l.split(',')
-            .map(|c| c.parse::<isize>().unwrap())
+            .map(|s| s.parse::<isize>().unwrap())
             .next_tuple()
             .map(|(x,y,z)| Vector3 {x,y,z})
             .unwrap()
         ).collect_vec();
-        let pairs = pts.clone().into_iter()
+        let mut pairs: Vec<_> = pts.clone().into_par_iter()
             .pairwise()
-            .sorted_by_cached_key(|(a,b)| euclid_dist_sqr_3d(*a,*b));
+            .collect();
+        pairs.par_sort_by_cached_key(|(a,b)| euclid_dist_sqr_3d(*a,*b));
         let mut circuits = pts.into_iter()
             .map(|p| vec![p])
             .collect_vec();
@@ -55,7 +56,7 @@ aoc_day!(
                 // completely diabolical to have different KINDS of cutoffs for the example and the actual input
                 let cables = if input.lines().count() < 100 {9} else {999};
                 let mut connected = 0;
-                for (a, b) in pairs.take(1000) {
+                for (a, b) in pairs.into_iter().take(1000) {
                     if connect_pair(&mut circuits, (a,b)) {
                         connected += 1;
                         if connected >= cables {
@@ -63,7 +64,10 @@ aoc_day!(
                         }
                     }
                 };
-                circuits.iter()
+                // let mut x = circuits.iter().map(|c| c.len()).collect_vec();
+                // x.par_sort();
+                // x.into_iter().rev().take(3).product::<usize>()
+                circuits.into_iter()
                     .map(|c| c.len())
                     .sorted().rev()
                     .take(3)
@@ -82,13 +86,13 @@ aoc_day!(
     }
 );
 
-fn euclid_dist_sqr_3d(a: Vector3, b: Vector3) -> u128 {
-    (b.x - a.x).pow(2) as u128
-        + (b.y - a.y).pow(2) as u128
-        + (b.z - a.z).pow(2) as u128
+fn euclid_dist_sqr_3d(a: Vector3, b: Vector3) -> usize {
+    (b.x - a.x).pow(2) as usize
+        + (b.y - a.y).pow(2) as usize
+        + (b.z - a.z).pow(2) as usize
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Vector3 {
     x: isize,
     y: isize,

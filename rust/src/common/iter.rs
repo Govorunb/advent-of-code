@@ -1,4 +1,5 @@
 use itertools::{Either, Itertools};
+use rayon::iter::{IndexedParallelIterator, ParallelIterator};
 
 pub trait Pick: Iterator {
     fn pick(self, indices: &[usize]) -> impl Iterator<Item = Self::Item>;
@@ -94,9 +95,11 @@ impl<I: Iterator> RleBy for I {
 }
 
 pub trait Pairwise: Iterator + Clone {
-    /// Produces pairs of elements. Equivalent to [`itertools::combinations`]\(2).map(|pair| (pair.0, pair.1))
+    /// Produces pairs of elements. Equivalent to [`itertools::combinations`]`(2).map(|pair| (pair.0, pair.1))`.
+    /// 
     /// Used on a sorted iterator, this produces pairs where the second item is at least as large (in the iterator's sort order) than the first.
-    /// This sort of "triangle product" runs in about half as much time as a normal cartesian product (specifically, `(n(n+1))/2` rather than `n^2`).
+    /// 
+    /// This sort of "triangle product" runs in about half as much time as a regular cartesian product (specifically, `(n(n+1))/2` rather than `n^2`).
     fn pairwise(self) -> impl Iterator<Item = (Self::Item, Self::Item)>;
 }
 
@@ -131,4 +134,25 @@ where
         }
         Some(v.into_iter())
     })
+}
+
+
+pub trait ParPairwise: IndexedParallelIterator + Clone {
+    fn pairwise(self) -> impl ParallelIterator<Item = (Self::Item, Self::Item)>;
+}
+
+impl<I> ParPairwise for I
+where
+    I: IndexedParallelIterator + Clone + Send + Sync,
+    I::Item: Clone + Send + Sync,
+{
+    fn pairwise(self) -> impl ParallelIterator<Item = (Self::Item, Self::Item)> {
+        let copy = self.clone();
+        self.enumerate()
+            .flat_map(move |(i, e)| {
+                copy.clone()
+                    .skip(i+1)
+                    .map(move |c| (e.clone(), c))
+            })
+    }
 }
