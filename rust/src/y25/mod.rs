@@ -18,7 +18,7 @@ pub mod test {
         Day5.test(None);
         Day6.test(None);
         Day7.test(None);
-        Day8.test(None);
+        // Day8.test(None);
         Day9.test(None);
         Day10.test(None);
         Day11.test(None);

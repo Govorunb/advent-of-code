@@ -17,7 +17,21 @@ impl Rect {
     pub fn from_origin(size: Size) -> Option<Self> {
         Self::new(Vector2::default(), size)
     }
-    pub fn from_corners(top_left: Vector2, bottom_right: Vector2) -> Option<Self> {
+    pub fn from_corners(a: Vector2, b: Vector2) -> Option<Self> {
+        match (a.y <= b.y, a.x <= b.x) {
+            // a top left
+            (true, true) => Self::from_tl_br(a,b),
+            // b top left
+            (false, false) => Self::from_tl_br(b,a),
+            // tr/bl
+            // a top right
+            (true, false) => Self::from_tl_br((b.x, a.y).into(), (a.x, b.y).into()),
+            // a bottom left
+            (false, true) => Self::from_tl_br((a.x, b.y).into(), (b.x, a.y).into()),
+        }
+    }
+    
+    pub fn from_tl_br(top_left: Vector2, bottom_right: Vector2) -> Option<Self> {
         if bottom_right.x < top_left.x || bottom_right.y < top_left.y {
             return None;
         }
@@ -48,6 +62,12 @@ impl Rect {
     pub fn contains(&self, point: &Vector2) -> bool {
         self.x_range().contains(&point.x) && self.y_range().contains(&point.y)
     }
+    pub fn inner(&self) -> Option<Rect> {
+        Self::from_corners(
+            self.top_left() + Vector2::BOTTOM_RIGHT,
+            self.bottom_right() + Vector2::TOP_LEFT,
+        )
+    }
 }
 
 impl IntoIterator for Rect {
@@ -72,4 +92,22 @@ fn test_rect_contains() {
     for (x,y,should_contain) in tests {
         assert_eq!(should_contain, rect.contains(&Vector2::from((x,y))))
     }
+}
+
+#[test]
+fn test_rect_construct() {
+    let a: Vector2 = (0,0).into();
+    let b: Vector2 = (5,5).into();
+    let c: Vector2 = (5,0).into();
+    let d: Vector2 = (0,5).into();
+
+    let ab = Rect::from_corners(a, b);
+    let ba = Rect::from_corners(b, a);
+    let cd = Rect::from_corners(c, d);
+    let dc = Rect::from_corners(d,c);
+    
+    assert!(ab.is_some());
+    assert_eq!(ab, ba);
+    assert_eq!(ab, cd);
+    assert_eq!(ab, dc);
 }
