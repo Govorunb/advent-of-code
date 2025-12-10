@@ -111,14 +111,32 @@ impl Rect {
         }
     }
 
-    #[deprecated(note="incorrect")]
     pub fn intersects(&self, line: &Line) -> bool {
-        #[allow(deprecated)] {
-            self.top_edge().intersects(line)
-            || self.bottom_edge().intersects(line)
-            || self.left_edge().intersects(line)
-            || self.right_edge().intersects(line)
-        }
+        self.top_edge().intersects(line)
+        || self.bottom_edge().intersects(line)
+        || self.left_edge().intersects(line)
+        || self.right_edge().intersects(line)
+    }
+
+    pub fn left(&self) -> isize {
+        self.base.x
+    }
+    pub fn top(&self) -> isize {
+        self.base.y
+    }
+    pub fn right(&self) -> isize {
+        self.bottom_right().x
+    }
+    pub fn bottom(&self) -> isize {
+        self.bottom_right().y
+    }
+
+    pub fn overlaps(&self, rect: &Rect) -> bool {
+        // classic AABB collision test
+        self.left() < rect.left()
+        && self.right() > rect.left()
+        && self.top() < rect.bottom()
+        && self.bottom() > rect.top()
     }
 }
 
@@ -166,14 +184,13 @@ fn rect_intersects() {
     let rect = Rect::from_origin((10,10).into()).unwrap();
     let tests: Vec<([isize; 4], bool)> = vec![
         ([-1,-1, -1,900], false),
+        ([0,0, 0,900], true),
     ];
     for case in tests {
         let ([ax,ay,bx,by], expected) = case;
         let a = (ax,ay).into();
         let b = (bx,by).into();
         let line = Line::new(a, b).unwrap();
-        #[allow(deprecated)] {
-            assert_eq!(expected, rect.intersects(&line), "{case:?}");
-        }
+        assert_eq!(expected, rect.intersects(&line), "{case:?}");
     }
 }

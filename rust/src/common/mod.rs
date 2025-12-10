@@ -28,6 +28,8 @@ use rustc_hash::FxHasher;
 use indexmap::{IndexMap, IndexSet};
 use simple_stopwatch::Stopwatch;
 
+use crate::REDACT;
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum Part
 {
@@ -75,8 +77,12 @@ pub trait Day<const DAY: u8>
             sw.restart();
             let result = self.solve_part(input, part);
             let time = sw.us();
-            print!("\tpart {part:?}: {result:?}");
-            println!(" (took {time}us)");
+            let result_fmt = if REDACT.load(std::sync::atomic::Ordering::Relaxed) {
+                "(redacted)"
+            } else {
+                &format!("{result:?}")
+            };
+            println!("\tpart {part:?}: {result_fmt} (took {time}us)");
         }
     }
     fn solve_part(&self, input: &str, part: Part) -> Self::Output;

@@ -15,7 +15,71 @@ aoc_day!(
 9,5
 2,5
 2,3
-7,3"
+7,3",
+
+"1,0
+3,0
+3,6
+16,6
+16,0
+18,0
+18,9
+13,9
+13,7
+6,7
+6,9
+1,9",
+
+"1,1
+8,1
+8,3
+3,3
+3,4
+8,4
+8,9
+18,9
+18,11
+5,11
+5,9
+4,9
+4,11
+1,11
+1,7
+6,7
+6,6
+1,6",
+
+"1,5
+3,5
+3,8
+7,8
+7,5
+9,5
+9,10
+11,10
+11,3
+6,3
+6,7
+4,7
+4,1
+13,1
+13,12
+1,12",
+
+"1,14
+16,14
+16,2
+2,2
+2,7
+5,7
+5,4
+14,4
+14,12
+5,12
+5,10
+3,10
+3,8
+1,8",
     ],
     tests = [
         test_cases![
@@ -24,7 +88,12 @@ aoc_day!(
         ],
         test_cases![
             (Self::EXAMPLES[0], 24),
-            // (Self::INPUT, 0),
+            (Self::INPUT, 1539809693),
+            // TODO: extra edge case inputs
+            // (Self::EXAMPLES[1], 30),
+            // (Self::EXAMPLES[2], 88),
+            // (Self::EXAMPLES[3], 72),
+            // (Self::EXAMPLES[4], 42),
         ]
     ],
     solve = |input, part| {
@@ -73,12 +142,20 @@ aoc_day!(
                         // if inner contains a pt, we contain both sides
                         if pts.iter().any(|p| inner.contains(p)) {continue};
                         // edge inside - same thing (we contain both inside and outside)
-                        #[allow(deprecated)] {
-                            if bounds.iter().any(|b| inner.intersects(b)) {continue};
-                        }
+                        if bounds.iter().any(|b| inner.intersects(b)) {continue};
+
+                        // misses corner case (heh) where 3 corners are red and 4th is outside
+                        /*X
+                          #XXXXXXXXXXXXX#
+                          |             X
+                          |             X
+                          |             X
+                          |_____________#XXX
+                         */
+                        // luckily the input is very merciful
                     }
                     
-                    // here comes the fun part
+                    // // here comes the fun part
                     // let corners = vec![
                     //     r.top_left(),
                     //     r.top_left() + Vector2::RIGHT * (r.width()-1),
@@ -180,8 +257,3 @@ fn check_bounds_expensive_also_wrong(bounds: &Vec<Bounds>, p: &Vector2) -> bool 
     }
     inside
 }
-
-/* hello again y23d10
-
-*/
-

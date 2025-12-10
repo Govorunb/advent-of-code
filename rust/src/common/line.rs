@@ -1,6 +1,7 @@
 use crate::*;
 
 
+/// Axis-aligned line (i.e. horizontal or vertical).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Line {
     pub origin: Vector2,
@@ -14,7 +15,7 @@ impl Line {
             .ok().map(|dir| Self {
                 dir,
                 origin: p1,
-                len: p2.manhattan_distance(p1)
+                len: 1+p2.manhattan_distance(p1)
             })
     }
 
@@ -48,14 +49,13 @@ impl Line {
     }
 
     pub fn end(&self) -> Vector2 {
-        self.origin + self.dir.to_vec2() * self.len
+        self.origin + self.dir.to_vec2() * (self.len-1)
     }
 
     pub fn points(self) -> (Vector2, Vector2) {
         (self.start(), self.end())
     }
 
-    #[deprecated(note="incorrect")]
     pub fn intersects(&self, other: &Line) -> bool {
         match (self.dir.is_vertical(), other.dir.is_vertical()) {
             (true, true) | (false, false) => self.contains(&other.origin) || other.contains(&self.origin),
@@ -111,9 +111,19 @@ fn line_contains() {
         (0, 0, true), (0, 1, true), (0, 10, true),
         (0, 11, false), (1, 0, false), (10, 0, false),
     ];
-    for (x, y, should_contain) in tests {
-        assert_eq!(should_contain, line.contains(&(x,y).into()), "{x},{y},{should_contain}");
+    for &(x, y, should_contain) in &tests {
+        assert_eq!(should_contain, line.contains(&(x,y).into()), "1 {x},{y},{should_contain}");
     }
+    let line_rev = Line::new((0,10).into(), (0,0).into()).unwrap();
+    for &(x, y, should_contain) in &tests {
+        assert_eq!(should_contain, line_rev.contains(&(x,y).into()), "2 {x},{y},{should_contain}");
+    }
+}
+
+#[test]
+fn line_rev() {
+    let line = Line::from_origin((0,10).into()).unwrap();
+    assert_eq!(line.rev(), Line::new((0,10).into(), (0,0).into()).unwrap());
 }
 
 #[test]
@@ -126,15 +136,38 @@ fn line_intersects() {
         ([5,5, 5,6], false), ([-5,5, 5,5], true), ([-5,0, 10,0], true),
     ];
     for case in tests {
-        let ([x1,y1,x2,y2], should_contain) = case;
+        let ([x1,y1,x2,y2], expected) = case;
         let other = Line::new((x1,y1).into(),(x2,y2).into()).unwrap();
-        #[allow(deprecated)] {
-            assert_eq!(should_contain, line.intersects(&other), "{case:?}");
-        }
+        assert_eq!(expected, line.intersects(&other), "{case:?}");
     }
+
+    let line2 = Line::new((10,10).into(), (0,10).into()).unwrap();
+    assert!(!line2.intersects(&Line::new((-1,-1).into(), (-1,900).into()).unwrap()));
 }
 
 #[test]
 fn line_intersects_rect() {
+    let rect = Rect::from_origin((10,10).into()).unwrap();
+    let tests: Vec<([isize; 4], &str)> = vec![
+        ([-1,-1, -1,900], "none"),
+    ];
+    for case in tests {
+        let ([ax,ay,bx,by], expected) = case;
+        let a = (ax,ay).into();
+        let b = (bx,by).into();
+        let line = Line::new(a, b).unwrap();
 
+        let edges = [
+            (rect.top_edge(), "top"),
+            (rect.right_edge(), "right"),
+            (rect.bottom_edge(), "bottom"),
+            (rect.left_edge(), "left"),
+        ];
+
+        let intersecting_edge = edges.iter()
+            .find(|(edge, _)| edge.intersects(&line))
+            .map(|&(_, name)| name)
+            .unwrap_or("none");
+        assert_eq!(expected, intersecting_edge, "{case:?} {intersecting_edge}");
+    }
 }

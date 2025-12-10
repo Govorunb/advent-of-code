@@ -17,12 +17,18 @@
 #![feature(iter_map_windows)]
 #![feature(slice_split_once)]
 
+use std::{env, sync::atomic::AtomicBool};
 pub mod common; pub use common::*;
+
 mod y15; mod y16;
 mod y23; mod y24; mod y25;
 
+static REDACT: AtomicBool = AtomicBool::new(false);
 fn main() {
-    let day = y25::days::Day10;
+    if let Some(_) = env::args().skip(1).find(|a| a == "--redact") {
+        REDACT.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+    let day = y25::days::Day9;
     day.test(None);
     day.solve(day.input());
 }
