@@ -142,10 +142,10 @@ fn p2_disjoint_too_low(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
 
     let dj_jolt = disjoint.iter().map(|d| joltage[*d]).collect_vec();
 
-    println!("\tdj: {disjoint:?} -> {dj_jolt:?}");
+    // println!("\tdj: {disjoint:?} -> {dj_jolt:?}");
 
     let total = dj_jolt.into_iter().sum::<usize>();
-    println!("\ttotal: {total}");
+    // println!("\ttotal: {total}");
     // confirm_stdin();
     total
 }
@@ -210,6 +210,9 @@ fn p2_z3(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
     }
 
     let sum = z3_sum(vars.iter().cloned());
+    // thought i'd constrain the search space, but it's actually slower
+    // let min_sum = p2_disjoint_too_low(buttons, joltage);
+    // solver.assert(&sum.ge(Int::from_u64(min_sum as u64)));
     solver.minimize(&sum);
     
     assert!(solver.check(&[]) == SatResult::Sat, "idiot 2: the booger");
