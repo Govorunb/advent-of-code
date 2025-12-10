@@ -22,7 +22,8 @@ aoc_day!(
         ],
         test_cases![
             (Self::EXAMPLES[0], 33),
-            // (Self::INPUT, 0),
+            // (Self::INPUT, 15377), // long
+            ("[] (0,1) (0,2) (1,2) {10,6,6}", 11),
         ]
     ],
     solve = |input, part| {
@@ -32,11 +33,11 @@ aoc_day!(
                 let s_lights = sp.next().unwrap().trim_matches(['[',']']);
                 let s_jolt = sp.next_back().unwrap().trim_matches(['{','}']);
                 let s_wiring = sp;
-                
+
                 let lights = s_lights.chars().map(|c| matches!(c, '#')).collect_vec();
                 let wiring = s_wiring.map(|s| s.trim_matches(['(',')'])
-                        .split(',')
-                        .map(|d| d.parse::<usize>().unwrap()).collect_vec()
+                    .split(',')
+                    .map(|d| d.parse::<usize>().unwrap()).collect_vec()
                 ).collect_vec();
                 let jolt = s_jolt.split(',').map(|d| d.parse::<usize>().unwrap()).collect_vec();
                 Machine {
@@ -131,13 +132,17 @@ fn p2_disjoint_too_low(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
     let mut disjoint = vec![];
     let max_i = joltage.iter().position_max().unwrap();
     disjoint.push(max_i);
-    for i in 0..joltage.len() {
-        if joltage[i] == 0 {continue;}
-        if buttons.iter().any(|b| b.contains(&i) && disjoint.iter().any(|d| b.contains(d))) {
+    for (ji, &j) in joltage.iter().enumerate() {
+        if j == 0 {continue;}
+        if buttons.iter().any(|b| b.contains(&ji) && disjoint.iter().any(|d| b.contains(d))) {
             continue;
         }
         // disjoint from max, needs its own presses
-        disjoint.push(i);
+        disjoint.push(ji);
+        // issue: pushes the first and not the max (of a particular disjoint graph)
+        // however, i already gave up and used z3 so there's zero motivation to fix this
+        // it only gives a hard lower bound anyway, not the actual minimum
+        // e.g. [] (0,1) (0,2) (1,2) {10,6,6} gives 10 when you actually need 11
     }
 
     let dj_jolt = disjoint.iter().map(|d| joltage[*d]).collect_vec();
@@ -152,18 +157,15 @@ fn p2_disjoint_too_low(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
 
 fn p2_simplify(buttons: &[Vec<usize>], joltage: &[usize]) -> Option<(Vec<Vec<usize>>, Vec<usize>, usize)> {
     let buttons_per_counter = (0..joltage.len())
-        .map(|i| buttons.iter().filter(|b| b.contains(&i)).collect_vec())
+        .map(|i| buttons.iter().filter(|b| b.contains(&i)).collect_vec());
+    
+    let remove = buttons_per_counter
+        .filter_map(|b| (b.len() == 1).then(|| b[0]))
+        .unique()
         .collect_vec();
-    let mut remove = FxHashSet::default();
-    for (_counter, b) in buttons_per_counter.iter().enumerate() {
-        if b.len() == 1 {
-            // println!("\t{_counter}: {b:?}");
-            remove.insert(b[0]);
-        }
-    }
-    if remove.is_empty() {
-        return None;
-    }
+    
+    if remove.is_empty() {return None};
+
     let mut next_buttons = buttons.to_vec();
     let mut next_jolts = joltage.to_vec();
     let mut presses = 0;
@@ -176,10 +178,19 @@ fn p2_simplify(buttons: &[Vec<usize>], joltage: &[usize]) -> Option<(Vec<Vec<usi
         }
         presses += min;
     }
-    
-    // TODO: also remove from middle (affects button indices)
+
     while next_jolts.pop_if(|j| *j == 0).is_some() { }
-    
+
+    // // removing zeroes from the middle is slower...
+    // while let Some((i, _)) = next_jolts.iter().find_position(|&&j| j == 0) {
+    //     next_jolts.remove(i);
+    //     for b in next_buttons.iter_mut().flatten() {
+    //         if *b > i {
+    //             *b -= 1;
+    //         }
+    //     }
+    // }
+
     Some((next_buttons, next_jolts, presses))
 }
 
@@ -214,7 +225,7 @@ fn p2_z3(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
     // let min_sum = p2_disjoint_too_low(buttons, joltage);
     // solver.assert(&sum.ge(Int::from_u64(min_sum as u64)));
     solver.minimize(&sum);
-    
+
     assert!(solver.check(&[]) == SatResult::Sat, "idiot 2: the booger");
     let m = solver.get_model().unwrap();
     vars.iter()
