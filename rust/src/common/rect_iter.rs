@@ -35,7 +35,6 @@ impl Iterator for RectIter {
             self.front.x = self.start.x;
             self.front.y += 1;
         }
-        // println!("{:?} forward {:?}", item, self.start);
         Some(item)
     }
 

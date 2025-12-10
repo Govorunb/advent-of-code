@@ -12,6 +12,7 @@ mod flood_fill; pub use flood_fill::*;
 mod math; pub use math::*;
 mod tuple; pub use tuple::*;
 mod print_vec; pub use print_vec::*;
+mod line; pub use line::*;
 
 pub use itertools::Itertools;
 pub use rustc_hash::{FxHashMap, FxHashSet};

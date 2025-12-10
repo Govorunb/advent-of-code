@@ -1,4 +1,4 @@
-use crate::{Vector2, RectIter, Size};
+use crate::{Direction, Line, RectIter, Size, Vector2};
 use std::ops::Range;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, PartialOrd)]
@@ -18,20 +18,17 @@ impl Rect {
         Self::new(Vector2::default(), size)
     }
     pub fn from_corners(a: Vector2, b: Vector2) -> Option<Self> {
-        match (a.y <= b.y, a.x <= b.x) {
+        let (top_left, bottom_right) = match (a.y <= b.y, a.x <= b.x) {
             // a top left
-            (true, true) => Self::from_tl_br(a,b),
+            (true, true) => (a,b),
             // b top left
-            (false, false) => Self::from_tl_br(b,a),
+            (false, false) => (b,a),
             // tr/bl
             // a top right
-            (true, false) => Self::from_tl_br((b.x, a.y).into(), (a.x, b.y).into()),
+            (true, false) => ((b.x, a.y).into(), (a.x, b.y).into()),
             // a bottom left
-            (false, true) => Self::from_tl_br((a.x, b.y).into(), (b.x, a.y).into()),
-        }
-    }
-    
-    pub fn from_tl_br(top_left: Vector2, bottom_right: Vector2) -> Option<Self> {
+            (false, true) => ((a.x, b.y).into(), (b.x, a.y).into()),
+        };
         if bottom_right.x < top_left.x || bottom_right.y < top_left.y {
             return None;
         }
@@ -51,6 +48,17 @@ impl Rect {
     pub const fn bottom_right(&self) -> Vector2 {
         self.base + self.size + Vector2::TOP_LEFT
     }
+
+    pub const fn top_right(&self) -> Vector2 {
+        self.base + Vector2::RIGHT * (self.width()-1)
+    }
+
+    pub const fn bottom_left(&self) -> Vector2 {
+        self.base + Vector2::DOWN * (self.height()-1)
+    }
+    pub const fn corners_cw(&self) -> [Vector2; 4] {
+        [self.top_left(),self.top_right(),self.bottom_right(),self.bottom_left()]
+    }
     
     pub const fn x_range(&self) -> Range<isize> {
         self.base.x .. (self.base.x + self.size.width as isize)
@@ -60,13 +68,57 @@ impl Rect {
     }
     
     pub fn contains(&self, point: &Vector2) -> bool {
-        self.x_range().contains(&point.x) && self.y_range().contains(&point.y)
+        point.x >= self.top_left().x && point.x <= self.bottom_right().x
+        && point.y >= self.top_left().y && point.y <= self.bottom_right().y
     }
-    pub fn inner(&self) -> Option<Rect> {
+
+    pub fn inset(&self, amount: isize) -> Option<Rect> {
         Self::from_corners(
-            self.top_left() + Vector2::BOTTOM_RIGHT,
-            self.bottom_right() + Vector2::TOP_LEFT,
+            self.top_left() + Vector2::BOTTOM_RIGHT * amount,
+            self.bottom_right() + Vector2::TOP_LEFT * amount,
         )
+    }
+
+    pub fn top_edge(&self) -> Line {
+        Line {
+            origin: self.base,
+            dir: Direction::East,
+            len: self.width()
+        }
+    }
+
+    pub fn right_edge(&self) -> Line {
+        Line {
+            origin: self.top_right(),
+            dir: Direction::South,
+            len: self.height()
+        }
+    }
+
+    pub fn bottom_edge(&self) -> Line {
+        Line {
+            origin: self.bottom_right(),
+            dir: Direction::West,
+            len: self.width()
+        }
+    }
+
+    pub fn left_edge(&self) -> Line {
+        Line {
+            origin: self.bottom_left(),
+            dir: Direction::North,
+            len: self.height()
+        }
+    }
+
+    #[deprecated(note="incorrect")]
+    pub fn intersects(&self, line: &Line) -> bool {
+        #[allow(deprecated)] {
+            self.top_edge().intersects(line)
+            || self.bottom_edge().intersects(line)
+            || self.left_edge().intersects(line)
+            || self.right_edge().intersects(line)
+        }
     }
 }
 
@@ -76,21 +128,6 @@ impl IntoIterator for Rect {
     
     fn into_iter(self) -> Self::IntoIter {
         RectIter::new(self)
-    }
-}
-
-#[test]
-fn test_rect_contains() {
-    let rect = Rect {
-        base: Vector2 { x: 0, y: 0 },
-        size: Size { width: 5, height: 5 }
-    };
-    let tests: Vec<(isize, isize, bool)> = vec![
-        (0,0,true), (0,1,true), (1,0,true), (4,4,true),
-        (5,5,false), (-1,-1,false), (-1,0,false), (0,-1,false),
-    ];
-    for (x,y,should_contain) in tests {
-        assert_eq!(should_contain, rect.contains(&Vector2::from((x,y))))
     }
 }
 
@@ -110,4 +147,33 @@ fn test_rect_construct() {
     assert_eq!(ab, ba);
     assert_eq!(ab, cd);
     assert_eq!(ab, dc);
+}
+
+#[test]
+fn test_rect_contains() {
+    let rect = Rect::from_origin((4,4).into()).unwrap();
+    let tests: Vec<(isize, isize, bool)> = vec![
+        (0,0,true), (0,1,true), (1,0,true), (4,4,true),
+        (5,5,false), (-1,-1,false), (-1,0,false), (0,-1,false),
+    ];
+    for (x,y,should_contain) in tests {
+        assert_eq!(should_contain, rect.contains(&(x,y).into()), "{x},{y},{should_contain}");
+    }
+}
+
+#[test]
+fn rect_intersects() {
+    let rect = Rect::from_origin((10,10).into()).unwrap();
+    let tests: Vec<([isize; 4], bool)> = vec![
+        ([-1,-1, -1,900], false),
+    ];
+    for case in tests {
+        let ([ax,ay,bx,by], expected) = case;
+        let a = (ax,ay).into();
+        let b = (bx,by).into();
+        let line = Line::new(a, b).unwrap();
+        #[allow(deprecated)] {
+            assert_eq!(expected, rect.intersects(&line), "{case:?}");
+        }
+    }
 }

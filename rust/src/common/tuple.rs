@@ -52,3 +52,32 @@ pub trait ParseTuple<T> {
     type Output;
     fn parse(self) -> Self::Output;
 }
+
+
+pub trait SortTuple<T: PartialOrd> {
+    type Output;
+    fn sort(self) -> Self::Output;
+}
+
+impl<T: PartialOrd> SortTuple<T> for (T, T) {
+    type Output = (T, T);
+
+    fn sort(self) -> Self::Output {
+        if self.0 <= self.1 {
+            self
+        } else {
+            (self.1, self.0)
+        }
+    }
+}
+
+impl<T: Ord> SortTuple<T> for (T, T, T) {
+    type Output = (T, T, T);
+
+    fn sort(self) -> Self::Output {
+        let mut slice = [self.0, self.1, self.2];
+        slice.sort();
+        let [a,b,c] = slice;
+        (a,b,c)
+    }
+}

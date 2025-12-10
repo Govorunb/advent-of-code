@@ -92,6 +92,10 @@ impl Direction {
     pub const fn to_vec2(self) -> Vector2 {
         Vector2::from(self)
     }
+
+    pub const fn is_vertical(self) -> bool {
+        matches!(self, Direction::North | Direction::South)
+    }
 }
 
 impl From<char> for Direction {
