@@ -1,6 +1,9 @@
 use std::io::stdin;
+use std::ops::Add;
 
 use pathfinding::prelude::{astar, dijkstra};
+use z3::{Optimize, Params, SatResult, Solver};
+use z3::ast::*;
 
 use crate::*;
 
@@ -63,8 +66,10 @@ aoc_day!(
                 }).sum::<usize>()
             },
             Part::Two => {
-                manual.iter().enumerate().map(|(i, machine)| {
-                    println!("machine {i}\n\tbuttons: {:?}\n\tjolts: {:?}", machine.buttons, machine.joltage);
+                manual.iter().enumerate().map(|(_i, machine)| {
+                    // return p2_z3(&machine.buttons, &machine.joltage); // slower, phew
+
+                    // println!("machine {_i}\n\tbuttons: {:?}\n\tjolts: {:?}", machine.buttons, machine.joltage);
 
                     let mut buttons = machine.buttons.clone();
                     let mut joltage = machine.joltage.clone();
@@ -79,10 +84,10 @@ aoc_day!(
                         total += presses;
                         // confirm_stdin();
                     }
-                    if total > 0 {
-                        println!("simplified:\n\tbuttons: {:?}\n\tjolts: {:?}", buttons, joltage);
-                    }
-                    total + p2_disjoint_wrong(&buttons, &joltage)
+                    // if total > 0 {
+                    //     println!("simplified:\n\tbuttons: {:?}\n\tjolts: {:?}", buttons, joltage);
+                    // }
+                    total + p2_z3(&buttons, &joltage)
                 }).sum::<usize>()
             }
         }
@@ -95,7 +100,6 @@ struct Machine {
     buttons: Vec<Vec<usize>>,
     joltage: Vec<usize>,
 }
-
 
 fn p2_astar_timeout(buttons: &[Vec<usize>], joltage: &Vec<usize>) -> usize {
     // we count down instead of up (it's funnier)
@@ -120,7 +124,7 @@ fn p2_astar_timeout(buttons: &[Vec<usize>], joltage: &Vec<usize>) -> usize {
     .unwrap().1
 }
 
-fn p2_disjoint_wrong(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
+fn p2_disjoint_too_low(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
     if buttons.is_empty() || joltage.is_empty() {
         return 0;
     }
@@ -173,7 +177,49 @@ fn p2_simplify(buttons: &[Vec<usize>], joltage: &[usize]) -> Option<(Vec<Vec<usi
         presses += min;
     }
     
+    // TODO: also remove from middle (affects button indices)
     while next_jolts.pop_if(|j| *j == 0).is_some() { }
     
     Some((next_buttons, next_jolts, presses))
+}
+
+// this used to be named "p2_shameful_z3"
+// but deciphering z3 docs is a challenge in its own right
+// so i declare "sufficient effort/investment" has been achieved
+fn p2_z3(buttons: &[Vec<usize>], joltage: &[usize]) -> usize {
+    let no_buttons = buttons.is_empty();
+    let no_joltage = joltage.is_empty();
+    assert!(no_buttons == no_joltage, "idiot {buttons:?} {joltage:?}");
+    if no_buttons || no_joltage {return 0};
+
+    let solver = Optimize::new();
+
+    let vars = (0..buttons.len())
+        .map(|i| Int::fresh_const(format!("b{i}").as_str()))
+        .collect_vec();
+    for v in &vars {
+        solver.assert(&v.ge(0));
+    }
+    // sum(vars[bi] == j)
+    for (ji, &j) in joltage.iter().enumerate() {
+        if j == 0 {continue};
+        let buttons_sum = z3_sum(buttons.iter().enumerate()
+            .filter_map(|(bi, b)| b.contains(&ji).then(|| vars[bi].clone()))
+        );
+        solver.assert(&buttons_sum.eq(Int::from_u64(j as u64)));
+    }
+
+    let sum = z3_sum(vars.iter().cloned());
+    solver.minimize(&sum);
+    
+    assert!(solver.check(&[]) == SatResult::Sat, "idiot 2: the booger");
+    let m = solver.get_model().unwrap();
+    vars.iter()
+        .map(|v| m.eval(v, true)
+            .and_then(|i| i.as_u64()).unwrap() as usize
+        ).sum()
+}
+
+fn z3_sum(ints: impl Iterator<Item = Int>) -> Int {
+    ints.reduce(|a, b| a.add(b)).unwrap()
 }
