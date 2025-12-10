@@ -1,6 +1,6 @@
 mod grid;
 
-use std::fmt::Debug;
+use std::{fmt::Debug, io::stdin};
 pub use grid::*;
 mod direction; pub use direction::*;
 mod rect_iter; pub use rect_iter::*;
@@ -147,4 +147,9 @@ macro_rules! aoc_day {
             }
         }
     }
+}
+
+pub fn confirm_stdin() {
+    let mut buf = String::with_capacity(1);
+    let _ = stdin().read_line(&mut buf);
 }
