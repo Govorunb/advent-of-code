@@ -28,7 +28,7 @@ fn main() {
     if let Some(_) = env::args().skip(1).find(|a| a == "--redact") {
         REDACT.store(true, std::sync::atomic::Ordering::Relaxed);
     }
-    let day = y25::days::Day9;
+    let day = y25::days::Day11;
     day.test(None);
     day.solve(day.input());
 }
