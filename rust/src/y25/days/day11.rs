@@ -56,18 +56,31 @@ hhh: out",
                 count_paths("you", succ, |&s| s == "out")
             },
             Part::Two => {
-                let must_visit = ["dac", "fft"];
-                // any order :)
-                must_visit.into_iter()
-                    .permutations(must_visit.len())
-                    .map(|perm| iter::once("svr").chain(perm).chain(iter::once("out"))
-                        .tuple_windows()
-                        .map(|(a, b)| count_paths(a, succ, |&s| s == b))
-                        .product::<usize>()
-                    ).sum::<usize>()
+                let must_visit = ["dac", "fft"]; // any order :)
+
+                // return must_visit.into_iter()
+                //     .permutations(must_visit.len())
+                //     .map(|perm| iter::once("svr").chain(perm).chain(iter::once("out"))
+                //         .tuple_windows()
+                //         .map(|(a, b)| count_paths(a, succ, |&s| s == b))
+                //         .product::<usize>()
+                //     ).sum::<usize>();
+
                 // expands to:
                 //   svr->fft * fft->dac * dac->out
                 // + svr->dac * dac->fft * fft->out
+                // (only one will be non-zero since the graph is acyclic - can't have fft->dac and dac->fft)
+
+                // ever so slightly faster due to breaking earlier
+                for perm in must_visit.into_iter().permutations(must_visit.len()) {
+                    let mut count = 1;
+                    for (a,b) in iter::once("svr").chain(perm).chain(iter::once("out")).tuple_windows() {
+                        count *= count_paths(a, succ, |&s| s == b);
+                        if count == 0 {break};
+                    }
+                    if count != 0 {return count};
+                }
+                unreachable!()
             }
         }
     }
