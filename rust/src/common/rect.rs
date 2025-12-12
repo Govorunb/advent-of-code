@@ -40,7 +40,8 @@ impl Rect {
     pub const fn width(&self) -> usize { self.size.width }
     pub const fn height(&self) -> usize { self.size.height }
     pub const fn size(&self) -> Size { self.size }
-    pub const fn area(&self) -> usize { self.size.width * self.size.height }
+    pub const fn area(&self) -> usize { self.width() * self.height() }
+    pub const fn perimeter(&self) -> usize { self.width() * 2 + self.height() * 2}
     
     pub const fn top_left(&self) -> Vector2 {
         self.base
@@ -109,6 +110,10 @@ impl Rect {
             dir: Direction::North,
             len: self.height()
         }
+    }
+
+    pub fn sides(&self) -> [Line;4] {
+        [self.top_edge(), self.right_edge(), self.bottom_edge(), self.left_edge()]
     }
 
     pub fn intersects(&self, line: &Line) -> bool {
